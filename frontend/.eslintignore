@@ -1,0 +1,10 @@
+public/**/*
+submodules/**/*
+**/node_modules
+jest.config.js
+jest.setup.js
+next.config.js
+coverage/**/*
+# pin-input: component copied and pasted from chakra-ui and has a 
+#            few eslint issues that I don't want to address
+**/pin-input/** 

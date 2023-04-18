@@ -1,0 +1,19 @@
+{
+  "name": "querymaker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/n/a",
+  "author": "n/a",
+  "license": "n/a",
+  "private": true,
+  "scripts": {
+    "prepare": "husky install .husky",
+    "postinstall": "husky install"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3"
+  },
+  "workspaces": [
+    "frontend"
+  ]
+}
