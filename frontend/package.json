@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.14",
+    "@heroicons/react": "^2.0.17",
     "autoprefixer": "10.4.14",
     "next": "13.3.0",
+    "node-postgres": "^0.6.2",
     "postcss": "8.4.22",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -18,7 +21,6 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "lint-staged": "^13.1.2",
     "@types/node": "18.14.0",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
@@ -26,9 +28,11 @@
     "@typescript-eslint/parser": "^5.53.0",
     "eslint": "8.34.0",
     "eslint-config-next": "13.1.6",
-    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-typescript": "^3.5.3",
-    "eslint-plugin-import": "^2.27.5"
+    "eslint-plugin-import": "^2.27.5",
+    "lint-staged": "^13.1.2",
+    "prettier": "^2.8.7"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
