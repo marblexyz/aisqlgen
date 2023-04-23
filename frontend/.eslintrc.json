@@ -68,5 +68,14 @@
         "project": "."
       }
     }
-  }
+  },
+  "ignorePatterns": [
+    "node_modules/",
+    "dist/",
+    "coverage/",
+    "out/",
+    "build/",
+    "public/",
+    "tailwind.config.js"
+  ]
 }
