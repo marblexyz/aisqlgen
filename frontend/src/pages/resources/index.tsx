@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/Navigation/Navbar";
+import { Navbar } from "@/components/navigation/Navbar";
 import { Box } from "@chakra-ui/react";
 
 export default function Resources() {

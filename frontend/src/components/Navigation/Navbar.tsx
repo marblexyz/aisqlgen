@@ -9,8 +9,8 @@ export const Navbar: FC = () => {
 
   const links = [
     {
-      name: "Queries",
-      path: "/queries",
+      name: "Query",
+      path: "/query",
     },
     {
       name: "Resources",
