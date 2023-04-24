@@ -11,3 +11,12 @@ export type PGTableSchema = {
   }[];
 };
 export type DatabaseSchemaObject = Record<string, PGTableSchema>;
+
+export type CreatePGPoolConfig = {
+  host: string;
+  port: number;
+  database: string;
+  user: string;
+  password: string;
+  useSSL?: boolean;
+};

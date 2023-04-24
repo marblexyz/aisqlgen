@@ -1,28 +1,28 @@
-import { DatabaseSchemaObject, PGTableSchema } from "@/types/schema";
+import {
+  CreatePGPoolConfig,
+  DatabaseSchemaObject,
+  PGTableSchema,
+} from "@/types/schema";
 import { isNullOrUndefined } from "@/utils";
-import { Pool } from "pg";
+import { Pool, QueryResult } from "pg";
 
-export type CreatePGClientConfig = {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
-  useSSL?: boolean;
+export const createPool = (config: CreatePGPoolConfig) => {
+  try {
+    const pool = new Pool(config);
+    return pool;
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error creating pg pool: ${error}`);
+  }
 };
 
-export const createClient = (config: CreatePGClientConfig) => {
-  const pool = new Pool(config);
-  return pool;
-};
-
-type DatabaseSchemaRow = {
+export type DatabaseSchemaRow = {
   table_name: string;
   column_name: string;
   udt_name: string;
 };
 
-type DatabaseRelationshipRow = {
+export type DatabaseRelationshipRow = {
   table_name: string;
   column_name: string;
   key_type: "pk" | "fk";
@@ -30,7 +30,7 @@ type DatabaseRelationshipRow = {
   referenced_column?: string;
 };
 
-type DatabaseSchemaMap = Map<string, PGTableSchema>;
+export type DatabaseSchemaMap = Map<string, PGTableSchema>;
 
 const DB_SCHEMA_QUERY = `
 SELECT
@@ -90,11 +90,23 @@ ORDER BY
 export const getBasicDatabaseSchema = async (
   pool: Pool
 ): Promise<DatabaseSchemaObject> => {
-  const databaseSchema = await pool.query<DatabaseSchemaRow>(DB_SCHEMA_QUERY);
+  let databaseSchema: QueryResult<DatabaseSchemaRow>;
+  try {
+    databaseSchema = await pool.query<DatabaseSchemaRow>(DB_SCHEMA_QUERY);
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error getting database schema.`);
+  }
 
-  const databaseRelationships = await pool.query<DatabaseRelationshipRow>(
-    DB_RELATIONSHIPS_QUERY
-  );
+  let databaseRelationships: QueryResult<DatabaseRelationshipRow>;
+  try {
+    databaseRelationships = await pool.query<DatabaseRelationshipRow>(
+      DB_RELATIONSHIPS_QUERY
+    );
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error getting database relationships.`);
+  }
 
   const schema: DatabaseSchemaMap = new Map();
 

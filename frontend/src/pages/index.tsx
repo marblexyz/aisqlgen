@@ -1,8 +1,11 @@
 import { Navbar } from "@/components/navigation/Navbar";
 import { IndexHeader } from "@/components/page/IndexHeader";
+import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
 import { useSamplePostgresData } from "@/hooks/queries/useSamplePostgresData";
+import { getSchemaAsString } from "@/utils/getSchemaAsString";
 import {
   Box,
+  Button,
   Divider,
   Flex,
   HStack,
@@ -14,7 +17,7 @@ import {
   useRadio,
   useRadioGroup,
 } from "@chakra-ui/react";
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 
 type DatasourceCardProps = UseRadioProps & {
   option: { value: string; label: string };
@@ -52,6 +55,7 @@ export const DatasourceCard: FC<DatasourceCardProps> = (props) => {
 };
 
 export type DataSourceRadioGroupProps = {
+  value: DataSource;
   onChange: (value: DataSource) => void;
 };
 
@@ -67,6 +71,7 @@ export type DataSourceType = {
 };
 
 export const DataSourceRadioGroup: FC<DataSourceRadioGroupProps> = ({
+  value,
   onChange,
 }) => {
   const options: DataSourceType[] = [
@@ -77,6 +82,7 @@ export const DataSourceRadioGroup: FC<DataSourceRadioGroupProps> = ({
 
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "datasource",
+    defaultValue: value,
     onChange,
   });
 
@@ -84,26 +90,63 @@ export const DataSourceRadioGroup: FC<DataSourceRadioGroupProps> = ({
 
   return (
     <HStack {...group}>
-      {options.map((value) => {
-        const radio = getRadioProps({ value: value.value });
-        return <DatasourceCard key={value.value} option={value} {...radio} />;
+      {options.map((option) => {
+        const radio = getRadioProps({ value: option.value });
+        return <DatasourceCard key={option.value} option={option} {...radio} />;
       })}
     </HStack>
   );
 };
 
 export default function Home() {
-  const [state, setState] = useState<DataSource | undefined>(undefined);
+  const [selectedDataSource, setSelectedDataSource] = useState<DataSource>(
+    DataSource.SAMPLE
+  );
+  const [userQuery, setUserQuery] = useState<string>("");
 
-  const { schemaString, isLoading, isError } = useSamplePostgresData({
+  const {
+    data: dbSchema,
+    isLoading: isLoadingDbSchema,
+    isError: isErrorDbSchema,
+  } = useSamplePostgresData({
     enabled: true,
   });
 
-  const showPreviewSchema = schemaString !== undefined && !isError;
+  const {
+    data: generateSQLQueryResult,
+    mutate: generateSQLQuery,
+    isError: isErrorGenerateSQLQuery,
+    isLoading: isLoadingGenerateSQLQuery,
+  } = useGenerateSQLQuery();
+
+  const schemaString = useMemo(() => {
+    if (dbSchema === undefined) {
+      return dbSchema;
+    }
+    const schemaString = getSchemaAsString(dbSchema);
+    return schemaString;
+  }, [dbSchema]);
+
+  const showPreviewSchema = schemaString !== undefined && !isErrorDbSchema;
 
   const handleSelectDataSource = (value: DataSource) => {
-    setState(value);
+    setSelectedDataSource(value);
   };
+  const handleChangeUserQuery = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setUserQuery(event.target.value);
+  };
+
+  const generateUserQueryIsDisabled =
+    userQuery === "" || isLoadingDbSchema || isErrorDbSchema;
+  const handleGenerateQuery = () => {
+    if (userQuery === "") {
+      return;
+    }
+    generateSQLQuery({ query: userQuery, dbSchema });
+  };
+
   return (
     <Box>
       <Navbar />
@@ -122,7 +165,10 @@ export default function Home() {
             Data source
           </Heading>
           <Box w="100%" m={2}>
-            <DataSourceRadioGroup onChange={handleSelectDataSource} />
+            <DataSourceRadioGroup
+              value={selectedDataSource}
+              onChange={handleSelectDataSource}
+            />
           </Box>
           <Heading size="sm" textAlign={"left"} w="100%">
             Preview schema
@@ -131,22 +177,44 @@ export default function Home() {
             {showPreviewSchema && (
               <Textarea
                 placeholder="Here is a sample placeholder"
-                size="sm"
                 resize={"vertical"}
-                isDisabled={state !== DataSource.CUSTOM}
+                isDisabled={selectedDataSource !== DataSource.CUSTOM}
                 value={schemaString}
               />
             )}
-            {isLoading && <Text>Loading...</Text>}
-            {isError && <Text>Error loading schema</Text>}
+            {isLoadingDbSchema && <Text>Loading...</Text>}
+            {isErrorDbSchema && <Text>Error loading schema</Text>}
+          </Box>
+          <Heading size="sm" textAlign={"left"} w="100%">
+            Your question
+          </Heading>
+          <Box w="100%" m={2}>
+            <Textarea
+              placeholder="Here is a sample placeholder"
+              resize={"vertical"}
+              value={userQuery}
+              onChange={handleChangeUserQuery}
+            />
+          </Box>
+          <Button
+            isDisabled={generateUserQueryIsDisabled}
+            onClick={handleGenerateQuery}
+          >
+            Generate query
+          </Button>
+          <Heading size="sm" textAlign={"left"} w="100%">
+            SQL Query
+          </Heading>
+          <Box w="100%" m={2}>
+            <Textarea
+              placeholder="Here is a sample placeholder"
+              resize={"vertical"}
+              value={generateSQLQueryResult}
+              isDisabled={true}
+            />
           </Box>
         </VStack>
       </Flex>
-      {/* Resource Selector */}
-
-      {/* Schema */}
-      {/* Question */}
-      {/* Output */}
     </Box>
   );
 }

@@ -6,7 +6,7 @@ export type GetSampleData = {
 };
 
 export const getSampleData = async () => {
-  const response = await callServerlessApi("/api/db/sample", HttpMethod.GET);
+  const response = await callServerlessApi("/api/db/pg", HttpMethod.POST);
   if (response.status >= 400) {
     throw new Error("Error getting sample data.");
   }

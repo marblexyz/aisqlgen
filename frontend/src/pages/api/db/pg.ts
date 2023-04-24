@@ -1,25 +1,25 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import {
-  CreatePGClientConfig,
-  createClient,
-  getBasicDatabaseSchema,
-} from "@/node/db/postgres";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Pool } from "pg";
+import { createPool, getBasicDatabaseSchema } from "@/node/db/postgres";
+import { SAMPLE_PG_DB_CONFIG } from "@/node/db/sample";
+import { CreatePGPoolConfig } from "@/types/schema";
 
-type RequestType = {
-  config: CreatePGClientConfig;
+import type { NextApiRequest, NextApiResponse } from "next";
+
+export type GetDBSchemaRequest = {
+  config?: CreatePGPoolConfig;
 };
 
-type Data = {
+export type GetDBSchemaResult = {
   error?: string;
   schema?: unknown;
 };
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<GetDBSchemaResult>
 ) {
+  // TODO: This should really be a GET request, but that will require
+  // a database, UUIDs, etc.
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
   }
@@ -29,18 +29,13 @@ export default async function handler(
   if (body === undefined || body === null) {
     res.status(400).json({ error: "Bad Request" });
   }
-  const { config } = body as RequestType;
+  const { config } = body as GetDBSchemaRequest;
 
-  let pgClient: Pool;
   try {
-    pgClient = createClient(config);
-    try {
-      const databaseSchema = await getBasicDatabaseSchema(pgClient);
-      res.status(200).json({ schema: databaseSchema });
-    } catch (error) {
-      res.status(500).json({ error: "Error getting database schema." });
-    }
+    const pgClient = createPool(config ?? SAMPLE_PG_DB_CONFIG);
+    const databaseSchema = await getBasicDatabaseSchema(pgClient);
+    res.status(200).json({ schema: databaseSchema });
   } catch (error) {
-    res.status(500).json({ error: "Error creating pg client." });
+    res.status(500).json({ error: "Error getting database schema." });
   }
 }
