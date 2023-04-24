@@ -17,7 +17,7 @@ export const getTablesToUsePrompt = ({
   
   Table Names: ${tableNames}
   
-  Relevant Table Names:
+  Only include the table names in the output, separated by commas. Do not include the question or any other text.
 	`;
   return PROMPT;
 };

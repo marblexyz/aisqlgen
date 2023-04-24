@@ -99,6 +99,7 @@ export const DataSourceRadioGroup: FC<DataSourceRadioGroupProps> = ({
 };
 
 export default function Home() {
+  const [textareaHeight, setTextareaHeight] = useState(1);
   const [selectedDataSource, setSelectedDataSource] = useState<DataSource>(
     DataSource.SAMPLE
   );
@@ -135,6 +136,13 @@ export default function Home() {
   const handleChangeUserQuery = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
+    const height = event.target.scrollHeight;
+    const rowHeight = 15;
+    const trows = Math.ceil(height / rowHeight) - 1;
+    if (trows !== textareaHeight) {
+      setTextareaHeight(trows);
+    }
+
     setUserQuery(event.target.value);
   };
 
@@ -151,7 +159,15 @@ export default function Home() {
     <Box>
       <Navbar />
       <IndexHeader />
-      <Flex w={"100%"} justify={"center"} align={"center"} px={4} pt={8}>
+      <Flex
+        w={"100%"}
+        justify={"center"}
+        align={"center"}
+        px={4}
+        pt={8}
+        h="100%"
+        overflowY={"auto"}
+      >
         <VStack w="container.lg" spacing={4}>
           <Heading size="md" textAlign={"left"} w="100%">
             Generate query
@@ -211,6 +227,7 @@ export default function Home() {
               resize={"vertical"}
               value={generateSQLQueryResult}
               isDisabled={true}
+              rows={textareaHeight}
             />
           </Box>
         </VStack>
