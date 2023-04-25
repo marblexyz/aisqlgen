@@ -1,22 +1,16 @@
 import { getSampleData } from "@/api/sample";
 import { useQuery } from "@tanstack/react-query";
 
-export type UseSamplePostgresData = {
-  enabled?: boolean;
-};
-export const useSamplePostgresData = ({
-  enabled = false,
-}: UseSamplePostgresData) => {
+export const useSamplePostgresData = (sampleRowsInTableInfo?: number) => {
   const queryResult = useQuery({
     queryKey: ["samplePostgresData"],
     queryFn: async () => {
-      const data = await getSampleData();
-      if (data === undefined) {
+      const data = await getSampleData({ sampleRowsInTableInfo });
+      if (data.error !== undefined) {
         throw new Error("Error getting sample data.");
       }
       return data;
     },
-    enabled,
   });
 
   return queryResult;

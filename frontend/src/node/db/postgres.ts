@@ -163,12 +163,11 @@ export const getSampleRowsForTable = async (
   tableName: string,
   limit = 3
 ) => {
-  const command = `SELECT * FROM $1 LIMIT $2;`;
-  const values = [tableName, limit];
+  const text = `SELECT * FROM ${tableName} LIMIT ${limit};`;
 
   try {
-    const result = await poolClient.query(command, values);
-    return result.rows as unknown[];
+    const result = await poolClient.query(text);
+    return result.rows as Record<string, unknown>[];
   } catch (error) {
     console.error(error);
     throw new Error(`Error getting sample rows for table ${tableName}.`);

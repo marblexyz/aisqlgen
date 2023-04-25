@@ -110,18 +110,16 @@ export default function Home() {
   const [userQuery, setUserQuery] = useState<string>("");
 
   const {
-    data: dbSchema,
+    data: samplePostgresData,
     isLoading: isLoadingDbSchema,
     isError: isErrorDbSchema,
-  } = useSamplePostgresData({
-    enabled: true,
-  });
+  } = useSamplePostgresData(3);
 
-  const onSuccessGenerateQuery = () => {
-    if (generateSQLQueryResult === undefined) {
+  const onSuccessGenerateQuery = (result: string | undefined) => {
+    if (result === undefined) {
       return;
     }
-    setValue(generateSQLQueryResult);
+    setValue(result);
   };
 
   const {
@@ -132,12 +130,16 @@ export default function Home() {
   } = useGenerateSQLQuery(onSuccessGenerateQuery);
 
   const schemaString = useMemo(() => {
-    if (dbSchema === undefined) {
-      return dbSchema;
+    if (samplePostgresData?.schema === undefined) {
+      return undefined;
     }
-    const schemaString = getSchemaAsString(dbSchema);
+    const schemaString = getSchemaAsString(
+      samplePostgresData.schema,
+      undefined,
+      samplePostgresData.sampleRows
+    );
     return schemaString;
-  }, [dbSchema]);
+  }, [samplePostgresData]);
 
   const showPreviewSchema = schemaString !== undefined && !isErrorDbSchema;
 
@@ -156,7 +158,13 @@ export default function Home() {
     if (userQuery === "") {
       return;
     }
-    generateSQLQuery({ query: userQuery, dbSchema });
+    if (samplePostgresData?.schema === undefined) {
+      return;
+    }
+    generateSQLQuery({
+      query: userQuery,
+      dbSchema: samplePostgresData.schema,
+    });
   };
 
   return (

@@ -17,7 +17,7 @@ export type GetDBSchemaRequest = {
 export type GetDBSchemaResult = {
   error?: string;
   schema?: DatabaseSchemaObject;
-  sampleRows?: unknown;
+  sampleRows?: Record<string, Record<string, unknown>[]>;
 };
 
 export default async function handler(
@@ -43,22 +43,20 @@ export default async function handler(
     // we don't need to dispose of the client (it will be undefined)
     const poolClient = await pgPool.connect();
     let databaseSchema: DatabaseSchemaObject;
-    let sampleRows: unknown | undefined;
+    let sampleRows: Record<string, Record<string, unknown>[]> | undefined;
     try {
       databaseSchema = await getBasicDatabaseSchema(poolClient);
       const tableNames = Object.keys(databaseSchema);
 
       if (sampleRowsInTableInfo !== undefined) {
-        sampleRows = await Promise.all(
-          tableNames.map(async (tableName) => {
-            const rowList = await getSampleRowsForTable(
-              poolClient,
-              tableName,
-              sampleRowsInTableInfo
-            );
-            return { tableName, rowList };
-          })
-        );
+        sampleRows = {};
+        for (const tableName of tableNames) {
+          sampleRows[tableName] = await getSampleRowsForTable(
+            poolClient,
+            tableName,
+            sampleRowsInTableInfo
+          );
+        }
       }
     } finally {
       poolClient.release();
