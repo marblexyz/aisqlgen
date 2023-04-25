@@ -1,3 +1,4 @@
+import { AutoResizeTextarea } from "@/components/common/AutoResizeTextarea";
 import { Navbar } from "@/components/navigation/Navbar";
 import { IndexHeader } from "@/components/page/IndexHeader";
 import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
@@ -10,10 +11,12 @@ import {
   Flex,
   HStack,
   Heading,
+  Spinner,
   Text,
   Textarea,
   UseRadioProps,
   VStack,
+  useClipboard,
   useRadio,
   useRadioGroup,
 } from "@chakra-ui/react";
@@ -99,7 +102,8 @@ export const DataSourceRadioGroup: FC<DataSourceRadioGroupProps> = ({
 };
 
 export default function Home() {
-  const [textareaHeight, setTextareaHeight] = useState(1);
+  const { onCopy, setValue, hasCopied } = useClipboard("");
+
   const [selectedDataSource, setSelectedDataSource] = useState<DataSource>(
     DataSource.SAMPLE
   );
@@ -113,12 +117,19 @@ export default function Home() {
     enabled: true,
   });
 
+  const onSuccessGenerateQuery = () => {
+    if (generateSQLQueryResult === undefined) {
+      return;
+    }
+    setValue(generateSQLQueryResult);
+  };
+
   const {
     data: generateSQLQueryResult,
     mutate: generateSQLQuery,
     isError: isErrorGenerateSQLQuery,
     isLoading: isLoadingGenerateSQLQuery,
-  } = useGenerateSQLQuery();
+  } = useGenerateSQLQuery(onSuccessGenerateQuery);
 
   const schemaString = useMemo(() => {
     if (dbSchema === undefined) {
@@ -136,13 +147,6 @@ export default function Home() {
   const handleChangeUserQuery = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    const height = event.target.scrollHeight;
-    const rowHeight = 15;
-    const trows = Math.ceil(height / rowHeight) - 1;
-    if (trows !== textareaHeight) {
-      setTextareaHeight(trows);
-    }
-
     setUserQuery(event.target.value);
   };
 
@@ -156,18 +160,10 @@ export default function Home() {
   };
 
   return (
-    <Box>
+    <>
       <Navbar />
       <IndexHeader />
-      <Flex
-        w={"100%"}
-        justify={"center"}
-        align={"center"}
-        px={4}
-        pt={8}
-        h="100%"
-        overflowY={"auto"}
-      >
+      <Flex w={"100%"} justify={"center"} align={"center"} px={4} pt={8}>
         <VStack w="container.lg" spacing={4}>
           <Heading size="md" textAlign={"left"} w="100%">
             Generate query
@@ -222,16 +218,19 @@ export default function Home() {
             SQL Query
           </Heading>
           <Box w="100%" m={2}>
-            <Textarea
-              placeholder="Here is a sample placeholder"
-              resize={"vertical"}
-              value={generateSQLQueryResult}
-              isDisabled={true}
-              rows={textareaHeight}
-            />
+            {!isLoadingGenerateSQLQuery && (
+              <AutoResizeTextarea
+                value={generateSQLQueryResult}
+                isDisabled={true}
+                minH={32}
+              />
+            )}
+            {isLoadingGenerateSQLQuery && <Spinner />}
+            {isErrorGenerateSQLQuery && <Text>Error generating query.</Text>}
+            <Button onClick={onCopy}>{hasCopied ? "Copied!" : "Copy"}</Button>
           </Box>
         </VStack>
       </Flex>
-    </Box>
+    </>
   );
 }

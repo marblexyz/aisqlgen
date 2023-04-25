@@ -1,17 +1,23 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { createPool, getBasicDatabaseSchema } from "@/node/db/postgres";
+import {
+  createPool,
+  getBasicDatabaseSchema,
+  getSampleRowsForTable,
+} from "@/node/db/postgres";
 import { SAMPLE_PG_DB_CONFIG } from "@/node/db/sample";
-import { CreatePGPoolConfig } from "@/types/schema";
+import { CreatePGPoolConfig, DatabaseSchemaObject } from "@/types/schema";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export type GetDBSchemaRequest = {
   config?: CreatePGPoolConfig;
+  sampleRowsInTableInfo?: number;
 };
 
 export type GetDBSchemaResult = {
   error?: string;
-  schema?: unknown;
+  schema?: DatabaseSchemaObject;
+  sampleRows?: unknown;
 };
 
 export default async function handler(
@@ -25,16 +31,39 @@ export default async function handler(
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const body = req.body;
+  const { body } = req;
   if (body === undefined || body === null) {
     res.status(400).json({ error: "Bad Request" });
   }
-  const { config } = body as GetDBSchemaRequest;
+  const { config, sampleRowsInTableInfo } = body as GetDBSchemaRequest;
 
   try {
-    const pgClient = createPool(config ?? SAMPLE_PG_DB_CONFIG);
-    const databaseSchema = await getBasicDatabaseSchema(pgClient);
-    res.status(200).json({ schema: databaseSchema });
+    const pgPool = createPool(config ?? SAMPLE_PG_DB_CONFIG);
+    // note: we don't try/catch this because if connecting throws an exception
+    // we don't need to dispose of the client (it will be undefined)
+    const poolClient = await pgPool.connect();
+    let databaseSchema: DatabaseSchemaObject;
+    let sampleRows: unknown | undefined;
+    try {
+      databaseSchema = await getBasicDatabaseSchema(poolClient);
+      const tableNames = Object.keys(databaseSchema);
+
+      if (sampleRowsInTableInfo !== undefined) {
+        sampleRows = await Promise.all(
+          tableNames.map(async (tableName) => {
+            const rowList = await getSampleRowsForTable(
+              poolClient,
+              tableName,
+              sampleRowsInTableInfo
+            );
+            return { tableName, rowList };
+          })
+        );
+      }
+    } finally {
+      poolClient.release();
+    }
+    res.status(200).json({ schema: databaseSchema, sampleRows });
   } catch (error) {
     res.status(500).json({ error: "Error getting database schema." });
   }

@@ -11,6 +11,9 @@ export const useSamplePostgresData = ({
     queryKey: ["samplePostgresData"],
     queryFn: async () => {
       const data = await getSampleData();
+      if (data === undefined) {
+        throw new Error("Error getting sample data.");
+      }
       return data;
     },
     enabled,

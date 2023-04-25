@@ -4,7 +4,7 @@ import {
   PGTableSchema,
 } from "@/types/schema";
 import { isNullOrUndefined } from "@/utils";
-import { Pool, QueryResult } from "pg";
+import { Pool, PoolClient, QueryResult } from "pg";
 
 export const createPool = (config: CreatePGPoolConfig) => {
   try {
@@ -86,13 +86,12 @@ ORDER BY
     key_type,
     kcu.column_name;
 `;
-
 export const getBasicDatabaseSchema = async (
-  pool: Pool
+  client: PoolClient
 ): Promise<DatabaseSchemaObject> => {
   let databaseSchema: QueryResult<DatabaseSchemaRow>;
   try {
-    databaseSchema = await pool.query<DatabaseSchemaRow>(DB_SCHEMA_QUERY);
+    databaseSchema = await client.query<DatabaseSchemaRow>(DB_SCHEMA_QUERY);
   } catch (error) {
     console.error(error);
     throw new Error(`Error getting database schema.`);
@@ -100,7 +99,7 @@ export const getBasicDatabaseSchema = async (
 
   let databaseRelationships: QueryResult<DatabaseRelationshipRow>;
   try {
-    databaseRelationships = await pool.query<DatabaseRelationshipRow>(
+    databaseRelationships = await client.query<DatabaseRelationshipRow>(
       DB_RELATIONSHIPS_QUERY
     );
   } catch (error) {
@@ -157,4 +156,21 @@ export const getBasicDatabaseSchema = async (
   });
 
   return Object.fromEntries(schema);
+};
+
+export const getSampleRowsForTable = async (
+  poolClient: PoolClient,
+  tableName: string,
+  limit = 3
+) => {
+  const command = `SELECT * FROM $1 LIMIT $2;`;
+  const values = [tableName, limit];
+
+  try {
+    const result = await poolClient.query(command, values);
+    return result.rows as unknown[];
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error getting sample rows for table ${tableName}.`);
+  }
 };

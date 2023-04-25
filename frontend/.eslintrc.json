@@ -75,7 +75,6 @@
     "coverage/",
     "out/",
     "build/",
-    "public/",
-    "tailwind.config.js"
+    "public/"
   ]
 }

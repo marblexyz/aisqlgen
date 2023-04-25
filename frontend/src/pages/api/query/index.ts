@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { getSQLCommandForQuery } from "@/node/api/llm/getSQLCommandForQuery";
-import { getTablesToUseForQuery } from "@/node/api/llm/getTablesToUseForQuery";
+import { getSQLCommandForQuery } from "@/node/llm/getSQLCommandForQuery";
+import { getTablesToUseForQuery } from "@/node/llm/getTablesToUseForQuery";
 import { DatabaseSchemaObject } from "@/types/schema";
 import { getSchemaAsString } from "@/utils/getSchemaAsString";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -8,6 +8,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export type GenerateSQLCommandBody = {
   query: string;
   dbSchema: DatabaseSchemaObject;
+  sampleRows: unknown[];
 };
 
 export type GenerateSQLQueryResult = {
@@ -32,7 +33,7 @@ export default async function handler(
   const { query, dbSchema } = body as GenerateSQLCommandBody;
 
   // Create a string with a list of possible table names with the format:
-  // table1: column1 (primary key), column2 (foreign key), column3, ...
+  // table1: column1 (primary key), column2 (foreign key, column3, ...
   // table2: column1, column2, column3, ...
   const tableNameInfo = Object.entries(dbSchema).reduce(
     (acc, [tableName, table]) => {
@@ -62,7 +63,7 @@ export default async function handler(
       validTableNames,
     });
     console.log(tableList);
-    const tableSchemaAsString = getSchemaAsString(dbSchema, tableList);
+    const tableSchemaAsString = getSchemaAsString(dbSchema);
     console.log(tableSchemaAsString);
     const result = await getSQLCommandForQuery({
       query,
