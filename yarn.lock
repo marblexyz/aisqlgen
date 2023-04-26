@@ -847,6 +847,11 @@
   resolved "https://registry.yarnpkg.com/@chakra-ui/visually-hidden/-/visually-hidden-2.0.15.tgz#60df64e0ab97d95fee4e6c61ccabd15fd5ace398"
   integrity sha512-WWULIiucYRBIewHKFA7BssQ2ABLHLVd9lrUo3N3SZgR0u4ZRDDVEUNOy+r+9ruDze8+36dGbN9wsN1IdELtdOw==
 
+"@dqbd/tiktoken@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@dqbd/tiktoken/-/tiktoken-1.0.6.tgz#96bfd0a4909726c61551a8c783493f01841bd163"
+  integrity sha512-umSdeZTy/SbPPKVuZKV/XKyFPmXSN145CcM3iHjBbmhlohBJg7vaDp4cPCW+xNlWL6L2U1sp7T2BD+di2sUKdA==
+
 "@emotion/babel-plugin@^11.10.6":
   version "11.10.6"
   resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.10.6.tgz#a68ee4b019d661d6f37dec4b8903255766925ead"
@@ -3884,11 +3889,6 @@ through@^2.3.8:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==
-
-tiktoken-node@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/tiktoken-node/-/tiktoken-node-0.0.6.tgz#7bd6c4b0ad0ce2fbd0f2989ec6b4d4cfd846ab7c"
-  integrity sha512-MiprfzPhoKhCflzl0Jyds0VKibAgUGHfJLvBCAXPpum6Lru6ZoKQGsl8lJP0B94LPpby2B2WveOB2tZVfEZQOQ==
 
 tiny-glob@^0.2.9:
   version "0.2.9"

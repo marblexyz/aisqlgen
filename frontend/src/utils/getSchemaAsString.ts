@@ -1,9 +1,9 @@
-import { DatabaseSchemaObject } from "@/types/schema";
+import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 
 export const getSchemaAsString = (
   schema: DatabaseSchemaObject,
   tableNameList?: string[],
-  sampleRows?: Record<string, Record<string, unknown>[]>
+  sampleRows?: SampleRowsObject
 ): string => {
   // Generate a string schema representation with the following format:
   // table_name

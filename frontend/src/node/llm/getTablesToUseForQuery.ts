@@ -1,4 +1,5 @@
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
+import { printPromptEncodingLength } from "../utils";
 import { generateChatCompletion } from "./openai";
 
 export type GetTablesToUsePromptConfig = {
@@ -34,6 +35,7 @@ export const getTablesToUseForQuery = async ({
   validTableNames,
 }: GetTablesToUseForQueryConfig) => {
   const prompt = getTablesToUsePrompt({ query, tableNames: tableNamesInfo });
+  printPromptEncodingLength(prompt);
   const messages = [
     {
       role: ChatCompletionRequestMessageRoleEnum.User,

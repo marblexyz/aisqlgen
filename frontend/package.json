@@ -11,6 +11,7 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.0.18",
     "@chakra-ui/react": "^2.5.5",
+    "@dqbd/tiktoken": "^1.0.6",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@headlessui/react": "^1.7.14",
@@ -27,7 +28,6 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
     "react-textarea-autosize": "^8.4.1",
-    "tiktoken-node": "^0.0.6",
     "typescript": "5.0.4"
   },
   "devDependencies": {

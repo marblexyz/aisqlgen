@@ -1,15 +1,19 @@
 import { GenerateSQLQueryResult } from "@/pages/api/query";
-import { DatabaseSchemaObject } from "@/types/schema";
+import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { HttpMethod, callServerlessApi } from ".";
 
 export type GenerateSQLQueryConfig = {
   query: string;
   dbSchema?: DatabaseSchemaObject;
+  sampleRows?: SampleRowsObject;
+  sequential?: boolean;
 };
 
 export const generateSQLQuery = async ({
   query,
   dbSchema,
+  sampleRows,
+  sequential,
 }: GenerateSQLQueryConfig) => {
   const response = await callServerlessApi(
     "/api/query",
@@ -17,6 +21,8 @@ export const generateSQLQuery = async ({
     JSON.stringify({
       query,
       dbSchema,
+      sampleRows,
+      sequential,
     })
   );
   if (response.status >= 400) {

@@ -1,7 +1,13 @@
 import { generateSQLQuery } from "@/api/query";
-import { DatabaseSchemaObject } from "@/types/schema";
+import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { useMutation } from "@tanstack/react-query";
 
+export type GenerateSQLQueryConfig = {
+  query: string;
+  dbSchema?: DatabaseSchemaObject;
+  sampleRows?: SampleRowsObject;
+  sequential?: boolean;
+};
 export const useGenerateSQLQuery = (
   onSuccess?: (result: string | undefined) => void,
   onError?: (error: unknown) => void
@@ -11,11 +17,15 @@ export const useGenerateSQLQuery = (
     mutationFn: async ({
       query,
       dbSchema,
-    }: {
-      query: string;
-      dbSchema?: DatabaseSchemaObject;
-    }) => {
-      const result = await generateSQLQuery({ query, dbSchema });
+      sampleRows,
+      sequential,
+    }: GenerateSQLQueryConfig) => {
+      const result = await generateSQLQuery({
+        query,
+        dbSchema,
+        sampleRows,
+        sequential,
+      });
       return result;
     },
     onSuccess: (result) => {

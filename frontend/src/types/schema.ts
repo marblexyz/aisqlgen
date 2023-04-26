@@ -20,3 +20,5 @@ export type CreatePGPoolConfig = {
   password: string;
   useSSL?: boolean;
 };
+
+export type SampleRowsObject = Record<string, Record<string, unknown>[]>;

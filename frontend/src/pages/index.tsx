@@ -164,6 +164,7 @@ export default function Home() {
     generateSQLQuery({
       query: userQuery,
       dbSchema: samplePostgresData.schema,
+      sampleRows: samplePostgresData.sampleRows,
     });
   };
 

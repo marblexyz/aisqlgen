@@ -5,7 +5,11 @@ import {
   getSampleRowsForTable,
 } from "@/node/db/postgres";
 import { SAMPLE_PG_DB_CONFIG } from "@/node/db/sample";
-import { CreatePGPoolConfig, DatabaseSchemaObject } from "@/types/schema";
+import {
+  CreatePGPoolConfig,
+  DatabaseSchemaObject,
+  SampleRowsObject,
+} from "@/types/schema";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -17,7 +21,7 @@ export type GetDBSchemaRequest = {
 export type GetDBSchemaResult = {
   error?: string;
   schema?: DatabaseSchemaObject;
-  sampleRows?: Record<string, Record<string, unknown>[]>;
+  sampleRows?: SampleRowsObject;
 };
 
 export default async function handler(
@@ -43,7 +47,7 @@ export default async function handler(
     // we don't need to dispose of the client (it will be undefined)
     const poolClient = await pgPool.connect();
     let databaseSchema: DatabaseSchemaObject;
-    let sampleRows: Record<string, Record<string, unknown>[]> | undefined;
+    let sampleRows: SampleRowsObject | undefined;
     try {
       databaseSchema = await getBasicDatabaseSchema(poolClient);
       const tableNames = Object.keys(databaseSchema);

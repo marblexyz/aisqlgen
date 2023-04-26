@@ -1,4 +1,5 @@
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
+import { printPromptEncodingLength } from "../utils";
 import { generateChatCompletion } from "./openai";
 
 export type GetPostgresPromptConfig = {
@@ -35,6 +36,7 @@ export const getSQLCommandForQuery = async ({
 }: GetSQLCommandForQueryConfig) => {
   // TODO: Generalize this to work with any database type prompt
   const psqlCmdPrompt = getPostgresPrompt({ query, tableInfo });
+  printPromptEncodingLength(psqlCmdPrompt);
   const messages = [
     {
       role: ChatCompletionRequestMessageRoleEnum.User,
