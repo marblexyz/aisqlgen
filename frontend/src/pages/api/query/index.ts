@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { getSQLCommandForQuery } from "@/node/llm/getSQLCommandForQuery";
+import { generateSQLCommandForQuery } from "@/node/llm/getSQLCommandForQuery";
 import { getTablesToUseForQuery } from "@/node/llm/getTablesToUseForQuery";
 import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { getSchemaAsString } from "@/utils/getSchemaAsString";
@@ -53,7 +53,7 @@ export default async function handler(
       sampleRows
     );
 
-    const result = await getSQLCommandForQuery({
+    const result = await generateSQLCommandForQuery({
       query,
       tableInfo: tableSchemaAsString,
     });

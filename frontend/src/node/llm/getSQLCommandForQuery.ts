@@ -25,15 +25,15 @@ Only return the SQL query in the answer. Do not include the question or any othe
   return PROMPT;
 };
 
-export type GetSQLCommandForQueryConfig = {
+export type GenerateSQLCommandForQueryConfig = {
   query: string;
   tableInfo: string;
 };
 
-export const getSQLCommandForQuery = async ({
+export const generateSQLCommandForQuery = async ({
   query,
   tableInfo,
-}: GetSQLCommandForQueryConfig) => {
+}: GenerateSQLCommandForQueryConfig) => {
   // TODO: Generalize this to work with any database type prompt
   const psqlCmdPrompt = getPostgresPrompt({ query, tableInfo });
   printPromptEncodingLength(psqlCmdPrompt);
