@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useSamplePostgresData = (sampleRowsInTableInfo?: number) => {
   const queryResult = useQuery({
-    queryKey: ["samplePostgresData"],
+    queryKey: ["samplePostgresData", sampleRowsInTableInfo],
     queryFn: async () => {
       const data = await getSampleData({ sampleRowsInTableInfo });
       if (data.error !== undefined) {

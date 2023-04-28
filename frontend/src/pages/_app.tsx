@@ -5,7 +5,6 @@ import { useState } from "react";
 
 const theme = extendTheme({
   fontSizes: {
-    body: "sm",
     xs: "8px",
     sm: "10px",
     md: "12px",

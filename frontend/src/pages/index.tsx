@@ -1,6 +1,12 @@
 import { AutoResizeTextarea } from "@/components/common/AutoResizeTextarea";
 import { Navbar } from "@/components/navigation/Navbar";
-import { IndexHeader } from "@/components/page/IndexHeader";
+import {
+  DataSource,
+  DataSourceRadioGroup,
+} from "@/components/page/Index/DataSourceRadioGroup";
+import { FastModeSwitch } from "@/components/page/Index/FastModeSwitch";
+import { IndexHeader } from "@/components/page/Index/IndexHeader";
+import { SampleDataSwitch } from "@/components/page/Index/SampleDataSwitch";
 import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
 import { useSamplePostgresData } from "@/hooks/queries/useSamplePostgresData";
 import { getSchemaAsString } from "@/utils/getSchemaAsString";
@@ -13,97 +19,13 @@ import {
   Heading,
   Spinner,
   Stack,
-  Switch,
   Text,
   Textarea,
-  Tooltip,
-  UseRadioProps,
   VStack,
   useBoolean,
   useClipboard,
-  useRadio,
-  useRadioGroup,
 } from "@chakra-ui/react";
-import { FC, useMemo, useState } from "react";
-
-type DatasourceCardProps = UseRadioProps & {
-  option: { value: string; label: string };
-};
-
-export const DatasourceCard: FC<DatasourceCardProps> = (props) => {
-  const { getInputProps, getRadioProps } = useRadio(props);
-
-  const input = getInputProps();
-  const checkbox = getRadioProps();
-
-  return (
-    <Box as="label">
-      <input {...input} />
-      <Box
-        {...checkbox}
-        cursor="pointer"
-        borderWidth="1px"
-        borderRadius="md"
-        _checked={{
-          bg: "blue.800",
-          color: "white",
-          borderColor: "blue.800",
-        }}
-        _focus={{
-          boxShadow: "outline",
-        }}
-        px={2}
-        py={1}
-      >
-        <Text>{props.option.label}</Text>
-      </Box>
-    </Box>
-  );
-};
-
-export type DataSourceRadioGroupProps = {
-  value: DataSource;
-  onChange: (value: DataSource) => void;
-};
-
-export enum DataSource {
-  POSTGRES = "postgres",
-  SAMPLE = "sample",
-  CUSTOM = "custom",
-}
-
-export type DataSourceType = {
-  value: DataSource;
-  label: string;
-};
-
-export const DataSourceRadioGroup: FC<DataSourceRadioGroupProps> = ({
-  value,
-  onChange,
-}) => {
-  const options: DataSourceType[] = [
-    { value: DataSource.SAMPLE, label: "Sample Postgres" },
-    { value: DataSource.POSTGRES, label: "PostgreSQL" },
-    { value: DataSource.CUSTOM, label: "Custom schema" },
-  ];
-
-  const { getRootProps, getRadioProps } = useRadioGroup({
-    name: "datasource",
-    defaultValue: value,
-    onChange,
-  });
-
-  const group = getRootProps();
-
-  return (
-    <HStack {...group}>
-      {options.map((option) => {
-        const radio = getRadioProps({ value: option.value });
-        return <DatasourceCard key={option.value} option={option} {...radio} />;
-      })}
-    </HStack>
-  );
-};
+import { useMemo, useState } from "react";
 
 export default function Home() {
   const { onCopy, setValue, hasCopied } = useClipboard("");
@@ -111,14 +33,16 @@ export default function Home() {
     DataSource.SAMPLE
   );
   const [fastMode, setFastMode] = useBoolean(true);
-
+  const [sampleDataInTableInfo, setSampleDataInTableInfo] = useBoolean(false);
   const [userQuery, setUserQuery] = useState<string>("");
+
+  const sampleDataInTableInfoRowCount = sampleDataInTableInfo ? 3 : 0;
 
   const {
     data: samplePostgresData,
     isLoading: isLoadingDbSchema,
     isError: isErrorDbSchema,
-  } = useSamplePostgresData(3);
+  } = useSamplePostgresData(sampleDataInTableInfoRowCount);
 
   const onSuccessGenerateQuery = (result: string | undefined) => {
     if (result === undefined) {
@@ -159,6 +83,7 @@ export default function Home() {
 
   const generateUserQueryIsDisabled =
     userQuery === "" || isLoadingDbSchema || isErrorDbSchema;
+
   const handleGenerateQuery = () => {
     if (userQuery === "") {
       return;
@@ -191,12 +116,16 @@ export default function Home() {
           <Heading size="sm" textAlign={"left"} w="100%">
             Data source
           </Heading>
-          <Box w="100%" m={2}>
+          <Stack w="100%" m={2} spacing={3}>
             <DataSourceRadioGroup
               value={selectedDataSource}
               onChange={handleSelectDataSource}
             />
-          </Box>
+            <SampleDataSwitch
+              isChecked={sampleDataInTableInfo}
+              onToggle={setSampleDataInTableInfo.toggle}
+            />
+          </Stack>
           <Heading size="sm" textAlign={"left"} w="100%">
             Preview schema
           </Heading>
@@ -258,40 +187,10 @@ export default function Home() {
                 />
               </Flex>
               <HStack mx={1}>
-                <HStack align={"center"} direction={"row"} spacing={1}>
-                  <Tooltip
-                    label={
-                      <Stack>
-                        <Text>
-                          We recommend using fast mode for faster responses. In
-                          fast mode, the AI first determines what tables to use,
-                          and then generates a query based on that information.
-                        </Text>
-                        <Text>
-                          In slow mode, the AI uses the entire database schema,
-                          including examples, to generate a query. This takes
-                          longer, but may be more accurate.
-                        </Text>
-                      </Stack>
-                    }
-                    aria-label="Disable fast mode for slower and potentially more accurate responses."
-                  >
-                    <Text
-                      fontSize={"sm"}
-                      whiteSpace={"nowrap"}
-                      textTransform={"uppercase"}
-                      color="yellow.500"
-                      fontWeight={"bold"}
-                    >
-                      Fast mode
-                    </Text>
-                  </Tooltip>
-                  <Switch
-                    isChecked={fastMode}
-                    onChange={setFastMode.toggle}
-                    colorScheme="yellow"
-                  />
-                </HStack>
+                <FastModeSwitch
+                  isChecked={fastMode}
+                  onToggle={setFastMode.toggle}
+                />
                 <Button
                   fontSize={"md"}
                   p={0}
