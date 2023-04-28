@@ -11,6 +11,7 @@ export const AutoResizeTextarea: FC<TextareaProps> = (props) => {
       fontSize="md"
       minRows={1}
       as={ResizeTextarea}
+      resize="none"
       {...props}
     />
   );

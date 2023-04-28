@@ -53,7 +53,7 @@ export const IndexHeader = () => {
             p={6}
             borderRadius={4}
             color="gray.100"
-            fontSize={"sm"}
+            fontSize={"md"}
             spacing={2}
             textAlign={"left"}
             justify={"end"}

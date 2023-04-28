@@ -12,10 +12,14 @@ import {
   HStack,
   Heading,
   Spinner,
+  Stack,
+  Switch,
   Text,
   Textarea,
+  Tooltip,
   UseRadioProps,
   VStack,
+  useBoolean,
   useClipboard,
   useRadio,
   useRadioGroup,
@@ -103,10 +107,11 @@ export const DataSourceRadioGroup: FC<DataSourceRadioGroupProps> = ({
 
 export default function Home() {
   const { onCopy, setValue, hasCopied } = useClipboard("");
-
   const [selectedDataSource, setSelectedDataSource] = useState<DataSource>(
     DataSource.SAMPLE
   );
+  const [fastMode, setFastMode] = useBoolean(true);
+
   const [userQuery, setUserQuery] = useState<string>("");
 
   const {
@@ -165,6 +170,7 @@ export default function Home() {
       query: userQuery,
       dbSchema: samplePostgresData.schema,
       sampleRows: samplePostgresData.sampleRows,
+      sequential: fastMode,
     });
   };
 
@@ -206,38 +212,153 @@ export default function Home() {
             {isLoadingDbSchema && <Text>Loading...</Text>}
             {isErrorDbSchema && <Text>Error loading schema</Text>}
           </Box>
-          <Heading size="sm" textAlign={"left"} w="100%">
-            Your question
-          </Heading>
-          <Box w="100%" m={2}>
-            <Textarea
-              placeholder="Here is a sample placeholder"
-              resize={"vertical"}
-              value={userQuery}
-              onChange={handleChangeUserQuery}
-            />
-          </Box>
-          <Button
-            isDisabled={generateUserQueryIsDisabled}
-            onClick={handleGenerateQuery}
+          <VStack
+            w="100%"
+            border={"1px solid"}
+            borderColor={"gray.100"}
+            boxShadow={"xs"}
+            borderRadius={"sm"}
+            spacing={0}
+            _focusWithin={{ border: "1px solid", borderColor: "purple.300" }}
           >
-            Generate query
-          </Button>
-          <Heading size="sm" textAlign={"left"} w="100%">
-            SQL Query
-          </Heading>
-          <Box w="100%" m={2}>
-            {!isLoadingGenerateSQLQuery && (
+            <Flex
+              w="100%"
+              bg={"purple.50"}
+              h="auto"
+              minH={10}
+              direction={"row"}
+              align={"center"}
+              maxH={16}
+              justifyContent={"space-between"}
+            >
+              <Text
+                textTransform={"uppercase"}
+                mx={2}
+                fontWeight={"bold"}
+                color={"purple.500"}
+                fontSize={"xs"}
+                whiteSpace={"nowrap"}
+              >
+                Your query
+              </Text>
+              <Flex w="100%">
+                <AutoResizeTextarea
+                  borderRadius={"none"}
+                  maxH={16}
+                  value={userQuery}
+                  border={"none"}
+                  _focusVisible={{
+                    border: "none",
+                  }}
+                  py={1}
+                  placeholder="What query do you want to generate? E.g. List all orders from last week."
+                  w="100%"
+                  px={0}
+                  onChange={handleChangeUserQuery}
+                />
+              </Flex>
+              <HStack mx={1}>
+                <HStack align={"center"} direction={"row"} spacing={1}>
+                  <Tooltip
+                    label={
+                      <Stack>
+                        <Text>
+                          We recommend using fast mode for faster responses. In
+                          fast mode, the AI first determines what tables to use,
+                          and then generates a query based on that information.
+                        </Text>
+                        <Text>
+                          In slow mode, the AI uses the entire database schema,
+                          including examples, to generate a query. This takes
+                          longer, but may be more accurate.
+                        </Text>
+                      </Stack>
+                    }
+                    aria-label="Disable fast mode for slower and potentially more accurate responses."
+                  >
+                    <Text
+                      fontSize={"sm"}
+                      whiteSpace={"nowrap"}
+                      textTransform={"uppercase"}
+                      color="yellow.500"
+                      fontWeight={"bold"}
+                    >
+                      Fast mode
+                    </Text>
+                  </Tooltip>
+                  <Switch
+                    isChecked={fastMode}
+                    onChange={setFastMode.toggle}
+                    colorScheme="yellow"
+                  />
+                </HStack>
+                <Button
+                  fontSize={"md"}
+                  p={0}
+                  my={0}
+                  onClick={handleGenerateQuery}
+                  h={8}
+                  w={32}
+                  borderRadius={"sm"}
+                  bg={"purple.500"}
+                  color={"white"}
+                  _hover={{
+                    bg: "purple.100",
+                    cursor: "pointer",
+                  }}
+                  isLoading={isLoadingGenerateSQLQuery}
+                  isDisabled={generateUserQueryIsDisabled}
+                  spinner={<Spinner size="sm" />}
+                  loadingText={undefined}
+                >
+                  Generate
+                </Button>
+              </HStack>
+            </Flex>
+            <Flex direction={"column"} w="100%">
               <AutoResizeTextarea
                 value={generateSQLQueryResult}
-                isDisabled={true}
                 minH={32}
+                borderRadius={"none"}
+                border={"none"}
+                _focusVisible={{
+                  border: "none",
+                }}
+                placeholder="Your generated query will appear here."
               />
-            )}
-            {isLoadingGenerateSQLQuery && <Spinner />}
-            {isErrorGenerateSQLQuery && <Text>Error generating query.</Text>}
-            <Button onClick={onCopy}>{hasCopied ? "Copied!" : "Copy"}</Button>
-          </Box>
+              <Flex
+                direction="row"
+                w="100%"
+                bg="gray.50"
+                justify={"space-between"}
+              >
+                <Button
+                  onClick={onCopy}
+                  p={1}
+                  m={0}
+                  h={4}
+                  fontSize={"sm"}
+                  borderRadius={"none"}
+                  bg="none"
+                  color="gray.500"
+                >
+                  {hasCopied ? "Copied" : "Copy"}
+                </Button>
+                {isErrorGenerateSQLQuery && (
+                  <Text
+                    fontSize={"xs"}
+                    color="red.300"
+                    fontWeight={"bold"}
+                    p={1}
+                    m={0}
+                    h={4}
+                  >
+                    Error generating query.
+                  </Text>
+                )}
+              </Flex>
+            </Flex>
+          </VStack>
         </VStack>
       </Flex>
     </>
