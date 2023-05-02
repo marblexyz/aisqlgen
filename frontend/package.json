@@ -17,6 +17,7 @@
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.17",
     "@monaco-editor/react": "^4.5.0",
+    "@reduxjs/toolkit": "^1.9.5",
     "@tanstack/react-query": "^4.29.3",
     "autoprefixer": "10.4.14",
     "formik": "^2.2.9",
@@ -29,6 +30,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
+    "react-redux": "^8.0.5",
     "react-textarea-autosize": "^8.4.1",
     "typescript": "5.0.4"
   },
