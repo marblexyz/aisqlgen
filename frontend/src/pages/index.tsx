@@ -4,14 +4,14 @@ import {
   DataSource,
   DataSourceRadioGroup,
 } from "@/components/page/Index/DataSourceRadioGroup";
+import { ExecutionHistory } from "@/components/page/Index/ExecutionHistory";
 import { FastModeSwitch } from "@/components/page/Index/FastModeSwitch";
 import { IndexHeader } from "@/components/page/Index/IndexHeader";
 import { SampleDataSwitch } from "@/components/page/Index/SampleDataSwitch";
 import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
 import { useSamplePostgresData } from "@/hooks/queries/useSamplePostgresData";
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useAppDispatch } from "@/hooks/reduxHooks";
 import { appendQuery } from "@/redux/slices/queryHistory/queryHistorySlice";
-import { selectQueryHistory } from "@/redux/slices/queryHistory/queryHistorySliceSelectors";
 import { getSchemaAsString } from "@/utils/getSchemaAsString";
 import {
   Box,
@@ -35,7 +35,6 @@ export default function Home() {
   const [selectedDataSource, setSelectedDataSource] = useState<DataSource>(
     DataSource.SAMPLE
   );
-  const queryHistory = useAppSelector(selectQueryHistory);
   const dispatch = useAppDispatch();
   const [fastMode, setFastMode] = useBoolean(true);
   const [sampleDataInTableInfo, setSampleDataInTableInfo] = useBoolean(false);
@@ -154,33 +153,7 @@ export default function Home() {
             {isLoadingDbSchema && <Text>Loading...</Text>}
             {isErrorDbSchema && <Text>Error loading schema</Text>}
           </Box>
-          <VStack>
-            {queryHistory.queries.length > 0 && (
-              <>
-                {queryHistory.queries.map((query, index) => (
-                  <Box
-                    key={index}
-                    w="100%"
-                    border={"1px solid"}
-                    borderColor={"gray.100"}
-                    boxShadow={"xs"}
-                    borderRadius={"sm"}
-                    p={2}
-                  >
-                    <VStack w="100%" justify={"space-between"}>
-                      <Text>
-                        {new Date(query.timestamp).toLocaleDateString() +
-                          " " +
-                          new Date(query.timestamp).toLocaleTimeString()}
-                      </Text>
-                      <Text>{query.userQuestion}</Text>
-                      <Text>{query.query}</Text>
-                    </VStack>
-                  </Box>
-                ))}
-              </>
-            )}
-          </VStack>
+          <ExecutionHistory />
           <VStack
             w="100%"
             border={"1px solid"}
