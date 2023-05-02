@@ -1,15 +1,15 @@
 import { AutoResizeTextarea } from "@/components/common/AutoResizeTextarea";
-import { BasicButton } from "@/components/common/BasicButton";
 import { ResultTable } from "@/components/common/ResultTable";
 import { Navbar } from "@/components/navigation/Navbar";
+import { Sidebar } from "@/components/navigation/Sidebar";
 import {
   DataSource,
   DataSourceRadioGroup,
-} from "@/components/page/Index/DataSourceRadioGroup";
-import { FastModeSwitch } from "@/components/page/Index/FastModeSwitch";
-import { IndexHeader } from "@/components/page/Index/IndexHeader";
-import { QueryHistory } from "@/components/page/Index/QueryHistory";
-import { SampleDataSwitch } from "@/components/page/Index/SampleDataSwitch";
+} from "@/components/page/index/DataSourceRadioGroup";
+import { FastModeSwitch } from "@/components/page/index/FastModeSwitch";
+import { IndexHeader } from "@/components/page/index/IndexHeader";
+import { QueryHistory } from "@/components/page/index/QueryHistory";
+import { SampleDataSwitch } from "@/components/page/index/SampleDataSwitch";
 import { useExecuteSQLQuery } from "@/hooks/mutations/useExecuteSQLQuery";
 import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
 import { useSamplePostgresData } from "@/hooks/queries/useSamplePostgresData";
@@ -155,28 +155,8 @@ export default function Home() {
   return (
     <Flex direction={"column"} h={CHAKRA_100VH}>
       <Navbar />
-      <Flex>
-        <Flex
-          h="100%"
-          borderRight="1px solid"
-          borderColor="gray.100"
-          minW="2xs"
-        >
-          <Flex w="100%" px={4} py={4} direction={"column"}>
-            <VStack w="100%" align={"left"} mb={4}>
-              <Heading size="sm" color="gray.900" mb="2">
-                Data connections
-              </Heading>
-              <Text fontSize={"sm"} fontWeight={"regular"} color={"gray.700"}>
-                Connections to external databases to be used when generating
-                queries.
-              </Text>
-            </VStack>
-            <BasicButton>
-              <Text>Add connection</Text>
-            </BasicButton>
-          </Flex>
-        </Flex>
+      <Flex h="100%">
+        <Sidebar />
         <Flex direction={"column"} w="100%">
           <IndexHeader />
           <Flex w={"100%"} justify={"center"} align={"center"} px={4} pt={8}>
