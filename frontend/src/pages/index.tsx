@@ -5,12 +5,13 @@ import {
   DataSource,
   DataSourceRadioGroup,
 } from "@/components/page/Index/DataSourceRadioGroup";
+import { QueryHistory } from "@/components/page/Index/QueryHistory";
 import { FastModeSwitch } from "@/components/page/Index/FastModeSwitch";
 import { IndexHeader } from "@/components/page/Index/IndexHeader";
 import { SampleDataSwitch } from "@/components/page/Index/SampleDataSwitch";
 import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
 import { useSamplePostgresData } from "@/hooks/queries/useSamplePostgresData";
-import { useAppDispatch } from "@/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { appendQuery } from "@/redux/slices/queryHistory/queryHistorySlice";
 import { CHAKRA_100VH } from "@/style/constants";
 import { getSchemaAsString } from "@/utils/getSchemaAsString";
@@ -19,30 +20,35 @@ import {
   Button,
   Divider,
   Flex,
-  HStack,
   Heading,
+  HStack,
   Spinner,
   Stack,
   Text,
   Textarea,
-  VStack,
   useBoolean,
   useClipboard,
+  VStack,
 } from "@chakra-ui/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { selectQueryHistory } from "@/redux/slices/queryHistory/queryHistorySliceSelectors";
 
 export default function Home() {
-  const { value: query, onCopy, setValue, hasCopied } = useClipboard("");
+  const dispatch = useAppDispatch();
+  const queryHistory = useAppSelector(selectQueryHistory);
+  const {
+    value: query,
+    setValue: setQuery,
+    onCopy,
+    hasCopied,
+  } = useClipboard("");
   const [selectedDataSource, setSelectedDataSource] = useState<DataSource>(
     DataSource.SAMPLE
   );
-  const dispatch = useAppDispatch();
   const [fastMode, setFastMode] = useBoolean(true);
   const [sampleDataInTableInfo, setSampleDataInTableInfo] = useBoolean(false);
   const [userQuestion, setUserQuestion] = useState<string>("");
-
   const sampleDataInTableInfoRowCount = sampleDataInTableInfo ? 3 : 0;
-
   const {
     data: samplePostgresData,
     isLoading: isLoadingDbSchema,
@@ -53,7 +59,7 @@ export default function Home() {
     if (result === undefined) {
       return;
     }
-    setValue(result);
+    setQuery(result);
     dispatch(
       appendQuery({
         query: result,
@@ -64,7 +70,6 @@ export default function Home() {
   };
 
   const {
-    data: generateSQLQueryResult,
     mutate: generateSQLQuery,
     isError: isErrorGenerateSQLQuery,
     isLoading: isLoadingGenerateSQLQuery,
@@ -82,19 +87,30 @@ export default function Home() {
     return schemaString;
   }, [samplePostgresData]);
 
+  useEffect(() => {
+    if (queryHistory.queries.length > 0) {
+      setQuery(queryHistory.queries[queryHistory.queries.length - 1].query);
+      setUserQuestion(
+        queryHistory.queries[queryHistory.queries.length - 1].userQuestion
+      );
+    }
+  }, [queryHistory.queries, setQuery, setUserQuestion]);
+
   const showPreviewSchema = schemaString !== undefined && !isErrorDbSchema;
 
   const handleSelectDataSource = (value: DataSource) => {
     setSelectedDataSource(value);
+  };
+  const handleChangeSQLQuery = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setQuery(event.target.value);
   };
   const handleChangeUserQuery = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setUserQuestion(event.target.value);
   };
-
-  const generateUserQueryIsDisabled =
-    userQuestion === "" || isLoadingDbSchema || isErrorDbSchema;
 
   const handleGenerateQuery = () => {
     if (userQuestion === "") {
@@ -109,9 +125,17 @@ export default function Home() {
       dbSchema: samplePostgresData.schema,
       sampleRows: samplePostgresData.sampleRows,
       sequential: fastMode,
+      // Take last five executions if it exists
+      previousQueries: queryHistory.queries.slice(
+        queryHistory.queries.length - 5,
+        queryHistory.queries.length
+      ),
     });
   };
+  const generateUserQueryIsDisabled =
+    userQuestion === "" || isLoadingDbSchema || isErrorDbSchema;
 
+  const sqlQueryIsEmpty = query === "";
   return (
     <Flex direction={"column"} h={CHAKRA_100VH}>
       <Navbar />
@@ -177,6 +201,7 @@ export default function Home() {
                 {isLoadingDbSchema && <Text>Loading...</Text>}
                 {isErrorDbSchema && <Text>Error loading schema</Text>}
               </Box>
+              <QueryHistory />
               <VStack
                 w="100%"
                 border={"1px solid"}
@@ -207,7 +232,7 @@ export default function Home() {
                     fontSize={"xs"}
                     whiteSpace={"nowrap"}
                   >
-                    Your query
+                    {sqlQueryIsEmpty ? "Generate" : "Edit"}
                   </Text>
                   <Flex w="100%">
                     <AutoResizeTextarea
@@ -219,7 +244,11 @@ export default function Home() {
                         border: "none",
                       }}
                       py={1}
-                      placeholder="What query do you want to generate? E.g. List all orders from last week."
+                      placeholder={
+                        sqlQueryIsEmpty
+                          ? "What query do you want to generate? E.g. List all orders from last week."
+                          : "Edit your query. E.g. Join with table X."
+                      }
                       w="100%"
                       px={0}
                       onChange={handleChangeUserQuery}
@@ -249,13 +278,14 @@ export default function Home() {
                       spinner={<Spinner size="sm" />}
                       loadingText={undefined}
                     >
-                      Generate
+                      {sqlQueryIsEmpty ? "Generate" : "Edit"}
                     </Button>
                   </HStack>
                 </Flex>
                 <Flex direction={"column"} w="100%">
                   <AutoResizeTextarea
-                    value={generateSQLQueryResult}
+                    value={query}
+                    onChange={handleChangeSQLQuery}
                     minH={32}
                     borderRadius={"none"}
                     border={"none"}

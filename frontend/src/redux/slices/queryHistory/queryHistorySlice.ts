@@ -22,7 +22,11 @@ export const queryHistorySlice = createSlice({
     ) => {
       state.queries = [...state.queries, action.payload];
     },
+    clearQueryHistory: (state) => {
+      state.queries = [];
+    },
   },
 });
 
-export const { appendQuery, hydrateQueryHistory } = queryHistorySlice.actions;
+export const { appendQuery, hydrateQueryHistory, clearQueryHistory } =
+  queryHistorySlice.actions;

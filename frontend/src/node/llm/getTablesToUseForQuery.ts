@@ -5,6 +5,7 @@ import { generateChatCompletion } from "./openai";
 export type GetTablesToUsePromptConfig = {
   userQuestion: string;
   tableNames: string;
+  query?: string;
 };
 
 export const getTablesToUsePrompt = ({
@@ -27,16 +28,19 @@ type GetTablesToUseForQueryConfig = {
   tableNamesInfo: string;
   userQuestion: string;
   validTableNames: string[];
+  query?: string;
 };
 
 export const getTablesToUseForQuery = async ({
   tableNamesInfo,
   userQuestion,
   validTableNames,
+  query,
 }: GetTablesToUseForQueryConfig) => {
   const prompt = getTablesToUsePrompt({
     userQuestion,
     tableNames: tableNamesInfo,
+    query,
   });
   printPromptEncodingLength(prompt);
   const messages = [

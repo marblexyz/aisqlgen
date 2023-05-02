@@ -2,6 +2,7 @@
 import { editSQLCommandForQuery } from "@/node/llm/editSQLCommandForQuery";
 import { generateSQLCommandForQuery } from "@/node/llm/getSQLCommandForQuery";
 import { getTablesToUseForQuery } from "@/node/llm/getTablesToUseForQuery";
+import { Query } from "@/types/redux/slices/queryHistory";
 import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { getSchemaAsString } from "@/utils/getSchemaAsString";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -12,6 +13,7 @@ export type GenerateSQLCommandBody = {
   query?: string;
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
+  previousQueries?: Query[];
 };
 
 export type GenerateSQLQueryResult = {
@@ -33,8 +35,14 @@ export default async function handler(
     res.status(400).json({ error: "Bad Request" });
   }
 
-  const { userQuestion, dbSchema, query, sampleRows, sequential } =
-    body as GenerateSQLCommandBody;
+  const {
+    userQuestion,
+    dbSchema,
+    query,
+    sampleRows,
+    sequential,
+    previousQueries,
+  } = body as GenerateSQLCommandBody;
 
   const tableNames = Object.keys(dbSchema).join(", ");
   const validTableNames = Object.keys(dbSchema);
@@ -46,6 +54,7 @@ export default async function handler(
         userQuestion,
         tableNamesInfo: tableNames,
         validTableNames,
+        query,
       });
     }
 
@@ -65,6 +74,7 @@ export default async function handler(
         userQuestion,
         tableInfo: tableSchemaAsString,
         query,
+        previousQueries,
       });
       res.status(200).json({ result });
     }
