@@ -1,4 +1,5 @@
 import { generateSQLQuery } from "@/api/query";
+import { Query } from "@/types/redux/slices/queryHistory";
 import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { useMutation } from "@tanstack/react-query";
 
@@ -8,6 +9,7 @@ export type GenerateSQLQueryConfig = {
   dbSchema?: DatabaseSchemaObject;
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
+  previousQueries?: Query[];
 };
 export const useGenerateSQLQuery = (
   onSuccess?: (result: string | undefined) => void,
@@ -21,6 +23,7 @@ export const useGenerateSQLQuery = (
       dbSchema,
       sampleRows,
       sequential,
+      previousQueries,
     }: GenerateSQLQueryConfig) => {
       const result = await generateSQLQuery({
         userQuestion,
@@ -28,6 +31,7 @@ export const useGenerateSQLQuery = (
         dbSchema,
         sampleRows,
         sequential,
+        previousQueries,
       });
       return result;
     },

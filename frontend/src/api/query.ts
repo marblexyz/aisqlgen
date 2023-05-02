@@ -1,4 +1,5 @@
 import { GenerateSQLQueryResult } from "@/pages/api/query";
+import { Query } from "@/types/redux/slices/queryHistory";
 import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { HttpMethod, callServerlessApi } from ".";
 
@@ -8,6 +9,7 @@ export type GenerateSQLQueryConfig = {
   dbSchema?: DatabaseSchemaObject;
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
+  previousQueries?: Query[];
 };
 
 export const generateSQLQuery = async ({
@@ -16,12 +18,14 @@ export const generateSQLQuery = async ({
   dbSchema,
   sampleRows,
   sequential,
+  previousQueries,
 }: GenerateSQLQueryConfig) => {
   const response = await callServerlessApi(
     "/api/query",
     HttpMethod.POST,
     JSON.stringify({
       userQuestion,
+      previousQueries,
       query,
       dbSchema,
       sampleRows,

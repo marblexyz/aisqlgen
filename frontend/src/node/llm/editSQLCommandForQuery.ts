@@ -1,3 +1,4 @@
+import { Query } from "@/types/redux/slices/queryHistory";
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
 import { printPromptEncodingLength } from "../utils";
 import { generateChatCompletion } from "./openai";
@@ -6,13 +7,21 @@ export type GetPostgresPromptConfig = {
   userQuestion: string;
   query: string;
   tableInfo: string;
+  previousQueries?: Query[];
 };
 
 const getPostgresPrompt = ({
   tableInfo,
   query,
   userQuestion,
+  previousQueries = [],
 }: GetPostgresPromptConfig) => {
+  const previousQueriesToString = previousQueries
+    .map((previousQuery) => {
+      return `Question: ${previousQuery.userQuestion} \n Query: ${previousQuery.query} \n`;
+    })
+    .join("\n");
+
   const PROMPT = `
 You are a PostgreSQL expert. Given an input question, your goal is to create a syntactically correct PostgreSQL query to run by modifying an existing query.
 You can order the results to return the most informative data in the database.
@@ -22,6 +31,11 @@ Pay attention to use only the column names you can see in the tables below. Be c
 Only use the following tables:
 ${tableInfo}
 
+${
+  previousQueriesToString !== ""
+    ? `Previous Queries: \n ${previousQueriesToString}`
+    : ""
+}
 Existing Query: ${query}
 Modification request: ${userQuestion}
 Only return the SQL query in the answer. Do not include the question or any other text.`;
@@ -32,15 +46,22 @@ export type EditSQLCommandForQueryConfig = {
   userQuestion: string;
   tableInfo: string;
   query: string;
+  previousQueries?: Query[];
 };
 
 export const editSQLCommandForQuery = async ({
   userQuestion,
   query,
   tableInfo,
+  previousQueries,
 }: EditSQLCommandForQueryConfig) => {
   // TODO: Generalize this to work with any database type prompt
-  const psqlCmdPrompt = getPostgresPrompt({ userQuestion, query, tableInfo });
+  const psqlCmdPrompt = getPostgresPrompt({
+    userQuestion,
+    query,
+    tableInfo,
+    previousQueries,
+  });
   printPromptEncodingLength(psqlCmdPrompt);
   const messages = [
     {

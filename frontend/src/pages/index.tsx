@@ -5,12 +5,13 @@ import {
   DataSource,
   DataSourceRadioGroup,
 } from "@/components/page/Index/DataSourceRadioGroup";
+import { QueryHistory } from "@/components/page/Index/QueryHistory";
 import { FastModeSwitch } from "@/components/page/Index/FastModeSwitch";
 import { IndexHeader } from "@/components/page/Index/IndexHeader";
 import { SampleDataSwitch } from "@/components/page/Index/SampleDataSwitch";
 import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
 import { useSamplePostgresData } from "@/hooks/queries/useSamplePostgresData";
-import { useAppDispatch } from "@/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { appendQuery } from "@/redux/slices/queryHistory/queryHistorySlice";
 import { CHAKRA_100VH } from "@/style/constants";
 import { getSchemaAsString } from "@/utils/getSchemaAsString";
@@ -19,30 +20,35 @@ import {
   Button,
   Divider,
   Flex,
-  HStack,
   Heading,
+  HStack,
   Spinner,
   Stack,
   Text,
   Textarea,
-  VStack,
   useBoolean,
   useClipboard,
+  VStack,
 } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
+import { selectQueryHistory } from "@/redux/slices/queryHistory/queryHistorySliceSelectors";
 
 export default function Home() {
-  const { value: query, onCopy, setValue, hasCopied } = useClipboard("");
+  const dispatch = useAppDispatch();
+  const queryHistory = useAppSelector(selectQueryHistory);
+  const {
+    value: query,
+    onCopy,
+    setValue: setQuery,
+    hasCopied,
+  } = useClipboard("");
   const [selectedDataSource, setSelectedDataSource] = useState<DataSource>(
     DataSource.SAMPLE
   );
-  const dispatch = useAppDispatch();
   const [fastMode, setFastMode] = useBoolean(true);
   const [sampleDataInTableInfo, setSampleDataInTableInfo] = useBoolean(false);
   const [userQuestion, setUserQuestion] = useState<string>("");
-
   const sampleDataInTableInfoRowCount = sampleDataInTableInfo ? 3 : 0;
-
   const {
     data: samplePostgresData,
     isLoading: isLoadingDbSchema,
@@ -53,7 +59,7 @@ export default function Home() {
     if (result === undefined) {
       return;
     }
-    setValue(result);
+    setQuery(result);
     dispatch(
       appendQuery({
         query: result,
@@ -87,6 +93,11 @@ export default function Home() {
   const handleSelectDataSource = (value: DataSource) => {
     setSelectedDataSource(value);
   };
+  const handleChangeSQLQuery = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setQuery(event.target.value);
+  };
   const handleChangeUserQuery = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
@@ -109,6 +120,11 @@ export default function Home() {
       dbSchema: samplePostgresData.schema,
       sampleRows: samplePostgresData.sampleRows,
       sequential: fastMode,
+      // Take last five executions if it exists
+      previousQueries: queryHistory.queries.slice(
+        queryHistory.queries.length - 5,
+        queryHistory.queries.length
+      ),
     });
   };
 
@@ -177,6 +193,7 @@ export default function Home() {
                 {isLoadingDbSchema && <Text>Loading...</Text>}
                 {isErrorDbSchema && <Text>Error loading schema</Text>}
               </Box>
+              <QueryHistory />
               <VStack
                 w="100%"
                 border={"1px solid"}
@@ -256,6 +273,7 @@ export default function Home() {
                 <Flex direction={"column"} w="100%">
                   <AutoResizeTextarea
                     value={generateSQLQueryResult}
+                    onChange={handleChangeSQLQuery}
                     minH={32}
                     borderRadius={"none"}
                     border={"none"}
