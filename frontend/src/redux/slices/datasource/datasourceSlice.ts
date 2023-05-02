@@ -3,7 +3,7 @@ import {
   DatasourceMap,
   DatasourceMapState,
   DatasourceType,
-} from "@/types/redux/slices/datasourceConnector";
+} from "@/types/redux/slices/datasource";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 const initialState: DatasourceMapState = {

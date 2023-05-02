@@ -1,6 +1,6 @@
 import { DATASOURCE_MAP, QUERY_HISTORY } from "@/storage/keys";
 import { localForageStore } from "@/storage/storage-provider";
-import { DatasourceMap } from "@/types/redux/slices/datasourceConnector";
+import { DatasourceMap } from "@/types/redux/slices/datasource";
 import { QueryHistory } from "@/types/redux/slices/queryHistory";
 import {
   DatasourceLocalStorageState,

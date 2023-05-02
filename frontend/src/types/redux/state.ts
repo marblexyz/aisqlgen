@@ -1,4 +1,4 @@
-import { DatasourceMap } from "./slices/datasourceConnector";
+import { DatasourceMap } from "./slices/datasource";
 import { QueryHistory } from "./slices/queryHistory";
 
 export type QueryMakerLocalStorageState = {
