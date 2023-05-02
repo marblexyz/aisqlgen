@@ -1,4 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { editSQLCommandForQuery } from "@/node/llm/editSQLCommandForQuery";
 import { generateSQLCommandForQuery } from "@/node/llm/getSQLCommandForQuery";
 import { getTablesToUseForQuery } from "@/node/llm/getTablesToUseForQuery";
 import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
@@ -8,6 +9,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export type GenerateSQLCommandBody = {
   userQuestion: string;
   dbSchema: DatabaseSchemaObject;
+  query?: string;
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
 };
@@ -31,7 +33,7 @@ export default async function handler(
     res.status(400).json({ error: "Bad Request" });
   }
 
-  const { userQuestion, dbSchema, sampleRows, sequential } =
+  const { userQuestion, dbSchema, query, sampleRows, sequential } =
     body as GenerateSQLCommandBody;
 
   const tableNames = Object.keys(dbSchema).join(", ");
@@ -52,12 +54,20 @@ export default async function handler(
       tableNameList,
       sampleRows
     );
-
-    const result = await generateSQLCommandForQuery({
-      userQuestion,
-      tableInfo: tableSchemaAsString,
-    });
-    res.status(200).json({ result });
+    if (query === undefined) {
+      const result = await generateSQLCommandForQuery({
+        userQuestion,
+        tableInfo: tableSchemaAsString,
+      });
+      res.status(200).json({ result });
+    } else {
+      const result = await editSQLCommandForQuery({
+        userQuestion,
+        tableInfo: tableSchemaAsString,
+        query,
+      });
+      res.status(200).json({ result });
+    }
   } catch (error) {
     res.status(500).json({ error: "Error getting table list." });
   }
