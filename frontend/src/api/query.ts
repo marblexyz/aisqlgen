@@ -3,14 +3,14 @@ import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { HttpMethod, callServerlessApi } from ".";
 
 export type GenerateSQLQueryConfig = {
-  query: string;
+  userQuestion: string;
   dbSchema?: DatabaseSchemaObject;
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
 };
 
 export const generateSQLQuery = async ({
-  query,
+  userQuestion,
   dbSchema,
   sampleRows,
   sequential,
@@ -19,7 +19,7 @@ export const generateSQLQuery = async ({
     "/api/query",
     HttpMethod.POST,
     JSON.stringify({
-      query,
+      userQuestion,
       dbSchema,
       sampleRows,
       sequential,

@@ -6,7 +6,7 @@ import { getSchemaAsString } from "@/utils/getSchemaAsString";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export type GenerateSQLCommandBody = {
-  query: string;
+  userQuestion: string;
   dbSchema: DatabaseSchemaObject;
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
@@ -31,7 +31,7 @@ export default async function handler(
     res.status(400).json({ error: "Bad Request" });
   }
 
-  const { query, dbSchema, sampleRows, sequential } =
+  const { userQuestion, dbSchema, sampleRows, sequential } =
     body as GenerateSQLCommandBody;
 
   const tableNames = Object.keys(dbSchema).join(", ");
@@ -41,7 +41,7 @@ export default async function handler(
     let tableNameList: string[] | undefined;
     if (sequential === true) {
       tableNameList = await getTablesToUseForQuery({
-        query,
+        userQuestion,
         tableNamesInfo: tableNames,
         validTableNames,
       });
@@ -54,7 +54,7 @@ export default async function handler(
     );
 
     const result = await generateSQLCommandForQuery({
-      query,
+      userQuestion,
       tableInfo: tableSchemaAsString,
     });
     res.status(200).json({ result });
