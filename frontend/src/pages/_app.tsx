@@ -9,9 +9,9 @@ import { Provider as ReduxProvider } from "react-redux";
 
 const theme = extendTheme({
   fontSizes: {
-    xs: "8px",
-    sm: "10px",
-    md: "12px",
+    xs: "10px",
+    sm: "12px",
+    md: "14px",
   },
 });
 
