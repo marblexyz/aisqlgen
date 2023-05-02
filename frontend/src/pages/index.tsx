@@ -30,7 +30,7 @@ import {
   useClipboard,
   VStack,
 } from "@chakra-ui/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { selectQueryHistory } from "@/redux/slices/queryHistory/queryHistorySliceSelectors";
 
 export default function Home() {
@@ -38,8 +38,8 @@ export default function Home() {
   const queryHistory = useAppSelector(selectQueryHistory);
   const {
     value: query,
-    onCopy,
     setValue: setQuery,
+    onCopy,
     hasCopied,
   } = useClipboard("");
   const [selectedDataSource, setSelectedDataSource] = useState<DataSource>(
@@ -70,7 +70,6 @@ export default function Home() {
   };
 
   const {
-    data: generateSQLQueryResult,
     mutate: generateSQLQuery,
     isError: isErrorGenerateSQLQuery,
     isLoading: isLoadingGenerateSQLQuery,
@@ -87,6 +86,15 @@ export default function Home() {
     );
     return schemaString;
   }, [samplePostgresData]);
+
+  useEffect(() => {
+    if (queryHistory.queries.length > 0) {
+      setQuery(queryHistory.queries[queryHistory.queries.length - 1].query);
+      setUserQuestion(
+        queryHistory.queries[queryHistory.queries.length - 1].userQuestion
+      );
+    }
+  }, [queryHistory.queries, setQuery, setUserQuestion]);
 
   const showPreviewSchema = schemaString !== undefined && !isErrorDbSchema;
 
@@ -272,7 +280,7 @@ export default function Home() {
                 </Flex>
                 <Flex direction={"column"} w="100%">
                   <AutoResizeTextarea
-                    value={generateSQLQueryResult}
+                    value={query}
                     onChange={handleChangeSQLQuery}
                     minH={32}
                     borderRadius={"none"}

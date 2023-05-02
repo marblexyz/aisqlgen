@@ -53,9 +53,6 @@ export const QueryHistory = () => {
             </Text>
           </PopoverHeader>
           <PopoverBody overflowY={"auto"}>
-            <Box py={2}>
-              <Text fontSize="md">{queryHistory.queries.length} queries</Text>
-            </Box>
             <VStack alignItems={"left"}>
               {queryHistory.queries.length === 0 && (
                 <Text color="gray.600" fontSize="md">
@@ -64,6 +61,13 @@ export const QueryHistory = () => {
               )}
               {queryHistory.queries.length > 0 && (
                 <>
+                  <Box py={2}>
+                    <Text fontSize="md" color="gray.600">
+                      {`${queryHistory.queries.length} quer${
+                        queryHistory.queries.length === 1 ? "y" : "ies"
+                      } executed`}
+                    </Text>
+                  </Box>
                   {queryHistory.queries.map((query, index) => (
                     <Box
                       key={index}
