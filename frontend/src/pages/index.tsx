@@ -112,9 +112,6 @@ export default function Home() {
     setUserQuestion(event.target.value);
   };
 
-  const generateUserQueryIsDisabled =
-    userQuestion === "" || isLoadingDbSchema || isErrorDbSchema;
-
   const handleGenerateQuery = () => {
     if (userQuestion === "") {
       return;
@@ -135,7 +132,10 @@ export default function Home() {
       ),
     });
   };
+  const generateUserQueryIsDisabled =
+    userQuestion === "" || isLoadingDbSchema || isErrorDbSchema;
 
+  const sqlQueryIsEmpty = query === "";
   return (
     <Flex direction={"column"} h={CHAKRA_100VH}>
       <Navbar />
@@ -232,7 +232,7 @@ export default function Home() {
                     fontSize={"xs"}
                     whiteSpace={"nowrap"}
                   >
-                    Your query
+                    {sqlQueryIsEmpty ? "Generate" : "Edit"}
                   </Text>
                   <Flex w="100%">
                     <AutoResizeTextarea
@@ -244,7 +244,11 @@ export default function Home() {
                         border: "none",
                       }}
                       py={1}
-                      placeholder="What query do you want to generate? E.g. List all orders from last week."
+                      placeholder={
+                        sqlQueryIsEmpty
+                          ? "What query do you want to generate? E.g. List all orders from last week."
+                          : "Edit your query. E.g. Join with table X."
+                      }
                       w="100%"
                       px={0}
                       onChange={handleChangeUserQuery}
@@ -274,7 +278,7 @@ export default function Home() {
                       spinner={<Spinner size="sm" />}
                       loadingText={undefined}
                     >
-                      Generate
+                      {sqlQueryIsEmpty ? "Generate" : "Edit"}
                     </Button>
                   </HStack>
                 </Flex>
