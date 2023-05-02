@@ -3,18 +3,18 @@ import { printPromptEncodingLength } from "../utils";
 import { generateChatCompletion } from "./openai";
 
 export type GetTablesToUsePromptConfig = {
-  query: string;
+  userQuestion: string;
   tableNames: string;
 };
 
 export const getTablesToUsePrompt = ({
-  query,
+  userQuestion,
   tableNames,
 }: GetTablesToUsePromptConfig) => {
   const PROMPT = `
   Given the below input question and list of potential tables, output a comma separated list of the table names that may be necessary to answer this question.
   
-  Question: ${query}
+  Question: ${userQuestion}
   
   Table Names: ${tableNames}
   
@@ -25,16 +25,19 @@ export const getTablesToUsePrompt = ({
 
 type GetTablesToUseForQueryConfig = {
   tableNamesInfo: string;
-  query: string;
+  userQuestion: string;
   validTableNames: string[];
 };
 
 export const getTablesToUseForQuery = async ({
   tableNamesInfo,
-  query,
+  userQuestion,
   validTableNames,
 }: GetTablesToUseForQueryConfig) => {
-  const prompt = getTablesToUsePrompt({ query, tableNames: tableNamesInfo });
+  const prompt = getTablesToUsePrompt({
+    userQuestion,
+    tableNames: tableNamesInfo,
+  });
   printPromptEncodingLength(prompt);
   const messages = [
     {

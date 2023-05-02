@@ -3,13 +3,13 @@ import { printPromptEncodingLength } from "../utils";
 import { generateChatCompletion } from "./openai";
 
 export type GetPostgresPromptConfig = {
-  query: string;
+  userQuestion: string;
   tableInfo: string;
 };
 
 export const getPostgresPrompt = ({
   tableInfo,
-  query,
+  userQuestion,
 }: GetPostgresPromptConfig) => {
   const PROMPT = `
 You are a PostgreSQL expert. Given an input question, your goal is to create a syntactically correct PostgreSQL query to run.
@@ -20,22 +20,22 @@ Pay attention to use only the column names you can see in the tables below. Be c
 Only use the following tables:
 ${tableInfo}
 		
-Question: ${query}
+Question: ${userQuestion}
 Only return the SQL query in the answer. Do not include the question or any other text.`;
   return PROMPT;
 };
 
 export type GenerateSQLCommandForQueryConfig = {
-  query: string;
+  userQuestion: string;
   tableInfo: string;
 };
 
 export const generateSQLCommandForQuery = async ({
-  query,
+  userQuestion,
   tableInfo,
 }: GenerateSQLCommandForQueryConfig) => {
   // TODO: Generalize this to work with any database type prompt
-  const psqlCmdPrompt = getPostgresPrompt({ query, tableInfo });
+  const psqlCmdPrompt = getPostgresPrompt({ userQuestion, tableInfo });
   printPromptEncodingLength(psqlCmdPrompt);
   const messages = [
     {

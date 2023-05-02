@@ -1,5 +1,5 @@
+import { Navbar } from "@/components/Navigation/Navbar";
 import { AutoResizeTextarea } from "@/components/common/AutoResizeTextarea";
-import { Navbar } from "@/components/navigation/Navbar";
 import {
   DataSource,
   DataSourceRadioGroup,
@@ -34,7 +34,7 @@ export default function Home() {
   );
   const [fastMode, setFastMode] = useBoolean(true);
   const [sampleDataInTableInfo, setSampleDataInTableInfo] = useBoolean(false);
-  const [userQuery, setUserQuery] = useState<string>("");
+  const [userQuestion, setUserQuestion] = useState<string>("");
 
   const sampleDataInTableInfoRowCount = sampleDataInTableInfo ? 3 : 0;
 
@@ -78,21 +78,21 @@ export default function Home() {
   const handleChangeUserQuery = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    setUserQuery(event.target.value);
+    setUserQuestion(event.target.value);
   };
 
   const generateUserQueryIsDisabled =
-    userQuery === "" || isLoadingDbSchema || isErrorDbSchema;
+    userQuestion === "" || isLoadingDbSchema || isErrorDbSchema;
 
   const handleGenerateQuery = () => {
-    if (userQuery === "") {
+    if (userQuestion === "") {
       return;
     }
     if (samplePostgresData?.schema === undefined) {
       return;
     }
     generateSQLQuery({
-      query: userQuery,
+      userQuestion,
       dbSchema: samplePostgresData.schema,
       sampleRows: samplePostgresData.sampleRows,
       sequential: fastMode,
@@ -174,7 +174,7 @@ export default function Home() {
                 <AutoResizeTextarea
                   borderRadius={"none"}
                   maxH={16}
-                  value={userQuery}
+                  value={userQuestion}
                   border={"none"}
                   _focusVisible={{
                     border: "none",
