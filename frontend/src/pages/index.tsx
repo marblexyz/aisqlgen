@@ -28,7 +28,7 @@ import {
 import { useMemo, useState } from "react";
 
 export default function Home() {
-  const { onCopy, setValue, hasCopied } = useClipboard("");
+  const { value: query, onCopy, setValue, hasCopied } = useClipboard("");
   const [selectedDataSource, setSelectedDataSource] = useState<DataSource>(
     DataSource.SAMPLE
   );
@@ -93,6 +93,7 @@ export default function Home() {
     }
     generateSQLQuery({
       userQuestion,
+      query,
       dbSchema: samplePostgresData.schema,
       sampleRows: samplePostgresData.sampleRows,
       sequential: fastMode,
