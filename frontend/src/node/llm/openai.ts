@@ -7,7 +7,7 @@ export type GenerateChatCompletion = {
 };
 export const generateChatCompletion = async ({
   messages,
-  temperature = 0.5,
+  temperature = 0,
   topP = undefined,
 }: GenerateChatCompletion) => {
   const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
