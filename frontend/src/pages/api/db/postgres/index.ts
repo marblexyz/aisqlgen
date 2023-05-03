@@ -46,6 +46,7 @@ export default async function handler(
     // note: we don't try/catch this because if connecting throws an exception
     // we don't need to dispose of the client (it will be undefined)
     const poolClient = await pgPool.connect();
+
     let databaseSchema: DatabaseSchemaObject;
     let sampleRows: SampleRowsObject | undefined;
     try {

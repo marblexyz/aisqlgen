@@ -1,15 +1,15 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
 import { FC, ReactNode } from "react";
 
-export type BasicButtonProps = ButtonProps & {
+export type BasicLinkButtonProps = ButtonProps & {
   onClick?: () => void;
-  disabled?: boolean;
+  isDisabled?: boolean;
   children: ReactNode;
 };
 
-export const BasicButton: FC<BasicButtonProps> = ({
+export const BasicLinkButton: FC<BasicLinkButtonProps> = ({
   onClick,
-  disabled,
+  isDisabled,
   children,
   // We shouldn't really need to do this, but Chakra internal types are a pain to export
   ...rest
@@ -17,23 +17,22 @@ export const BasicButton: FC<BasicButtonProps> = ({
   return (
     <Button
       variant={"unstyled"}
-      isDisabled={disabled}
+      isDisabled={isDisabled}
       h={8}
-      color={"gray.900"}
       fontWeight={"normal"}
-      bg={"gray.200"}
-      borderRadius={"1"}
-      px={4}
+      color={"gray.900"}
+      borderRadius={"none"}
       fontSize={"sm"}
       _hover={{
-        bg: "gray.300",
+        bg: "gray.50",
       }}
       _active={{
-        bg: "gray.300",
+        bg: "gray.50",
       }}
+      px={2}
       _disabled={{
-        bgColor: "gray.400",
-        color: "gray.700",
+        color: "gray.400",
+        bg: "none ",
         cursor: "not-allowed",
       }}
       onClick={onClick}

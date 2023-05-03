@@ -1,4 +1,4 @@
-import { generateSQLQuery } from "@/api/query";
+import { generateSQLQuery } from "@/handlers/query";
 import { Query } from "@/types/redux/slices/queryHistory";
 import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { useMutation } from "@tanstack/react-query";

@@ -1,29 +1,48 @@
-import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
-import { queryHistorySlice } from "./slices/queryHistory/queryHistorySlice";
-import { QueryHistory } from "@/types/redux/slices/queryHistory";
+import { DATASOURCE_MAP, QUERY_HISTORY } from "@/storage/keys";
 import { localForageStore } from "@/storage/storage-provider";
+import { DatasourceMapState } from "@/types/redux/slices/datasource";
+import { QueryHistory } from "@/types/redux/slices/queryHistory";
 import { QueryMakerLocalStorageState } from "@/types/redux/state";
+import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit";
+import { datasourceConnector } from "./slices/datasource/datasourceSlice";
+import { queryHistorySlice } from "./slices/queryHistory/queryHistorySlice";
 
-const saveToLocalStorage = async (state: QueryMakerLocalStorageState) => {
+const saveReduxStateToLocalStorage = async (
+  state: QueryMakerLocalStorageState
+) => {
   try {
-    const serialisedState = JSON.stringify(state.queryHistory);
-    await localForageStore.setItem("queryHistory", serialisedState);
+    const serializedHistoryState = JSON.stringify(state.queryHistory);
+    await localForageStore.setItem(QUERY_HISTORY, serializedHistoryState);
+    const serializedDatasourceState = JSON.stringify(state.datasourceMapState);
+    await localForageStore.setItem(DATASOURCE_MAP, serializedDatasourceState);
   } catch (e) {
     console.warn(e);
   }
 };
 
-export const loadFromlocalStorage =
+export const loadReduxStateFromLocalStorage =
   async (): Promise<QueryMakerLocalStorageState> => {
     try {
-      const serialisedState = await localForageStore.getItem<string>(
-        "queryHistory"
-      );
-      if (serialisedState === null) return { queryHistory: undefined };
-      return { queryHistory: JSON.parse(serialisedState) as QueryHistory };
+      const queryHistorySerializedState =
+        await localForageStore.getItem<string>(QUERY_HISTORY);
+      const datasourceMapSerializedState =
+        await localForageStore.getItem<string>(DATASOURCE_MAP);
+      // TODO: Not exactly fault tolerant, but it's a start.
+      if (
+        queryHistorySerializedState === null ||
+        datasourceMapSerializedState === null
+      )
+        return { datasourceMapState: undefined, queryHistory: undefined };
+
+      return {
+        queryHistory: JSON.parse(queryHistorySerializedState) as QueryHistory,
+        datasourceMapState: JSON.parse(
+          datasourceMapSerializedState
+        ) as DatasourceMapState,
+      };
     } catch (e) {
       console.warn(e);
-      return { queryHistory: undefined };
+      return { queryHistory: undefined, datasourceMapState: undefined };
     }
   };
 
@@ -31,13 +50,14 @@ const makeStore = () => {
   return configureStore({
     reducer: {
       queryHistory: queryHistorySlice.reducer,
+      datasourceMapState: datasourceConnector.reducer,
     },
   });
 };
 
 const store = makeStore();
 
-store.subscribe(() => void saveToLocalStorage(store.getState()));
+store.subscribe(() => void saveReduxStateToLocalStorage(store.getState()));
 
 export type ReduxStoreType = ReturnType<typeof makeStore>;
 
