@@ -20,21 +20,21 @@ export const datasourceConnector = createSlice({
     ) => {
       state.datasourceMap = action.payload;
     },
-    addDataSource: (
+    addDatasource: (
       state,
       action: PayloadAction<{
-        datasourceId: string;
-        datasourceType: DatasourceType;
-        datasourceConfig: DatasourceConfigType;
+        id: string;
+        type: DatasourceType;
+        config: DatasourceConfigType;
       }>
     ) => {
-      state.datasourceMap[action.payload.datasourceId] = {
-        type: action.payload.datasourceType,
-        config: action.payload.datasourceConfig,
+      state.datasourceMap[action.payload.id] = {
+        type: action.payload.type,
+        config: action.payload.config,
       };
     },
   },
 });
 
-export const { hydrateDatasourceConnector, addDataSource } =
+export const { hydrateDatasourceConnector, addDatasource } =
   datasourceConnector.actions;

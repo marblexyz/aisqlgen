@@ -173,3 +173,12 @@ export const getSampleRowsForTable = async (
     throw new Error(`Error getting sample rows for table ${tableName}.`);
   }
 };
+
+export const checkDBConnection = async (pool: Pool) => {
+  try {
+    await pool.query("SELECT NOW()");
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error checking database connection.`);
+  }
+};

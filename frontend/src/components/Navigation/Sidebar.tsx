@@ -1,8 +1,14 @@
-import { Flex, Heading, Text, VStack } from "@chakra-ui/react";
+import { Flex, Heading, Text, VStack, useDisclosure } from "@chakra-ui/react";
 import { FC } from "react";
 import { BasicButton } from "../common/BasicButton";
+import { AddDatasourceModal } from "../datasource/AddDatasourceModal";
 
 export const Sidebar: FC = () => {
+  const {
+    isOpen: datasourceModalIsOpen,
+    onOpen: onOpenDatasourceModal,
+    onClose: onCloseDatasourceModal,
+  } = useDisclosure();
   return (
     <Flex h="100%" borderRight="1px solid" borderColor="gray.100" minW="3xs">
       <Flex w="100%" px={4} py={4} direction={"column"}>
@@ -15,9 +21,13 @@ export const Sidebar: FC = () => {
             queries.
           </Text>
         </VStack>
-        <BasicButton>
+        <BasicButton onClick={onOpenDatasourceModal}>
           <Text>Add connection</Text>
         </BasicButton>
+        <AddDatasourceModal
+          isOpen={datasourceModalIsOpen}
+          onClose={onCloseDatasourceModal}
+        />
       </Flex>
     </Flex>
   );

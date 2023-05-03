@@ -9,5 +9,4 @@ export const SAMPLE_PG_DB_CONFIG = {
   user: process.env.PGUSER !== undefined ? process.env.PGUSER : "postgres",
   password:
     process.env.PGPASSWPRD !== undefined ? process.env.PGPASSWPRD : "postgres",
-  useSSL: process.env.PGUSESSL === undefined || process.env.PGUSESSL === "true",
 };

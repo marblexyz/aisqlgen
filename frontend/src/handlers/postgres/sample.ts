@@ -1,10 +1,7 @@
-import {
-  GetDBSchemaRequest,
-  GetDBSchemaResult,
-} from "@/pages/api/db/postgresql";
-import { HttpMethod, callServerlessApi } from ".";
+import { GetDBSchemaRequest, GetDBSchemaResult } from "@/pages/api/db/postgres";
+import { HttpMethod, callServerlessApi } from "..";
 
-export const getSampleData = async (requestData?: GetDBSchemaRequest) => {
+export const getSamplePGData = async (requestData?: GetDBSchemaRequest) => {
   const body = requestData ? JSON.stringify(requestData) : undefined;
   const response = await callServerlessApi(
     "/api/db/postgresql",
