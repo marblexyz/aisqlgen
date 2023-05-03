@@ -1,6 +1,11 @@
 import { GenerateSQLQueryResult } from "@/pages/api/query";
 import { Query } from "@/types/redux/slices/queryHistory";
-import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
+import {
+  CreatePGPoolConfig,
+  DatabaseRow,
+  DatabaseSchemaObject,
+  SampleRowsObject,
+} from "@/types/schema";
 import { HttpMethod, callServerlessApi } from ".";
 
 export type GenerateSQLQueryConfig = {
@@ -36,5 +41,30 @@ export const generateSQLQuery = async ({
     throw new Error("Error getting sample data.");
   }
   const data = (await response.json()) as GenerateSQLQueryResult;
+  return data.result;
+};
+
+export type ExecuteSQLQueryConfig = {
+  query: string;
+  config?: CreatePGPoolConfig;
+};
+
+export type ExecuteSQLQueryResult = {
+  error?: string;
+  result?: DatabaseRow[];
+};
+
+export const executeSQLQuery = async ({ query }: ExecuteSQLQueryConfig) => {
+  const response = await callServerlessApi(
+    "/api/query/execute",
+    HttpMethod.POST,
+    JSON.stringify({
+      query,
+    })
+  );
+  if (response.status >= 400) {
+    throw new Error("Error executing query.");
+  }
+  const data = (await response.json()) as ExecuteSQLQueryResult;
   return data.result;
 };

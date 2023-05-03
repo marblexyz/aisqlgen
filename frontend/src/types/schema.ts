@@ -12,6 +12,8 @@ export type PGTableSchema = {
 };
 export type DatabaseSchemaObject = Record<string, PGTableSchema>;
 
+export type DatabaseRow = { [key: string]: unknown };
+
 export type CreatePGPoolConfig = {
   host: string;
   port: number;

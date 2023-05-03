@@ -11,6 +11,7 @@ export type GenerateSQLQueryConfig = {
   sequential?: boolean;
   previousQueries?: Query[];
 };
+
 export const useGenerateSQLQuery = (
   onSuccess?: (result: string | undefined) => void,
   onError?: (error: unknown) => void

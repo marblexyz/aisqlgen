@@ -1,37 +1,40 @@
 import { AutoResizeTextarea } from "@/components/common/AutoResizeTextarea";
 import { BasicButton } from "@/components/common/BasicButton";
+import { ResultTable } from "@/components/common/ResultTable";
 import { Navbar } from "@/components/navigation/Navbar";
 import {
   DataSource,
   DataSourceRadioGroup,
 } from "@/components/page/Index/DataSourceRadioGroup";
-import { QueryHistory } from "@/components/page/Index/QueryHistory";
 import { FastModeSwitch } from "@/components/page/Index/FastModeSwitch";
 import { IndexHeader } from "@/components/page/Index/IndexHeader";
+import { QueryHistory } from "@/components/page/Index/QueryHistory";
 import { SampleDataSwitch } from "@/components/page/Index/SampleDataSwitch";
+import { useExecuteSQLQuery } from "@/hooks/mutations/useExecuteSQLQuery";
 import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
 import { useSamplePostgresData } from "@/hooks/queries/useSamplePostgresData";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { appendQuery } from "@/redux/slices/queryHistory/queryHistorySlice";
+import { selectQueryHistory } from "@/redux/slices/queryHistory/queryHistorySliceSelectors";
 import { CHAKRA_100VH } from "@/style/constants";
+import { DatabaseRow } from "@/types/schema";
 import { getSchemaAsString } from "@/utils/getSchemaAsString";
 import {
   Box,
   Button,
   Divider,
   Flex,
-  Heading,
   HStack,
+  Heading,
   Spinner,
   Stack,
   Text,
   Textarea,
+  VStack,
   useBoolean,
   useClipboard,
-  VStack,
 } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
-import { selectQueryHistory } from "@/redux/slices/queryHistory/queryHistorySliceSelectors";
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -48,6 +51,9 @@ export default function Home() {
   const [fastMode, setFastMode] = useBoolean(true);
   const [sampleDataInTableInfo, setSampleDataInTableInfo] = useBoolean(false);
   const [userQuestion, setUserQuestion] = useState<string>("");
+  const [queryResult, setQueryResult] = useState<DatabaseRow[] | undefined>(
+    undefined
+  );
   const sampleDataInTableInfoRowCount = sampleDataInTableInfo ? 3 : 0;
   const {
     data: samplePostgresData,
@@ -74,6 +80,11 @@ export default function Home() {
     isError: isErrorGenerateSQLQuery,
     isLoading: isLoadingGenerateSQLQuery,
   } = useGenerateSQLQuery(onSuccessGenerateQuery);
+
+  const { mutate: executeSQLQuery, isLoading: isLoadingExecuteSQLQuery } =
+    useExecuteSQLQuery((result: DatabaseRow[] | undefined) => {
+      setQueryResult(result);
+    });
 
   const schemaString = useMemo(() => {
     if (samplePostgresData?.schema === undefined) {
@@ -132,9 +143,14 @@ export default function Home() {
       ),
     });
   };
+  const handleExecuteQuery = () => {
+    executeSQLQuery({
+      query,
+    });
+  };
   const generateUserQueryIsDisabled =
     userQuestion === "" || isLoadingDbSchema || isErrorDbSchema;
-
+  const runQueryIsDisabled = query === "" || isLoadingGenerateSQLQuery;
   const sqlQueryIsEmpty = query === "";
   return (
     <Flex direction={"column"} h={CHAKRA_100VH}>
@@ -327,6 +343,30 @@ export default function Home() {
                   </Flex>
                 </Flex>
               </VStack>
+              <VStack>
+                <Button
+                  fontSize={"md"}
+                  p={0}
+                  my={0}
+                  onClick={handleExecuteQuery}
+                  h={8}
+                  w={32}
+                  borderRadius={"sm"}
+                  bg={"purple.500"}
+                  color={"white"}
+                  _hover={{
+                    bg: "purple.100",
+                    cursor: "pointer",
+                  }}
+                  isLoading={isLoadingExecuteSQLQuery}
+                  isDisabled={runQueryIsDisabled}
+                  spinner={<Spinner size="sm" />}
+                  loadingText={undefined}
+                >
+                  {"Execute"}
+                </Button>
+              </VStack>
+              {queryResult !== undefined && <ResultTable data={queryResult} />}
             </VStack>
           </Flex>
         </Flex>
