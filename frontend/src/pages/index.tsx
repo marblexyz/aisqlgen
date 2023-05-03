@@ -1,15 +1,15 @@
 import { AutoResizeTextarea } from "@/components/common/AutoResizeTextarea";
 import { ResultTable } from "@/components/common/ResultTable";
-import { Navbar } from "@/components/navigation/Navbar";
-import { Sidebar } from "@/components/navigation/Sidebar";
+import { Navbar } from "@/components/nav/Navbar";
+import { Sidebar } from "@/components/nav/Sidebar";
 import {
   DataSource,
   DataSourceRadioGroup,
-} from "@/components/page/index_page/DataSourceRadioGroup";
-import { FastModeSwitch } from "@/components/page/index_page/FastModeSwitch";
-import { IndexHeader } from "@/components/page/index_page/IndexHeader";
-import { QueryHistory } from "@/components/page/index_page/QueryHistory";
-import { SampleDataSwitch } from "@/components/page/index_page/SampleDataSwitch";
+} from "@/components/page/index/DataSourceRadioGroup";
+import { FastModeSwitch } from "@/components/page/index/FastModeSwitch";
+import { IndexHeader } from "@/components/page/index/IndexHeader";
+import { QueryHistory } from "@/components/page/index/QueryHistory";
+import { SampleDataSwitch } from "@/components/page/index/SampleDataSwitch";
 import { useExecuteSQLQuery } from "@/hooks/mutations/useExecuteSQLQuery";
 import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
 import { useSamplePostgresData } from "@/hooks/queries/useSamplePostgresData";
@@ -48,6 +48,7 @@ export default function Home() {
   const [selectedDataSource, setSelectedDataSource] = useState<DataSource>(
     DataSource.SAMPLE
   );
+
   const [fastMode, setFastMode] = useBoolean(true);
   const [sampleDataInTableInfo, setSampleDataInTableInfo] = useBoolean(false);
   const [userQuestion, setUserQuestion] = useState<string>("");
