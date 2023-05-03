@@ -2,7 +2,7 @@
 import { editSQLCommandForQuery } from "@/node/llm/editSQLCommandForQuery";
 import { generateSQLCommandForQuery } from "@/node/llm/getSQLCommandForQuery";
 import { getTablesToUseForQuery } from "@/node/llm/getTablesToUseForQuery";
-import { Query } from "@/types/redux/slices/queryHistory";
+import { Query } from "@/types/redux/slices/query";
 import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { getSchemaAsString } from "@/utils/getSchemaAsString";
 import type { NextApiRequest, NextApiResponse } from "next";

@@ -1,4 +1,4 @@
-import { HStack, Switch, Text } from "@chakra-ui/react";
+import { HStack, Stack, Switch, Text, Tooltip } from "@chakra-ui/react";
 import { FC } from "react";
 
 export type SampleDataSwitchProps = {
@@ -12,8 +12,25 @@ export const SampleDataSwitch: FC<SampleDataSwitchProps> = ({
 }) => {
   return (
     <HStack align={"center"} direction={"row"} spacing={1}>
-      <Text fontSize={"md"}>Use sample data to generate queries</Text>
-      <Switch isChecked={isChecked} onChange={onToggle} colorScheme="purple" />
+      <Tooltip
+        label={
+          <Stack>
+            <Text>We recommend using sample data for better accuracy.</Text>
+          </Stack>
+        }
+        aria-label="Disable fast mode for slower and potentially more accurate responses."
+      >
+        <Text
+          fontSize={"sm"}
+          whiteSpace={"nowrap"}
+          textTransform={"uppercase"}
+          color="yellow.500"
+          fontWeight={"bold"}
+        >
+          Sample Data
+        </Text>
+      </Tooltip>
+      <Switch isChecked={isChecked} onChange={onToggle} colorScheme="yellow" />
     </HStack>
   );
 };

@@ -1,7 +1,7 @@
 import { DatasourceMapState } from "./slices/datasource";
-import { QueryHistory } from "./slices/queryHistory";
+import { QueryState } from "./slices/query";
 
 export type QueryMakerLocalStorageState = {
-  queryHistory: QueryHistory | undefined;
+  queryState: QueryState | undefined;
   datasourceMapState: DatasourceMapState | undefined;
 };
