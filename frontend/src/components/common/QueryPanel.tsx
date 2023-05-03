@@ -8,7 +8,11 @@ import { useExecuteSQLQuery } from "@/hooks/mutations/useExecuteSQLQuery";
 import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
 import { useSamplePostgresData } from "@/hooks/queries/useSamplePostgresData";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
-import { deleteQuery, updateQuery } from "@/redux/slices/query/querySlice";
+import {
+  clearQueryHistory,
+  deleteQuery,
+  updateQuery,
+} from "@/redux/slices/query/querySlice";
 import { selectQuery } from "@/redux/slices/query/querySliceSelectors";
 import { DatabaseRow } from "@/types/schema";
 import {
@@ -24,6 +28,7 @@ import {
 import { FC, useState } from "react";
 import { v4 } from "uuid";
 import { DataSource, DataSourceMenu } from "../page/index/DataSourceMenu";
+import { TimeoutText } from "./TimeoutText";
 
 type QueryPanelProps = {
   id: string;
@@ -59,6 +64,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
       ? undefined
       : lastQueryExecutionLog.result
   );
+  const [saveCount, setSaveCount] = useState<number>(0);
   const sampleDataInTableInfoRowCount = useSampleData ? 3 : 0;
   const {
     data: samplePostgresData,
@@ -73,6 +79,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     setCommand(result);
     const newExecutionId = v4();
     setExecutionId(newExecutionId);
+    setSaveCount(saveCount + 1);
     dispatch(
       updateQuery({
         id,
@@ -91,6 +98,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
 
   const handleExecuteSQLQuerySuccess = (result: DatabaseRow[] | undefined) => {
     setQueryResult(result);
+    setSaveCount(saveCount + 1);
     dispatch(
       updateQuery({
         id,
@@ -116,6 +124,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
 
   const handleToggleFastMode = () => {
     setUseFastMode.toggle();
+    setSaveCount(saveCount + 1);
     dispatch(
       updateQuery({
         id,
@@ -126,6 +135,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
 
   const handleToggleSampleData = () => {
     setUseSampleData.toggle();
+    setSaveCount(saveCount + 1);
     dispatch(
       updateQuery({
         id,
@@ -134,8 +144,13 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     );
   };
 
+  const handleClearHistory = () => {
+    dispatch(clearQueryHistory({ id }));
+  };
+
   const handleSelectDataSource = (value: DataSource) => {
     setSelectedDataSource(value);
+    setSaveCount(saveCount + 1);
     dispatch(
       updateQuery({
         id,
@@ -143,6 +158,20 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
       })
     );
   };
+
+  const handleDescriptionChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setDescription(event.target.value);
+    setSaveCount(saveCount + 1);
+    dispatch(
+      updateQuery({
+        id,
+        description: event.target.value,
+      })
+    );
+  };
+
   const handleChangeSQLCommand = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
@@ -196,23 +225,29 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
       border="1px solid"
       borderColor="gray.100"
     >
-      <Input
-        w="100%"
-        h={12}
-        value={description}
-        onChange={(event) => setDescription(event.target.value)}
-        placeholder="Query description"
-        variant="unstyled"
-        fontSize="md"
-        fontWeight="bold"
-      />
+      <HStack w="100%" justifyContent="space-between">
+        <Input
+          w="100%"
+          h={12}
+          value={description}
+          onChange={handleDescriptionChange}
+          placeholder="Query description"
+          variant="unstyled"
+          fontSize="md"
+          fontWeight="bold"
+        />
+        <TimeoutText baseText="" timeoutText="Saved" trigger={saveCount} />
+      </HStack>
       <HStack w="100%" justifyContent={"space-between"}>
         <HStack>
           <DataSourceMenu
             value={selectedDataSource}
             onChange={handleSelectDataSource}
           />
-          <QueryHistory executionLog={queryExecutionLogSorted} />
+          <QueryHistory
+            executionLog={queryExecutionLogSorted}
+            onClearHistory={handleClearHistory}
+          />
         </HStack>
         <Button
           h={8}

@@ -23,7 +23,7 @@ export const ResultTable: FC<ResultTableProps> = ({ data }) => {
   keys.sort();
 
   return (
-    <TableContainer>
+    <TableContainer w="100%">
       <Table variant="simple">
         <Thead>
           <Tr>

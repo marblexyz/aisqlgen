@@ -94,9 +94,8 @@ export const queryStateSlice = createSlice({
       }>
     ) => {
       const { id } = action.payload;
-      const index = state.ids.indexOf(id);
-      state.queries[index] = {
-        ...state.queries[index],
+      state.queries[id] = {
+        ...state.queries[id],
         executionLog: {},
       };
     },
