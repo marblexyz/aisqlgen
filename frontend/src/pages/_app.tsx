@@ -1,5 +1,5 @@
 import { hydrateDatasourceConnector } from "@/redux/slices/datasource/datasourceSlice";
-import { hydrateQueryHistory } from "@/redux/slices/queryHistory/queryHistorySlice";
+import { hydrateQueryState } from "@/redux/slices/query/querySlice";
 import store, { loadReduxStateFromLocalStorage } from "@/redux/store";
 
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
@@ -21,8 +21,11 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     const hydrateReduxOnLoad = async () => {
       const preloadedReduxState = await loadReduxStateFromLocalStorage();
-      if (preloadedReduxState.queryHistory !== undefined) {
-        store.dispatch(hydrateQueryHistory(preloadedReduxState.queryHistory));
+      if (
+        preloadedReduxState.queryState !== undefined &&
+        preloadedReduxState.queryState.ids.length > 0
+      ) {
+        store.dispatch(hydrateQueryState(preloadedReduxState.queryState));
       }
       if (preloadedReduxState.datasourceMapState !== undefined) {
         store.dispatch(

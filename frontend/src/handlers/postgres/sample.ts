@@ -4,7 +4,7 @@ import { HttpMethod, callServerlessApi } from "..";
 export const getSamplePGData = async (requestData?: GetDBSchemaRequest) => {
   const body = requestData ? JSON.stringify(requestData) : undefined;
   const response = await callServerlessApi(
-    "/api/db/postgresql",
+    "/api/db/postgres",
     HttpMethod.POST,
     body
   );

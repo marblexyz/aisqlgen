@@ -1,4 +1,4 @@
-import { Query } from "@/types/redux/slices/queryHistory";
+import { Query } from "@/types/redux/slices/query";
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
 import { printPromptEncodingLength } from "../utils";
 import { generateChatCompletion } from "./openai";

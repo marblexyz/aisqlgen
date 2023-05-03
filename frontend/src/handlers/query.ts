@@ -1,5 +1,5 @@
 import { GenerateSQLQueryResult } from "@/pages/api/query";
-import { Query } from "@/types/redux/slices/queryHistory";
+import { Query } from "@/types/redux/slices/query";
 import {
   CreatePGPoolConfig,
   DatabaseRow,
