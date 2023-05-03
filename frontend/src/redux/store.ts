@@ -13,7 +13,7 @@ const saveReduxStateToLocalStorage = async (
   try {
     const serializedHistoryState = JSON.stringify(state.queryHistory);
     await localForageStore.setItem(QUERY_HISTORY, serializedHistoryState);
-    const serializedDatasourceState = JSON.stringify(state.datasourceMap);
+    const serializedDatasourceState = JSON.stringify(state.datasourceMapState);
     await localForageStore.setItem(DATASOURCE_MAP, serializedDatasourceState);
   } catch (e) {
     console.warn(e);
@@ -32,17 +32,17 @@ export const loadReduxStateFromLocalStorage =
         queryHistorySerializedState === null ||
         datasourceMapSerializedState === null
       )
-        return { datasourceMap: undefined, queryHistory: undefined };
+        return { datasourceMapState: undefined, queryHistory: undefined };
 
       return {
         queryHistory: JSON.parse(queryHistorySerializedState) as QueryHistory,
-        datasourceMap: JSON.parse(
+        datasourceMapState: JSON.parse(
           datasourceMapSerializedState
         ) as DatasourceMapState,
       };
     } catch (e) {
       console.warn(e);
-      return { queryHistory: undefined, datasourceMap: undefined };
+      return { queryHistory: undefined, datasourceMapState: undefined };
     }
   };
 
@@ -50,7 +50,7 @@ const makeStore = () => {
   return configureStore({
     reducer: {
       queryHistory: queryHistorySlice.reducer,
-      datasourceMap: datasourceConnector.reducer,
+      datasourceMapState: datasourceConnector.reducer,
     },
   });
 };

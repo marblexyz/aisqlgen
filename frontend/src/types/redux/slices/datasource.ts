@@ -4,7 +4,9 @@ export enum DatasourceType {
   Postgres = "Postgres",
 }
 
-export type DatasourceConfigType = CreatePGPoolConfig;
+export type DatasourceConfigType = {
+  resourceName: string;
+} & CreatePGPoolConfig;
 
 export type Datasource = {
   type: DatasourceType;

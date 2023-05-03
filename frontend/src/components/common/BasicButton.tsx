@@ -22,14 +22,14 @@ export const BasicButton: FC<BasicButtonProps> = ({
       color={"gray.900"}
       fontWeight={"normal"}
       bg={"gray.200"}
-      borderRadius={"none"}
+      borderRadius={"1"}
       px={4}
       fontSize={"sm"}
       _hover={{
-        bg: "purple.300",
+        bg: "gray.300",
       }}
       _active={{
-        bg: "purple.300",
+        bg: "gray.300",
       }}
       _disabled={{
         bgColor: "gray.400",

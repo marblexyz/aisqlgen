@@ -24,10 +24,10 @@ export default function App({ Component, pageProps }: AppProps) {
       if (preloadedReduxState.queryHistory !== undefined) {
         store.dispatch(hydrateQueryHistory(preloadedReduxState.queryHistory));
       }
-      if (preloadedReduxState.datasourceMap !== undefined) {
+      if (preloadedReduxState.datasourceMapState !== undefined) {
         store.dispatch(
           hydrateDatasourceConnector(
-            preloadedReduxState.datasourceMap.datasourceMap
+            preloadedReduxState.datasourceMapState.datasourceMap
           )
         );
       }

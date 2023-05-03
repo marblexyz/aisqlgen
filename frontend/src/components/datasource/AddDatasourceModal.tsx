@@ -1,8 +1,10 @@
 import { useCheckPgConnection } from "@/hooks/mutations/useCheckPgConnection";
 import { useAppDispatch } from "@/hooks/reduxHooks";
 import { addDatasource } from "@/redux/slices/datasource/datasourceSlice";
-import { DatasourceType } from "@/types/redux/slices/datasource";
-import { CreatePGPoolConfig } from "@/types/schema";
+import {
+  DatasourceConfigType,
+  DatasourceType,
+} from "@/types/redux/slices/datasource";
 import {
   Box,
   FormControl,
@@ -83,7 +85,7 @@ const validateFormValues = (values: PostgresFormValues) => {
     values: {
       ...values,
       port: parseInt(values.port),
-    } as CreatePGPoolConfig,
+    } as DatasourceConfigType,
   };
 };
 
