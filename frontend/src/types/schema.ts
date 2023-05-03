@@ -1,14 +1,16 @@
+export type PGColumnType = {
+  name: string;
+  columnType: string;
+  isPrimaryKey?: boolean;
+  foreignKey?: {
+    referencedTableName: string;
+    referencedColumnName: string;
+  };
+};
+
 export type PGTableSchema = {
   tableName: string;
-  columns: {
-    name: string;
-    columnType: string;
-    isPrimaryKey?: boolean;
-    foreignKey?: {
-      referencedTableName: string;
-      referencedColumnName: string;
-    };
-  }[];
+  columns: PGColumnType[];
 };
 export type DatabaseSchemaObject = Record<string, PGTableSchema>;
 
