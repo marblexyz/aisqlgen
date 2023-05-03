@@ -1,4 +1,4 @@
-import { executeSQLQuery } from "@/api/query";
+import { executeSQLQuery } from "@/handlers/query";
 import { CreatePGPoolConfig, DatabaseRow } from "@/types/schema";
 import { useMutation } from "@tanstack/react-query";
 

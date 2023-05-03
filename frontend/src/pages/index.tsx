@@ -5,11 +5,11 @@ import { Sidebar } from "@/components/navigation/Sidebar";
 import {
   DataSource,
   DataSourceRadioGroup,
-} from "@/components/page/Index/DataSourceRadioGroup";
-import { FastModeSwitch } from "@/components/page/Index/FastModeSwitch";
-import { IndexHeader } from "@/components/page/Index/IndexHeader";
-import { QueryHistory } from "@/components/page/Index/QueryHistory";
-import { SampleDataSwitch } from "@/components/page/Index/SampleDataSwitch";
+} from "@/components/page/index_page/DataSourceRadioGroup";
+import { FastModeSwitch } from "@/components/page/index_page/FastModeSwitch";
+import { IndexHeader } from "@/components/page/index_page/IndexHeader";
+import { QueryHistory } from "@/components/page/index_page/QueryHistory";
+import { SampleDataSwitch } from "@/components/page/index_page/SampleDataSwitch";
 import { useExecuteSQLQuery } from "@/hooks/mutations/useExecuteSQLQuery";
 import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
 import { useSamplePostgresData } from "@/hooks/queries/useSamplePostgresData";
