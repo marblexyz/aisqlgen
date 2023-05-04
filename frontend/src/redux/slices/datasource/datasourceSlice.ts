@@ -28,7 +28,8 @@ export const datasourceConnector = createSlice({
         config: DatasourceConfigType;
       }>
     ) => {
-      state.datasourceMap[action.payload.id] = {
+      const { id } = action.payload;
+      state.datasourceMap[id] = {
         type: action.payload.type,
         config: action.payload.config,
       };

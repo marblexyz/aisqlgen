@@ -13,7 +13,7 @@ export type Datasource = {
   config: DatasourceConfigType;
 };
 
-export type DatasourceMap = Record<string, Datasource>;
+export type DatasourceMap = Record<string, Datasource | undefined>;
 
 export type DatasourceMapState = {
   datasourceMap: DatasourceMap;
