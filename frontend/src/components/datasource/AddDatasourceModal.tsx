@@ -115,7 +115,8 @@ export const AddDatasourceModal: FC<AddDatasourceModalProps> = ({
       alert(JSON.stringify(values, null, 2));
     },
   });
-  const { validateForm, errors, handleSubmit, touched, values } = formik;
+  const { validateForm, errors, handleSubmit, touched, values, resetForm } =
+    formik;
 
   const handleAddDatasourceClick = async () => {
     await validateForm();
@@ -130,6 +131,7 @@ export const AddDatasourceModal: FC<AddDatasourceModalProps> = ({
       config: validatedValues,
     };
     dispatch(addDatasource(datasource));
+    resetForm();
     onClose();
   };
 

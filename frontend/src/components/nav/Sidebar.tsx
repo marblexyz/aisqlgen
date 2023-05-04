@@ -1,19 +1,11 @@
 import { useAppSelector } from "@/hooks/reduxHooks";
 import { selectDatasourceMap } from "@/redux/slices/datasource/datasourceSliceSelectors";
-import { ChevronRightIcon } from "@chakra-ui/icons";
-import {
-  Button,
-  Flex,
-  HStack,
-  Heading,
-  Text,
-  VStack,
-  useDisclosure,
-} from "@chakra-ui/react";
-import Image from "next/image";
-import { FC } from "react";
-import { BasicButton } from "../common/BasicButton";
+import { Datasource } from "@/types/redux/slices/datasource";
+import { Flex, useBoolean, useDisclosure } from "@chakra-ui/react";
+import { FC, useState } from "react";
 import { AddDatasourceModal } from "../datasource/AddDatasourceModal";
+import { DatasourceDetailsPanel } from "./DatasourceDetailsPanel";
+import { DatasourceListPanel } from "./DatasourceListPanel";
 
 export const Sidebar: FC = () => {
   const {
@@ -21,89 +13,40 @@ export const Sidebar: FC = () => {
     onOpen: onOpenDatasourceModal,
     onClose: onCloseDatasourceModal,
   } = useDisclosure();
+  const [showDetails, setShowDetails] = useBoolean(false);
+  const [selectedDatasourceItem, setSelectedDatasourceItem] = useState<
+    { id: string; datasource: Datasource } | undefined
+  >(undefined);
   const datasourceMap = useAppSelector(selectDatasourceMap);
-  const datasourceMapKeys = Object.keys(datasourceMap);
+  const handleClickDatasourceListItem = (id: string) => {
+    const datasource = datasourceMap[id];
+    if (datasource === undefined) {
+      return;
+    }
+    setShowDetails.on();
+    setSelectedDatasourceItem({ id, datasource });
+  };
   return (
-    <Flex h="100%" borderRight="1px solid" borderColor="gray.100" minW="3xs">
-      <Flex w="100%" px={4} py={4} direction={"column"}>
-        <VStack w="100%" align={"left"} mb={4}>
-          <Heading size="sm" color="gray.900" mb="2">
-            Data connections
-          </Heading>
-          <Text fontSize={"sm"} fontWeight={"regular"} color={"gray.700"}>
-            Connections to external databases to be used when generating
-            queries.
-          </Text>
-        </VStack>
-        <BasicButton onClick={onOpenDatasourceModal}>
-          <Text>Add connection</Text>
-        </BasicButton>
-        <Flex w="100%" direction={"column"}>
-          <Text
-            fontSize="xs"
-            fontWeight={"bold"}
-            color="gray.400"
-            pt={4}
-            pb={2}
-            textTransform={"uppercase"}
-          >
-            Connection list
-          </Text>
-          {datasourceMapKeys.map((key) => {
-            const datasource = datasourceMap[key];
-            return (
-              <Button
-                key={key}
-                variant="unstyled"
-                color={"gray.900"}
-                _hover={{
-                  bg: "gray.100",
-                }}
-                _active={{
-                  bg: "gray.100",
-                }}
-                borderRadius={"1"}
-                px={2}
-              >
-                <Flex w="100%" direction="column">
-                  <Flex
-                    justify={"space-between"}
-                    w="100%"
-                    fontSize={"sm"}
-                    align={"center"}
-                  >
-                    <HStack>
-                      <Image
-                        src="/logos/postgres.png"
-                        alt="Postgres Logo"
-                        width={"15"}
-                        height={"15"}
-                      />
-                      <Text fontWeight={"bold"}>
-                        {datasource.config.resourceName}
-                      </Text>
-                    </HStack>
-
-                    {/* <IconButton
-                      alignItems={"center"}
-                      variant={"unstyled"}
-                      icon={<Icon as={IoEllipsisVertical} />}
-                      aria-label={"More"}
-                      h={4}
-                    /> */}
-
-                    <ChevronRightIcon h={4} />
-                  </Flex>
-                </Flex>
-              </Button>
-            );
-          })}
-        </Flex>
-        <AddDatasourceModal
-          isOpen={datasourceModalIsOpen}
-          onClose={onCloseDatasourceModal}
+    <Flex h="100%" borderRight="1px solid" borderColor="gray.100" w="xs">
+      {showDetails === false && (
+        <DatasourceListPanel
+          onOpenDatasourceModal={onOpenDatasourceModal}
+          datasourceMap={datasourceMap}
+          onClickDatasourceListItem={handleClickDatasourceListItem}
         />
-      </Flex>
+      )}
+      {showDetails === true && selectedDatasourceItem !== undefined && (
+        <DatasourceDetailsPanel
+          datasourceId={selectedDatasourceItem.id}
+          onReturnToList={setShowDetails.off}
+          datasource={selectedDatasourceItem.datasource}
+        />
+      )}
+      {/* We always render this component in case you accidentally close it when adding a db. */}
+      <AddDatasourceModal
+        isOpen={datasourceModalIsOpen}
+        onClose={onCloseDatasourceModal}
+      />
     </Flex>
   );
 };

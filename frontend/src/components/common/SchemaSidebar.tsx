@@ -11,7 +11,7 @@ import {
 import { FC } from "react";
 
 export type SchemaSidebarProps = {
-  schema: DatabaseSchemaObject | undefined;
+  schema: DatabaseSchemaObject;
 };
 
 const SchemaInfoItem: FC<{ tableSchema: PGTableSchema }> = ({
@@ -63,26 +63,14 @@ export const SchemaSidebar: FC<SchemaSidebarProps> = ({ schema }) => {
       py={2}
       resize="both"
     >
-      <Text fontSize="md" fontWeight="bold">
-        Schema
-      </Text>
-      {schema === undefined && (
-        <>
-          <Text>No schema found.</Text>
-        </>
-      )}
-      {schema !== undefined && (
-        <>
-          {Object.entries(schema).map(([_, tableSchema]) => {
-            return (
-              <SchemaInfoItem
-                key={tableSchema.tableName}
-                tableSchema={tableSchema}
-              />
-            );
-          })}
-        </>
-      )}
+      {Object.entries(schema).map(([_, tableSchema]) => {
+        return (
+          <SchemaInfoItem
+            key={tableSchema.tableName}
+            tableSchema={tableSchema}
+          />
+        );
+      })}
     </VStack>
   );
 };

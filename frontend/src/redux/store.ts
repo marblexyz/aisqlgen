@@ -1,13 +1,13 @@
 import { CONFIG_STATE, DATASOURCE_MAP, QUERY_STATE } from "@/storage/keys";
 import { localForageStore } from "@/storage/storage-provider";
+import { ConfigState } from "@/types/redux/slices/config";
 import { DatasourceMapState } from "@/types/redux/slices/datasource";
 import { QueryState } from "@/types/redux/slices/query";
 import { QueryMakerLocalStorageState } from "@/types/redux/state";
 import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit";
+import { configSlice } from "./slices/config/configSlice";
 import { datasourceConnector } from "./slices/datasource/datasourceSlice";
 import { queryStateSlice } from "./slices/query/querySlice";
-import { configSlice } from "./slices/config/configSlice";
-import { ConfigState } from "@/types/redux/slices/config";
 
 const saveReduxStateToLocalStorage = async (
   state: QueryMakerLocalStorageState

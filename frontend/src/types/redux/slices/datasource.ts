@@ -2,6 +2,7 @@ import { CreatePGPoolConfig } from "@/types/schema";
 
 export enum DatasourceType {
   Postgres = "Postgres",
+  Custom = "Custom",
 }
 
 export type DatasourceConfigType = {
@@ -13,7 +14,7 @@ export type Datasource = {
   config: DatasourceConfigType;
 };
 
-export type DatasourceMap = Record<string, Datasource>;
+export type DatasourceMap = Record<string, Datasource | undefined>;
 
 export type DatasourceMapState = {
   datasourceMap: DatasourceMap;

@@ -6,8 +6,9 @@ import { QueryHistory } from "@/components/page/index/QueryHistory";
 import { SampleDataSwitch } from "@/components/page/index/SampleDataSwitch";
 import { useExecuteSQLQuery } from "@/hooks/mutations/useExecuteSQLQuery";
 import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
-import { useSamplePostgresData } from "@/hooks/queries/useSamplePostgresData";
+import { useGetPostgresSchema } from "@/hooks/queries/useGetPostgresSchema";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { selectOpenAIKey } from "@/redux/slices/config/configSliceSelector";
 import {
   clearQueryHistory,
   deleteQuery,
@@ -29,7 +30,6 @@ import { FC, useState } from "react";
 import { v4 } from "uuid";
 import { DataSourceMenu } from "../page/index/DataSourceMenu";
 import { TimeoutText } from "./TimeoutText";
-import { selectOpenAIKey } from "@/redux/slices/config/configSliceSelector";
 
 type QueryPanelProps = {
   id: string;
@@ -72,7 +72,9 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     data: samplePostgresData,
     isLoading: isLoadingDbSchema,
     isError: isErrorDbSchema,
-  } = useSamplePostgresData(sampleDataInTableInfoRowCount);
+  } = useGetPostgresSchema({
+    sampleRowsInTableInfo: sampleDataInTableInfoRowCount,
+  });
 
   const handleGenerateSQLQuerySuccess = (result: string | undefined) => {
     if (result === undefined) {
