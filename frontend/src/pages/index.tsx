@@ -1,10 +1,14 @@
+import { OpenAIKeyModal } from "@/components/common/OpenAIKeyModal";
 import { QueryPanel } from "@/components/common/QueryPanel";
 import { Navbar } from "@/components/nav/Navbar";
 import { Sidebar } from "@/components/nav/Sidebar";
 import { IndexHeader } from "@/components/page/index/IndexHeader";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { selectOpenAIKey } from "@/redux/slices/config/configSliceSelector";
 import { createQuery } from "@/redux/slices/query/querySlice";
 import { selectIds } from "@/redux/slices/query/querySliceSelectors";
+import { SHOW_OPEN_AI_KEY_MODAL } from "@/storage/keys";
+import { localForageStore } from "@/storage/storage-provider";
 import { CHAKRA_100VH } from "@/style/constants";
 import {
   Button,
@@ -14,9 +18,30 @@ import {
   Heading,
   Text,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 
 export default function Home() {
+  const {
+    isOpen: isOpenOpenAIKeyModal,
+    onClose: onCloseOpenAIKeyModal,
+    onOpen: onOpenOpenAIKeyModal,
+  } = useDisclosure();
+  const openAIKey = useAppSelector(selectOpenAIKey);
+  useEffect(() => {
+    const showModal = async () => {
+      if (
+        openAIKey === "" &&
+        ((await localForageStore.getItem(SHOW_OPEN_AI_KEY_MODAL)) === null ||
+          (await localForageStore.getItem(SHOW_OPEN_AI_KEY_MODAL)) === true)
+      ) {
+        onOpenOpenAIKeyModal();
+      }
+    };
+    void showModal();
+  }, [openAIKey, onOpenOpenAIKeyModal]);
+
   const dispatch = useAppDispatch();
   const handleCreateNewQuery = () => {
     dispatch(createQuery());
@@ -65,6 +90,10 @@ export default function Home() {
           </Flex>
         </Flex>
       </Flex>
+      <OpenAIKeyModal
+        isOpen={isOpenOpenAIKeyModal}
+        onClose={onCloseOpenAIKeyModal}
+      />
     </Flex>
   );
 }

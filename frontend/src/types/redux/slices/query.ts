@@ -1,4 +1,3 @@
-import { DataSource } from "@/components/page/index/DataSourceMenu";
 import { DatabaseRow } from "@/types/schema";
 
 export type ExecutionLog = {
@@ -13,7 +12,7 @@ export type Query = {
   id: string;
   description: string;
   timestamp: number;
-  dataSource: DataSource;
+  dataSourceId: string | undefined;
   useFastMode: boolean;
   useSampleData: boolean;
   executionLog: Record<string, ExecutionLog>;

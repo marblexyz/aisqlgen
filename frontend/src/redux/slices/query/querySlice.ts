@@ -1,13 +1,12 @@
-import { DataSource } from "@/components/page/index/DataSourceMenu";
 import { ExecutionLog, QueryState } from "@/types/redux/slices/query";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { v4 } from "uuid";
 
 const defaultQuery = {
   id: v4(),
   description: "",
   executionLog: {},
-  dataSource: DataSource.SAMPLE,
+  dataSourceId: undefined,
   useFastMode: true,
   useSampleData: false,
   timestamp: Date.now(),
@@ -30,7 +29,7 @@ export const queryStateSlice = createSlice({
       const newQuery = {
         id: v4(),
         description: "",
-        dataSource: DataSource.SAMPLE,
+        dataSourceId: undefined,
         timestamp: Date.now(),
         executionLog: {},
         useFastMode: true,
@@ -48,7 +47,7 @@ export const queryStateSlice = createSlice({
         id: string;
         description?: string;
         executionLog?: Record<string, ExecutionLog>;
-        dataSource?: DataSource;
+        dataSourceId?: string;
         useFastMode?: boolean;
         useSampleData?: boolean;
       }>
@@ -57,7 +56,7 @@ export const queryStateSlice = createSlice({
         id,
         description,
         executionLog,
-        dataSource,
+        dataSourceId,
         useFastMode,
         useSampleData,
       } = action.payload;
@@ -69,8 +68,8 @@ export const queryStateSlice = createSlice({
           description === undefined ? queryItem.description : description,
         executionLog:
           executionLog === undefined ? queryItem.executionLog : executionLog,
-        dataSource:
-          dataSource === undefined ? queryItem.dataSource : dataSource,
+        dataSourceId:
+          dataSourceId === undefined ? queryItem.dataSourceId : dataSourceId,
         useFastMode:
           useFastMode === undefined ? queryItem.useFastMode : useFastMode,
         useSampleData:

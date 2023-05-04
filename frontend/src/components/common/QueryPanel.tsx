@@ -27,7 +27,7 @@ import {
 } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { v4 } from "uuid";
-import { DataSource, DataSourceMenu } from "../page/index/DataSourceMenu";
+import { DataSourceMenu } from "../page/index/DataSourceMenu";
 import { TimeoutText } from "./TimeoutText";
 import { selectOpenAIKey } from "@/redux/slices/config/configSliceSelector";
 
@@ -47,9 +47,9 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
   const [command, setCommand] = useState<string>(
     queryExecutionLogSorted.length === 0 ? "" : lastQueryExecutionLog.command
   );
-  const [selectedDataSource, setSelectedDataSource] = useState<DataSource>(
-    queryItem.dataSource
-  );
+  const [selectedDataSourceId, setSelectedDataSourceId] = useState<
+    string | undefined
+  >(queryItem.dataSourceId);
   const [description, setDescription] = useState<string>(queryItem.description);
   const [useFastMode, setUseFastMode] = useBoolean(queryItem.useFastMode);
   const [useSampleData, setUseSampleData] = useBoolean(queryItem.useSampleData);
@@ -150,13 +150,13 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     dispatch(clearQueryHistory({ id }));
   };
 
-  const handleSelectDataSource = (value: DataSource) => {
-    setSelectedDataSource(value);
+  const handleSelectDataSourceId = (value: string) => {
+    setSelectedDataSourceId(value);
     setSaveCount(saveCount + 1);
     dispatch(
       updateQuery({
         id,
-        dataSource: value,
+        dataSourceId: value,
       })
     );
   };
@@ -250,8 +250,8 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
       <HStack w="100%" justifyContent={"space-between"}>
         <HStack>
           <DataSourceMenu
-            value={selectedDataSource}
-            onChange={handleSelectDataSource}
+            value={selectedDataSourceId}
+            onChange={handleSelectDataSourceId}
           />
           <QueryHistory
             executionLog={queryExecutionLogSorted}
