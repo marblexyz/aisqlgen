@@ -29,6 +29,7 @@ import { FC, useState } from "react";
 import { v4 } from "uuid";
 import { DataSource, DataSourceMenu } from "../page/index/DataSourceMenu";
 import { TimeoutText } from "./TimeoutText";
+import { selectOpenAIKey } from "@/redux/slices/config/configSliceSelector";
 
 type QueryPanelProps = {
   id: string;
@@ -37,6 +38,7 @@ type QueryPanelProps = {
 export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
   const dispatch = useAppDispatch();
   const queryItem = useAppSelector(selectQuery(id));
+  const openAIKey = useAppSelector(selectOpenAIKey);
   const queryExecutionLogSorted = Object.values(queryItem.executionLog).sort(
     (a, b) => b.timestamp - a.timestamp
   );
@@ -204,6 +206,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
             userQuestion: queryExecutionLog.userQuestion,
           };
         }),
+      openAIKey,
     });
   };
   const handleExecuteQuery = () => {

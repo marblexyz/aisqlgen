@@ -10,6 +10,7 @@ export type GenerateSQLQueryConfig = {
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
   previousQueries?: ExecutionLogItem[];
+  openAIKey?: string;
 };
 
 export const useGenerateSQLQuery = (
@@ -25,6 +26,7 @@ export const useGenerateSQLQuery = (
       sampleRows,
       sequential,
       previousQueries,
+      openAIKey,
     }: GenerateSQLQueryConfig) => {
       const result = await generateSQLQuery({
         userQuestion,
@@ -33,6 +35,7 @@ export const useGenerateSQLQuery = (
         sampleRows,
         sequential,
         previousQueries,
+        openAIKey,
       });
       return result;
     },

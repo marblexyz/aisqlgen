@@ -47,7 +47,7 @@ export type EditSQLCommandForQueryConfig = {
   tableInfo: string;
   query: string;
   previousQueries?: ExecutionLogItem[];
-  openAIAPIKey?: string;
+  openAIKey?: string;
 };
 
 export const editSQLCommandForQuery = async ({
@@ -55,7 +55,7 @@ export const editSQLCommandForQuery = async ({
   query,
   tableInfo,
   previousQueries,
-  openAIAPIKey,
+  openAIKey,
 }: EditSQLCommandForQueryConfig) => {
   // TODO: Generalize this to work with any database type prompt
   const psqlCmdPrompt = getPostgresPrompt({
@@ -73,7 +73,7 @@ export const editSQLCommandForQuery = async ({
   ];
   try {
     const result = await generateChatCompletion({
-      openAIAPIKey,
+      openAIKey,
       messages,
       temperature: 0,
     });

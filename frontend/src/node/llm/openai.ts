@@ -2,18 +2,18 @@ import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 
 export type GenerateChatCompletion = {
   messages: ChatCompletionRequestMessage[];
-  openAIAPIKey?: string;
+  openAIKey?: string;
   temperature?: number;
   topP?: number;
 };
 export const generateChatCompletion = async ({
   messages,
-  openAIAPIKey,
+  openAIKey,
   temperature = 0,
   topP = undefined,
 }: GenerateChatCompletion) => {
   const OPENAI_API_KEY =
-    openAIAPIKey === undefined ? process.env.OPENAI_API_KEY : openAIAPIKey;
+    openAIKey === undefined ? process.env.OPENAI_API_KEY : openAIKey;
   if (OPENAI_API_KEY === undefined) {
     throw new Error("OPENAI_API_KEY is undefined");
   }

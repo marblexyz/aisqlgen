@@ -28,13 +28,13 @@ Only return the SQL query in the answer. Do not include the question or any othe
 export type GenerateSQLCommandForQueryConfig = {
   userQuestion: string;
   tableInfo: string;
-  openAIAPIKey?: string;
+  openAIKey?: string;
 };
 
 export const generateSQLCommandForQuery = async ({
   userQuestion,
   tableInfo,
-  openAIAPIKey,
+  openAIKey,
 }: GenerateSQLCommandForQueryConfig) => {
   // TODO: Generalize this to work with any database type prompt
   const psqlCmdPrompt = getPostgresPrompt({ userQuestion, tableInfo });
@@ -47,7 +47,7 @@ export const generateSQLCommandForQuery = async ({
   ];
   try {
     const result = await generateChatCompletion({
-      openAIAPIKey,
+      openAIKey,
       messages,
       temperature: 0,
     });

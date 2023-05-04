@@ -29,7 +29,7 @@ type GetTablesToUseForQueryConfig = {
   userQuestion: string;
   validTableNames: string[];
   query?: string;
-  openAIAPIKey?: string;
+  openAIKey?: string;
 };
 
 export const getTablesToUseForQuery = async ({
@@ -37,7 +37,7 @@ export const getTablesToUseForQuery = async ({
   userQuestion,
   validTableNames,
   query,
-  openAIAPIKey,
+  openAIKey,
 }: GetTablesToUseForQueryConfig) => {
   const prompt = getTablesToUsePrompt({
     userQuestion,
@@ -53,7 +53,7 @@ export const getTablesToUseForQuery = async ({
   ];
   try {
     const result = await generateChatCompletion({
-      openAIAPIKey,
+      openAIKey,
       messages,
       temperature: 0,
     });

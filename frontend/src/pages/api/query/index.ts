@@ -14,6 +14,7 @@ export type GenerateSQLCommandBody = {
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
   previousQueries?: ExecutionLogItem[];
+  openAIKey?: string;
 };
 
 export type GenerateSQLQueryResult = {
@@ -42,6 +43,7 @@ export default async function handler(
     sampleRows,
     sequential,
     previousQueries,
+    openAIKey,
   } = body as GenerateSQLCommandBody;
 
   const tableNames = Object.keys(dbSchema).join(", ");
@@ -55,6 +57,7 @@ export default async function handler(
         tableNamesInfo: tableNames,
         validTableNames,
         query,
+        openAIKey,
       });
     }
 
@@ -67,6 +70,7 @@ export default async function handler(
       const result = await generateSQLCommandForQuery({
         userQuestion,
         tableInfo: tableSchemaAsString,
+        openAIKey,
       });
       res.status(200).json({ result });
     } else {
@@ -75,6 +79,7 @@ export default async function handler(
         tableInfo: tableSchemaAsString,
         query,
         previousQueries,
+        openAIKey,
       });
       res.status(200).json({ result });
     }

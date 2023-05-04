@@ -15,6 +15,7 @@ export type GenerateSQLQueryConfig = {
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
   previousQueries?: ExecutionLogItem[];
+  openAIKey?: string;
 };
 
 export const generateSQLQuery = async ({
@@ -24,6 +25,7 @@ export const generateSQLQuery = async ({
   sampleRows,
   sequential,
   previousQueries,
+  openAIKey,
 }: GenerateSQLQueryConfig) => {
   const response = await callServerlessApi(
     "/api/query",
@@ -35,6 +37,7 @@ export const generateSQLQuery = async ({
       dbSchema,
       sampleRows,
       sequential,
+      openAIKey,
     })
   );
   if (response.status >= 400) {
