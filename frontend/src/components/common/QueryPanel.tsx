@@ -196,8 +196,14 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
       dbSchema: samplePostgresData.schema,
       sampleRows: samplePostgresData.sampleRows,
       sequential: useFastMode,
-      // Take last five executions if it exists
-      previousQueries: undefined,
+      previousQueries: queryExecutionLogSorted
+        .slice(0, 5)
+        .map((queryExecutionLog) => {
+          return {
+            command: queryExecutionLog.command,
+            userQuestion: queryExecutionLog.userQuestion,
+          };
+        }),
     });
   };
   const handleExecuteQuery = () => {
@@ -319,10 +325,10 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
               onToggle={handleToggleFastMode}
             />
             <Button
+              onClick={handleGenerateQuery}
               fontSize={"md"}
               p={0}
               my={0}
-              onClick={handleGenerateQuery}
               h={8}
               w={32}
               borderRadius={"sm"}

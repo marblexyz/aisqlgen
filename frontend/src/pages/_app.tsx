@@ -1,3 +1,4 @@
+import { hydrateConfig } from "@/redux/slices/config/configSlice";
 import { hydrateDatasourceConnector } from "@/redux/slices/datasource/datasourceSlice";
 import { hydrateQueryState } from "@/redux/slices/query/querySlice";
 import store, { loadReduxStateFromLocalStorage } from "@/redux/store";
@@ -33,6 +34,9 @@ export default function App({ Component, pageProps }: AppProps) {
             preloadedReduxState.datasourceMapState.datasourceMap
           )
         );
+      }
+      if (preloadedReduxState.configState !== undefined) {
+        store.dispatch(hydrateConfig(preloadedReduxState.configState));
       }
     };
     void hydrateReduxOnLoad();

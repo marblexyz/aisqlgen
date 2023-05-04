@@ -1,4 +1,4 @@
-import { Query } from "@/types/redux/slices/query";
+import { ExecutionLogItem } from "@/types/api";
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
 import { printPromptEncodingLength } from "../utils";
 import { generateChatCompletion } from "./openai";
@@ -7,7 +7,7 @@ export type GetPostgresPromptConfig = {
   userQuestion: string;
   query: string;
   tableInfo: string;
-  previousQueries?: Query[];
+  previousQueries?: ExecutionLogItem[];
 };
 
 const getPostgresPrompt = ({
@@ -18,7 +18,7 @@ const getPostgresPrompt = ({
 }: GetPostgresPromptConfig) => {
   const previousQueriesToString = previousQueries
     .map((previousQuery) => {
-      return `Question: ${previousQuery.userQuestion} \n Query: ${previousQuery.query} \n`;
+      return `Question: ${previousQuery.userQuestion} \n Query: ${previousQuery.command} \n`;
     })
     .join("\n");
 
@@ -46,7 +46,8 @@ export type EditSQLCommandForQueryConfig = {
   userQuestion: string;
   tableInfo: string;
   query: string;
-  previousQueries?: Query[];
+  previousQueries?: ExecutionLogItem[];
+  openAIAPIKey?: string;
 };
 
 export const editSQLCommandForQuery = async ({
@@ -54,6 +55,7 @@ export const editSQLCommandForQuery = async ({
   query,
   tableInfo,
   previousQueries,
+  openAIAPIKey,
 }: EditSQLCommandForQueryConfig) => {
   // TODO: Generalize this to work with any database type prompt
   const psqlCmdPrompt = getPostgresPrompt({
@@ -70,7 +72,11 @@ export const editSQLCommandForQuery = async ({
     },
   ];
   try {
-    const result = await generateChatCompletion({ messages, temperature: 0 });
+    const result = await generateChatCompletion({
+      openAIAPIKey,
+      messages,
+      temperature: 0,
+    });
     if (result.data.choices.length === 0) {
       throw new Error("No choices returned from OpenAI");
     }

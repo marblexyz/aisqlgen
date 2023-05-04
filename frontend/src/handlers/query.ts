@@ -1,5 +1,5 @@
 import { GenerateSQLQueryResult } from "@/pages/api/query";
-import { Query } from "@/types/redux/slices/query";
+import { ExecutionLogItem } from "@/types/api";
 import {
   CreatePGPoolConfig,
   DatabaseRow,
@@ -14,7 +14,7 @@ export type GenerateSQLQueryConfig = {
   dbSchema?: DatabaseSchemaObject;
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
-  previousQueries?: Query[];
+  previousQueries?: ExecutionLogItem[];
 };
 
 export const generateSQLQuery = async ({

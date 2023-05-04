@@ -1,5 +1,5 @@
 import { generateSQLQuery } from "@/handlers/query";
-import { Query } from "@/types/redux/slices/query";
+import { ExecutionLogItem } from "@/types/api";
 import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { useMutation } from "@tanstack/react-query";
 
@@ -9,7 +9,7 @@ export type GenerateSQLQueryConfig = {
   dbSchema?: DatabaseSchemaObject;
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
-  previousQueries?: Query[];
+  previousQueries?: ExecutionLogItem[];
 };
 
 export const useGenerateSQLQuery = (

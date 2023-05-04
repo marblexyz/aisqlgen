@@ -29,6 +29,7 @@ type GetTablesToUseForQueryConfig = {
   userQuestion: string;
   validTableNames: string[];
   query?: string;
+  openAIAPIKey?: string;
 };
 
 export const getTablesToUseForQuery = async ({
@@ -36,6 +37,7 @@ export const getTablesToUseForQuery = async ({
   userQuestion,
   validTableNames,
   query,
+  openAIAPIKey,
 }: GetTablesToUseForQueryConfig) => {
   const prompt = getTablesToUsePrompt({
     userQuestion,
@@ -50,7 +52,11 @@ export const getTablesToUseForQuery = async ({
     },
   ];
   try {
-    const result = await generateChatCompletion({ messages, temperature: 0 });
+    const result = await generateChatCompletion({
+      openAIAPIKey,
+      messages,
+      temperature: 0,
+    });
     if (result.data.choices.length === 0) {
       throw new Error("No choices returned from OpenAI");
     }
