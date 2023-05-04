@@ -1,4 +1,7 @@
-import { Datasource } from "@/types/redux/slices/datasource";
+import { useGetPostgresSchema } from "@/hooks/queries/useGetPostgresSchema";
+import { useAppDispatch } from "@/hooks/reduxHooks";
+import { deleteDatasource } from "@/redux/slices/datasource/datasourceSlice";
+import { Datasource, DatasourceType } from "@/types/redux/slices/datasource";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -11,19 +14,31 @@ import {
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { FC } from "react";
-import { IoEllipsisHorizontal } from "react-icons/io5";
+import { IoCloseSharp } from "react-icons/io5";
+import { SchemaSidebar } from "../common/SchemaSidebar";
 
 export type DatasourceDetailsPanelProps = {
+  datasourceId: string;
   datasource: Datasource;
   onReturnToList: () => void;
 };
 
 export const DatasourceDetailsPanel: FC<DatasourceDetailsPanelProps> = ({
+  datasourceId,
   datasource,
   onReturnToList,
 }) => {
+  const { data, isLoading, isError } = useGetPostgresSchema({
+    datasource,
+    enabled: datasource.type === DatasourceType.Postgres,
+  });
+  const dispatch = useAppDispatch();
+  const handleDatasourceDelete = () => {
+    dispatch(deleteDatasource(datasourceId));
+    onReturnToList();
+  };
   return (
-    <Flex w="100%" py={2} direction={"column"}>
+    <Flex w="xs" py={2} direction={"column"}>
       <VStack w="100%" align={"left"} px={2}>
         <Button
           variant="unstyled"
@@ -72,13 +87,17 @@ export const DatasourceDetailsPanel: FC<DatasourceDetailsPanelProps> = ({
                 bg: "gray.100",
               }}
               borderRadius={1}
+              onClick={handleDatasourceDelete}
             >
               <Flex justify={"center"} w="100%" align={"center"}>
-                <Icon w={4} h={4} as={IoEllipsisHorizontal} />
+                <Icon w={4} h={4} as={IoCloseSharp} />
               </Flex>
             </Button>
           </HStack>
         </VStack>
+        {isLoading && <Text>Loading...</Text>}
+        {isError && <Text>Error loading schema</Text>}
+        {data?.schema !== undefined && <SchemaSidebar schema={data.schema} />}
       </VStack>
     </Flex>
   );

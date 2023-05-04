@@ -34,8 +34,12 @@ export const datasourceConnector = createSlice({
         config: action.payload.config,
       };
     },
+    deleteDatasource: (state, action: PayloadAction<string>) => {
+      const { payload: id } = action;
+      delete state.datasourceMap[id];
+    },
   },
 });
 
-export const { hydrateDatasourceConnector, addDatasource } =
+export const { hydrateDatasourceConnector, addDatasource, deleteDatasource } =
   datasourceConnector.actions;

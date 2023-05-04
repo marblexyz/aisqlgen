@@ -15,7 +15,7 @@ export const Sidebar: FC = () => {
   } = useDisclosure();
   const [showDetails, setShowDetails] = useBoolean(false);
   const [selectedDatasourceItem, setSelectedDatasourceItem] = useState<
-    Datasource | undefined
+    { id: string; datasource: Datasource } | undefined
   >(undefined);
   const datasourceMap = useAppSelector(selectDatasourceMap);
   const handleClickDatasourceListItem = (id: string) => {
@@ -24,7 +24,7 @@ export const Sidebar: FC = () => {
       return;
     }
     setShowDetails.on();
-    setSelectedDatasourceItem(datasource);
+    setSelectedDatasourceItem({ id, datasource });
   };
   return (
     <Flex h="100%" borderRight="1px solid" borderColor="gray.100" w="xs">
@@ -37,8 +37,9 @@ export const Sidebar: FC = () => {
       )}
       {showDetails === true && selectedDatasourceItem !== undefined && (
         <DatasourceDetailsPanel
+          datasourceId={selectedDatasourceItem.id}
           onReturnToList={setShowDetails.off}
-          datasource={selectedDatasourceItem}
+          datasource={selectedDatasourceItem.datasource}
         />
       )}
       {/* We always render this component in case you accidentally close it when adding a db. */}
