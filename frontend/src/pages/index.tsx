@@ -20,7 +20,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const {
@@ -47,13 +47,19 @@ export default function Home() {
     dispatch(createQuery());
   };
   const ids = useAppSelector(selectIds);
+  const [isMounted, setMount] = useState(false);
+
+  useEffect(() => {
+    setMount(true);
+  }, []);
 
   return (
     <Flex direction={"column"} h={CHAKRA_100VH}>
       <Navbar />
-      <Flex h="100%">
+      {/** subtract navbar height */}
+      <Flex h="calc(100% - 48px)">
         <Sidebar />
-        <Flex direction={"column"} w="100%">
+        <Flex direction={"column"} w="100%" overflowY="auto" pb={24}>
           <IndexHeader />
           <Flex w={"100%"} justify={"center"} align={"center"} px={4} pt={8}>
             <VStack w="container.lg" spacing={4}>
@@ -83,9 +89,7 @@ export default function Home() {
                 </Button>
               </HStack>
               <Divider />
-              {ids.map((id) => (
-                <QueryPanel key={id} id={id} />
-              ))}
+              {isMounted && ids.map((id) => <QueryPanel key={id} id={id} />)}
             </VStack>
           </Flex>
         </Flex>

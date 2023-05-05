@@ -32,12 +32,14 @@ export default async function handler(
   // a database, UUIDs, etc.
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
+    return;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { body } = req;
   if (body === undefined || body === null) {
     res.status(400).json({ error: "Bad Request" });
+    return;
   }
   const { config, sampleRowsInTableInfo } = body as GetDBSchemaRequest;
 
@@ -56,18 +58,25 @@ export default async function handler(
       if (sampleRowsInTableInfo !== undefined) {
         sampleRows = {};
         for (const tableName of tableNames) {
-          sampleRows[tableName] = await getSampleRowsForTable(
-            poolClient,
-            tableName,
-            sampleRowsInTableInfo
-          );
+          try {
+            const res = await getSampleRowsForTable(
+              poolClient,
+              tableName,
+              sampleRowsInTableInfo
+            );
+            sampleRows[tableName] = res;
+          } catch {
+            delete databaseSchema[tableName];
+          }
         }
       }
     } finally {
       poolClient.release();
     }
     res.status(200).json({ schema: databaseSchema, sampleRows });
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Error getting database schema." });
+    console.error(error);
+    res.status(500).json({ error: (error as Error).message });
   }
 }

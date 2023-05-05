@@ -45,22 +45,17 @@ export const generateSQLCommandForQuery = async ({
       content: psqlCmdPrompt,
     },
   ];
-  try {
-    const result = await generateChatCompletion({
-      openAIKey,
-      messages,
-      temperature: 0,
-    });
-    if (result.data.choices.length === 0) {
-      throw new Error("No choices returned from OpenAI");
-    }
-    const relevantTableNames = result.data.choices[0].message?.content;
-    if (relevantTableNames === undefined) {
-      throw new Error("No relevant table names returned from OpenAI");
-    }
-    return relevantTableNames;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Error getting tables to use for query.");
+  const result = await generateChatCompletion({
+    openAIKey,
+    messages,
+    temperature: 0,
+  });
+  if (result.data.choices.length === 0) {
+    throw new Error("No choices returned from OpenAI");
   }
+  const relevantTableNames = result.data.choices[0].message?.content;
+  if (relevantTableNames === undefined) {
+    throw new Error("No relevant table names returned from OpenAI");
+  }
+  return relevantTableNames;
 };

@@ -13,6 +13,8 @@ export const Navbar: FC = () => {
       align={"center"}
       borderBottom={"1px solid"}
       borderColor={"gray.200"}
+      position="sticky"
+      top="0"
     >
       <Link href={"/"}>
         <Flex

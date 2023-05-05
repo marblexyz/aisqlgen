@@ -6,10 +6,13 @@ export type ExecuteSQLQueryConfig = {
   query: string;
   config?: CreatePGPoolConfig;
 };
-export const useExecuteSQLQuery = (
-  onSuccess?: (result: DatabaseRow[] | undefined) => void,
-  onError?: (error: unknown) => void
-) => {
+export const useExecuteSQLCommand = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: (result: DatabaseRow[] | undefined) => void;
+  onError?: (error: unknown) => void;
+}) => {
   const mutationResult = useMutation({
     mutationKey: ["executeSQLQuery"],
     mutationFn: async ({ query, config }: ExecuteSQLQueryConfig) => {

@@ -11,13 +11,15 @@ export type UseSampleRowsInTableInfo = {
 export const useGetPostgresSchema = ({
   datasource,
   sampleRowsInTableInfo,
-  enabled = true,
 }: UseSampleRowsInTableInfo) => {
   const pgConfig = datasource?.config;
   const resourceName = pgConfig?.resourceName ?? "sample";
   const queryResult = useQuery({
     queryKey: ["samplePostgresData", resourceName, sampleRowsInTableInfo ?? 0],
     queryFn: async () => {
+      if (datasource === undefined) {
+        return {};
+      }
       const data = await getSamplePGData({
         config: pgConfig,
         sampleRowsInTableInfo,
@@ -27,7 +29,6 @@ export const useGetPostgresSchema = ({
       }
       return data;
     },
-    enabled,
   });
 
   return queryResult;

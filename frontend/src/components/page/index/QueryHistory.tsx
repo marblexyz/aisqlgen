@@ -48,7 +48,10 @@ export const QueryHistory: FC<QueryHistoryProps> = ({
           <PopoverCloseButton _hover={{ backgroundColor: "none" }} />
           <PopoverHeader bg={"purple.50"}>
             <Text color="purple.500" fontWeight={"bold"} fontSize={"sm"}>
-              History
+              History -{" "}
+              {`${executionLog.length} quer${
+                executionLog.length === 1 ? "y" : "ies"
+              }`}
             </Text>
           </PopoverHeader>
           <PopoverBody overflowY={"auto"}>
@@ -60,13 +63,6 @@ export const QueryHistory: FC<QueryHistoryProps> = ({
               )}
               {executionLog.length > 0 && (
                 <>
-                  <Box py={2}>
-                    <Text fontSize="md" color="gray.600">
-                      {`${executionLog.length} quer${
-                        executionLog.length === 1 ? "y" : "ies"
-                      } executed`}
-                    </Text>
-                  </Box>
                   {executionLog.map((query, index) => (
                     <Box
                       key={index}

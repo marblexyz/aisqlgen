@@ -15,7 +15,14 @@ export const SampleDataSwitch: FC<SampleDataSwitchProps> = ({
       <Tooltip
         label={
           <Stack>
-            <Text>We recommend using sample data for better accuracy.</Text>
+            <Text>
+              Using sample data helps with accuracy but will spend much more
+              OpenAI credit.
+            </Text>
+            <Text>
+              We sample 3 rows from the table to infer better the structure of
+              the data when generating the query.
+            </Text>
           </Stack>
         }
         aria-label="Disable fast mode for slower and potentially more accurate responses."

@@ -1,6 +1,6 @@
 import { useCheckPgConnection } from "@/hooks/mutations/useCheckPgConnection";
 import { useAppDispatch } from "@/hooks/reduxHooks";
-import { addDatasource } from "@/redux/slices/datasource/datasourceSlice";
+import { upsertDatasource } from "@/redux/slices/datasource/datasourceSlice";
 import {
   DatasourceConfigType,
   DatasourceType,
@@ -35,6 +35,7 @@ import { BasicInput } from "../common/Input";
 type AddDatasourceModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  initialValues?: PostgresFormValues & { id: string };
 };
 
 type PostgresFormValues = {
@@ -89,9 +90,10 @@ const validateFormValues = (values: PostgresFormValues) => {
   };
 };
 
-export const AddDatasourceModal: FC<AddDatasourceModalProps> = ({
+export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
   isOpen,
   onClose,
+  initialValues,
 }) => {
   const dispatch = useAppDispatch();
   const {
@@ -100,15 +102,15 @@ export const AddDatasourceModal: FC<AddDatasourceModalProps> = ({
     isError: isErrorCheckingPgConnection,
     isSuccess: isSuccessCheckingPgConnection,
   } = useCheckPgConnection();
-
   const formik = useFormik({
     initialValues: {
-      resourceName: "",
-      host: "",
-      port: "",
-      database: "",
-      user: "",
-      password: "",
+      resourceName:
+        initialValues !== undefined ? initialValues.resourceName : "",
+      host: initialValues !== undefined ? initialValues.host : "",
+      port: initialValues !== undefined ? initialValues.port.toString() : "",
+      database: initialValues !== undefined ? initialValues.database : "",
+      user: initialValues !== undefined ? initialValues.user : "",
+      password: initialValues !== undefined ? initialValues.password : "",
     },
     validate: (values) => validateFormValues(values).errors,
     onSubmit: (values) => {
@@ -126,11 +128,11 @@ export const AddDatasourceModal: FC<AddDatasourceModalProps> = ({
     }
 
     const datasource = {
-      id: uuidv4(),
+      id: initialValues !== undefined ? initialValues.id : uuidv4(),
       type: DatasourceType.Postgres,
       config: validatedValues,
     };
-    dispatch(addDatasource(datasource));
+    dispatch(upsertDatasource(datasource));
     resetForm();
     onClose();
   };
@@ -148,6 +150,7 @@ export const AddDatasourceModal: FC<AddDatasourceModalProps> = ({
     };
     checkPgConnection(datasource);
   };
+  const action = initialValues !== undefined ? "Edit" : "Add";
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
@@ -155,7 +158,7 @@ export const AddDatasourceModal: FC<AddDatasourceModalProps> = ({
         <FormikProvider value={formik}>
           <ModalHeader>
             <Heading fontSize="md" color="gray.900">
-              Add datasource
+              {action} datasource
             </Heading>
           </ModalHeader>
           <ModalCloseButton m={2} />
@@ -294,8 +297,26 @@ export const AddDatasourceModal: FC<AddDatasourceModalProps> = ({
                     )}
                   </HStack>
                 </BasicLinkButton>
-                <BasicButton type="submit" onClick={handleAddDatasourceClick}>
-                  Add datasource
+                <BasicButton
+                  borderRadius={"sm"}
+                  bg={"purple.500"}
+                  color={"white"}
+                  _hover={{
+                    bg: "purple.100",
+                    cursor: "pointer",
+                  }}
+                  _active={{
+                    bg: "purple.100",
+                    cursor: "pointer",
+                  }}
+                  _focus={{
+                    bg: "purple.100",
+                    cursor: "pointer",
+                  }}
+                  type="submit"
+                  onClick={handleAddDatasourceClick}
+                >
+                  {action} datasource
                 </BasicButton>
               </HStack>
               {isErrorCheckingPgConnection && (

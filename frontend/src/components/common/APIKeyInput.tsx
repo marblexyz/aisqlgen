@@ -14,6 +14,7 @@ import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { TimeoutText } from "../common/TimeoutText";
 import { localForageStore } from "@/storage/storage-provider";
 import { SHOW_OPEN_AI_KEY_MODAL } from "@/storage/keys";
+import { BasicButton } from "./BasicButton";
 
 type APIKeyInputProps = {
   onSave?: () => void;
@@ -75,15 +76,23 @@ export const APIKeyInput: FC<APIKeyInputProps> = ({ onSave }) => {
           </Button>
         </InputRightElement>
       </InputGroup>
-      <Button
-        fontSize={"md"}
-        w={32}
-        borderRadius={0}
+      <BasicButton
         bg={"purple.500"}
         color={"white"}
         _hover={{
           bg: "purple.100",
           cursor: "pointer",
+        }}
+        _active={{
+          bg: "purple.100",
+          cursor: "pointer",
+        }}
+        _focus={{
+          bg: "purple.100",
+          cursor: "pointer",
+        }}
+        _disabled={{
+          bg: "purple.100",
         }}
         onClick={handleSave}
       >
@@ -93,7 +102,7 @@ export const APIKeyInput: FC<APIKeyInputProps> = ({ onSave }) => {
           timeoutText="Saved"
           trigger={trigger}
         />
-      </Button>
+      </BasicButton>
     </HStack>
   );
 };
