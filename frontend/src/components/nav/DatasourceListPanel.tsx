@@ -27,10 +27,27 @@ export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
           Connections to external databases to be used when generating queries.
         </Text>
       </VStack>
-      <BasicButton onClick={onOpenDatasourceModal}>
+      <BasicButton
+        onClick={onOpenDatasourceModal}
+        borderRadius={"sm"}
+        bg={"purple.500"}
+        color={"white"}
+        _hover={{
+          bg: "purple.100",
+          cursor: "pointer",
+        }}
+        _active={{
+          bg: "purple.100",
+          cursor: "pointer",
+        }}
+        _focus={{
+          bg: "purple.100",
+          cursor: "pointer",
+        }}
+      >
         <HStack w="100%" align={"center"} justify={"center"}>
-          <Text>Add datasource</Text>
           <Icon as={IoAddSharp} />
+          <Text>Add datasource</Text>
         </HStack>
       </BasicButton>
       <Flex w="100%" direction={"column"} flex={1}>

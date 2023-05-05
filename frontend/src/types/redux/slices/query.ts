@@ -4,6 +4,7 @@ export type ExecutionLog = {
   id: string;
   userQuestion: string;
   command: string;
+  chartCode?: string;
   result?: DatabaseRow[];
   timestamp: number;
 };

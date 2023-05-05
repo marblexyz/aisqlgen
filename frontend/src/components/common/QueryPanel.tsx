@@ -1,14 +1,14 @@
 import { AutoResizeTextarea } from "@/components/common/AutoResizeTextarea";
-import { ResultTable } from "@/components/common/ResultTable";
-
 import { FastModeSwitch } from "@/components/page/index/FastModeSwitch";
 import { QueryHistory } from "@/components/page/index/QueryHistory";
 import { SampleDataSwitch } from "@/components/page/index/SampleDataSwitch";
-import { useExecuteSQLQuery } from "@/hooks/mutations/useExecuteSQLQuery";
-import { useGenerateSQLQuery } from "@/hooks/mutations/useGenerateSQLQuery";
+import { useExecuteSQLCommand } from "@/hooks/mutations/useExecuteSQLCommand";
+import { useGenerateChart } from "@/hooks/mutations/useGenerateChart";
+import { useGenerateSQLCommand } from "@/hooks/mutations/useGenerateSQLCommand";
 import { useGetPostgresSchema } from "@/hooks/queries/useGetPostgresSchema";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { selectOpenAIKey } from "@/redux/slices/config/configSliceSelector";
+import { selectDatasourceMap } from "@/redux/slices/datasource/datasourceSliceSelectors";
 import {
   clearQueryHistory,
   deleteQuery,
@@ -18,17 +18,25 @@ import { selectQuery } from "@/redux/slices/query/querySliceSelectors";
 import { DatabaseRow } from "@/types/schema";
 import {
   Button,
+  Divider,
   Flex,
   HStack,
   Input,
   Spinner,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Text,
   VStack,
   useBoolean,
 } from "@chakra-ui/react";
-import { FC, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { v4 } from "uuid";
 import { DataSourceMenu } from "../page/index/DataSourceMenu";
+import { BasicButton } from "./BasicButton";
+import { ResultTable } from "./ResultTable";
 import { TimeoutText } from "./TimeoutText";
 
 type QueryPanelProps = {
@@ -39,6 +47,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
   const dispatch = useAppDispatch();
   const queryItem = useAppSelector(selectQuery(id));
   const openAIKey = useAppSelector(selectOpenAIKey);
+  const dataSourceMap = useAppSelector(selectDatasourceMap);
   const queryExecutionLogSorted = Object.values(queryItem.executionLog).sort(
     (a, b) => b.timestamp - a.timestamp
   );
@@ -53,20 +62,33 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
   const [description, setDescription] = useState<string>(queryItem.description);
   const [useFastMode, setUseFastMode] = useBoolean(queryItem.useFastMode);
   const [useSampleData, setUseSampleData] = useBoolean(queryItem.useSampleData);
-  const [executionId, setExecutionId] = useState<string | undefined>(
-    queryExecutionLogSorted.length === 0 ? "" : lastQueryExecutionLog.id
+  const [executionId, setExecutionId] = useState<string>(
+    queryExecutionLogSorted.length === 0 ? v4() : lastQueryExecutionLog.id
   );
   const [userQuestion, setUserQuestion] = useState<string>(
     queryExecutionLogSorted.length === 0
       ? ""
       : lastQueryExecutionLog.userQuestion
   );
+  const [chartRequest, setChartRequest] = useState<string>("");
   const [queryResult, setQueryResult] = useState<DatabaseRow[] | undefined>(
     queryExecutionLogSorted.length === 0
       ? undefined
       : lastQueryExecutionLog.result
   );
+  const [generateError, setGenerateError] = useState<string | undefined>(
+    undefined
+  );
+  const [commandError, setCommandError] = useState<string | undefined>(
+    undefined
+  );
+  const [chartError, setChartError] = useState<string | undefined>(undefined);
   const [saveCount, setSaveCount] = useState<number>(0);
+  const datasource =
+    selectedDataSourceId !== undefined
+      ? dataSourceMap[selectedDataSourceId]
+      : undefined;
+
   const sampleDataInTableInfoRowCount = useSampleData ? 3 : 0;
   const {
     data: samplePostgresData,
@@ -74,9 +96,17 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     isError: isErrorDbSchema,
   } = useGetPostgresSchema({
     sampleRowsInTableInfo: sampleDataInTableInfoRowCount,
+    datasource,
   });
 
-  const handleGenerateSQLQuerySuccess = (result: string | undefined) => {
+  const [chartCode, setChartCode] = useState<string | undefined>(
+    queryExecutionLogSorted.length === 0
+      ? undefined
+      : lastQueryExecutionLog.chartCode
+  );
+
+  const [tabIndex, setTabIndex] = useState<number>(0);
+  const handleGenerateCommandSuccess = (result: string | undefined) => {
     if (result === undefined) {
       return;
     }
@@ -100,7 +130,13 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     );
   };
 
-  const handleExecuteSQLQuerySuccess = (result: DatabaseRow[] | undefined) => {
+  const { mutate: generateSQLCommand, isLoading: isLoadingGenerateCommand } =
+    useGenerateSQLCommand({
+      onSuccess: handleGenerateCommandSuccess,
+      onError: (error) => setGenerateError((error as Error).message),
+    });
+
+  const handleExecuteCommandSuccess = (result: DatabaseRow[] | undefined) => {
     setQueryResult(result);
     setSaveCount(saveCount + 1);
     dispatch(
@@ -108,8 +144,8 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
         id,
         executionLog: {
           ...queryItem.executionLog,
-          [executionId as string]: {
-            ...queryItem.executionLog[executionId as string],
+          [executionId]: {
+            ...queryItem.executionLog[executionId],
             result: result,
           },
         },
@@ -117,14 +153,11 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     );
   };
 
-  const {
-    mutate: generateSQLQuery,
-    isError: isErrorGenerateSQLQuery,
-    isLoading: isLoadingGenerateSQLQuery,
-  } = useGenerateSQLQuery(handleGenerateSQLQuerySuccess);
-
-  const { mutate: executeSQLQuery, isLoading: isLoadingExecuteSQLQuery } =
-    useExecuteSQLQuery(handleExecuteSQLQuerySuccess);
+  const { mutate: executeSQLCommand, isLoading: isLoadingExecuteSQLCommand } =
+    useExecuteSQLCommand({
+      onSuccess: handleExecuteCommandSuccess,
+      onError: (error) => setCommandError((error as Error).message),
+    });
 
   const handleToggleFastMode = () => {
     setUseFastMode.toggle();
@@ -150,6 +183,93 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
 
   const handleClearHistory = () => {
     dispatch(clearQueryHistory({ id }));
+  };
+
+  /** chart related start */
+  const handleGenerateChartSuccess = (chartCode: string | undefined) => {
+    setChartCode(chartCode);
+    dispatch(
+      updateQuery({
+        id,
+        executionLog: {
+          ...queryItem.executionLog,
+          [executionId]: {
+            ...queryItem.executionLog[executionId],
+            chartCode,
+          },
+        },
+      })
+    );
+  };
+
+  const { mutate: generateChart, isLoading: isLoadingGenerateChart } =
+    useGenerateChart({
+      onSuccess: handleGenerateChartSuccess,
+      onError: (error) => setChartError((error as Error).message),
+    });
+
+  const handleGenerateChart = () => {
+    generateChart({
+      openAIKey,
+      chartRequest,
+      canvasId: id,
+      scriptId: `${id}-setupChartScript`,
+      data: JSON.stringify(queryResult?.slice(0, 3)),
+    });
+  };
+
+  const handleViewChart = useCallback(() => {
+    // this gets initialized in the dangerous html. Because we provide scriptId
+    // in handleGenerateChart, it will be referencable
+    const script = document.getElementById(`${id}-setupChartScript`)?.innerHTML;
+    if (script !== undefined) {
+      try {
+        window.eval(`const data = ${JSON.stringify(queryResult)}; \n${script}`);
+      } catch (error) {
+        // do nothing
+        console.error(error);
+      }
+    }
+  }, [id, queryResult]);
+
+  /**
+   * necessary to setup the dangerous html first.
+   * */
+  useEffect(() => {
+    if (chartCode === undefined) {
+      return;
+    }
+    handleViewChart();
+  }, [chartCode, handleViewChart]);
+
+  const handleTabSelect = (index: number) => {
+    if (index === 1) {
+      /**
+       * the delay exists so that the chart.js
+       * object in the chartCode has enough time to get initialized
+       */
+      setTimeout(() => {
+        handleViewChart();
+      }, 200);
+    }
+  };
+
+  /** chart related end */
+  const handleExecute = () => {
+    executeSQLCommand({
+      query: command,
+      config:
+        datasource !== undefined
+          ? {
+              host: datasource.config.host,
+              port: datasource.config.port,
+              user: datasource.config.user,
+              password: datasource.config.password,
+              database: datasource.config.database,
+            }
+          : undefined,
+    });
+    setTabIndex(0);
   };
 
   const handleSelectDataSourceId = (value: string) => {
@@ -180,28 +300,65 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setCommand(event.target.value);
+    setSaveCount(saveCount + 1);
+    dispatch(
+      updateQuery({
+        id,
+        executionLog: {
+          ...queryItem.executionLog,
+          [executionId]: {
+            id: executionId,
+            userQuestion,
+            command: event.target.value,
+            timestamp: Date.now(),
+          },
+        },
+      })
+    );
   };
+
   const handleChangeUserQuestion = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setUserQuestion(event.target.value);
+    setSaveCount(saveCount + 1);
+    dispatch(
+      updateQuery({
+        id,
+        executionLog: {
+          ...queryItem.executionLog,
+          [executionId]: {
+            id: executionId,
+            userQuestion: event.target.value,
+            command,
+            timestamp: Date.now(),
+          },
+        },
+      })
+    );
   };
 
-  const handleGenerateQuery = () => {
+  const handleChangeChartRequest = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setChartRequest(event.target.value);
+  };
+
+  const handleGenerateCommand = () => {
     if (userQuestion === "") {
       return;
     }
     if (samplePostgresData?.schema === undefined) {
       return;
     }
-    generateSQLQuery({
+    generateSQLCommand({
       userQuestion,
       query: command,
       dbSchema: samplePostgresData.schema,
       sampleRows: samplePostgresData.sampleRows,
       sequential: useFastMode,
       previousQueries: queryExecutionLogSorted
-        .slice(0, 5)
+        .slice(0, 2)
         .map((queryExecutionLog) => {
           return {
             command: queryExecutionLog.command,
@@ -211,11 +368,6 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
       openAIKey,
     });
   };
-  const handleExecuteQuery = () => {
-    executeSQLQuery({
-      query: command,
-    });
-  };
   const handleDeleteQuery = () => {
     dispatch(
       deleteQuery({
@@ -223,32 +375,42 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
       })
     );
   };
-  const generateUserQueryIsDisabled =
+  const generateCommandIsDisabled =
     userQuestion === "" || isLoadingDbSchema || isErrorDbSchema;
-  const runQueryIsDisabled = command === "" || isLoadingGenerateSQLQuery;
-  const sqlQueryIsEmpty = command === "";
+  const executeCommandIsDisabled = command === "" || isLoadingGenerateCommand;
+  const runChartGenerateIsDisabled =
+    executeCommandIsDisabled || queryResult === undefined;
+  const commandIsEmpty = command === "";
 
   return (
     <VStack
-      w="container.lg"
+      w="100%"
+      maxW="container.xl"
       spacing={4}
       p={4}
       border="1px solid"
       borderColor="gray.100"
     >
+      {/** Title */}
       <HStack w="100%" justifyContent="space-between">
-        <Input
-          w="100%"
-          h={12}
-          value={description}
-          onChange={handleDescriptionChange}
-          placeholder="Query description"
-          variant="unstyled"
-          fontSize="md"
-          fontWeight="bold"
-        />
+        <VStack spacing={0}>
+          <Text fontSize="xs" color="gray.500" fontWeight="bold">
+            {id}
+          </Text>
+          <Input
+            w="100%"
+            h={12}
+            value={description}
+            onChange={handleDescriptionChange}
+            placeholder="What is this query about?"
+            variant="unstyled"
+            fontSize="md"
+            fontWeight="bold"
+          />
+        </VStack>
         <TimeoutText baseText="" timeoutText="Saved" trigger={saveCount} />
       </HStack>
+      {/** Action Options */}
       <HStack w="100%" justifyContent={"space-between"}>
         <HStack>
           <DataSourceMenu
@@ -278,139 +440,305 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
           Delete
         </Button>
       </HStack>
-      <VStack
-        w="100%"
-        border={"1px solid"}
-        borderColor={"gray.100"}
-        boxShadow={"xs"}
-        borderRadius={"sm"}
-        spacing={0}
-        _focusWithin={{
-          border: "1px solid",
-          borderColor: "purple.300",
-        }}
-      >
-        <VStack w="100%" bg={"purple.50"} alignItems="flex-start" px={2} py={2}>
-          <Text
-            textTransform={"uppercase"}
-            fontWeight={"bold"}
-            color={"purple.500"}
-            fontSize={"xs"}
-            whiteSpace={"nowrap"}
-          >
-            {sqlQueryIsEmpty ? "Generate" : "Edit"}
-          </Text>
-          <AutoResizeTextarea
-            borderRadius={"none"}
-            minH={10}
-            maxH={16}
-            value={userQuestion}
-            border={"none"}
-            _focusVisible={{
-              border: "none",
-            }}
-            py={1}
-            placeholder={
-              sqlQueryIsEmpty
-                ? "What query do you want to generate? E.g. List all orders from last week."
-                : "Edit your query. E.g. Join with table X."
-            }
+      {/** Generate Panel */}
+      <VStack w="100%" spacing={0}>
+        <VStack
+          w="100%"
+          border={"1px solid"}
+          borderColor={"gray.100"}
+          borderRadius={"sm"}
+          boxShadow={"xs"}
+          spacing={0}
+          _focusWithin={{
+            border: "1px solid",
+            borderColor: "purple.300",
+          }}
+        >
+          <VStack
             w="100%"
-            px={0}
-            onChange={handleChangeUserQuestion}
-          />
-          <HStack alignSelf={"end"}>
-            <SampleDataSwitch
-              isChecked={useSampleData}
-              onToggle={handleToggleSampleData}
-            />
-
-            <FastModeSwitch
-              isChecked={useFastMode}
-              onToggle={handleToggleFastMode}
-            />
-            <Button
-              onClick={handleGenerateQuery}
-              fontSize={"md"}
-              p={0}
-              my={0}
-              h={8}
-              w={32}
-              borderRadius={"sm"}
-              bg={"purple.500"}
-              color={"white"}
-              _hover={{
-                bg: "purple.100",
-                cursor: "pointer",
-              }}
-              isLoading={isLoadingGenerateSQLQuery}
-              isDisabled={generateUserQueryIsDisabled}
-              spinner={<Spinner size="sm" />}
-              loadingText={undefined}
-            >
-              {sqlQueryIsEmpty ? "Generate" : "Edit"}
-            </Button>
-          </HStack>
-        </VStack>
-        <Flex direction={"column"} w="100%">
-          <AutoResizeTextarea
-            value={command}
-            onChange={handleChangeSQLCommand}
-            minH={32}
+            bg={"purple.50"}
+            alignItems="flex-start"
             px={2}
-            borderRadius={"none"}
-            border={"none"}
-            _focusVisible={{
-              border: "none",
-            }}
-            placeholder="Copy / paste a SQL query to edit, or generate one from above."
-          />
-          <Flex
-            direction="row"
-            w="100%"
-            bg="gray.50"
-            justify={"space-between"}
-            p={2}
+            py={2}
           >
-            <Flex alignItems="center">
-              {isErrorGenerateSQLQuery && (
-                <Text
-                  fontSize={"xs"}
-                  color="red.300"
-                  fontWeight={"bold"}
-                  p={1}
-                  m={0}
-                  h={4}
+            <Text
+              textTransform={"uppercase"}
+              fontWeight={"bold"}
+              color={"purple.500"}
+              fontSize={"xs"}
+              whiteSpace={"nowrap"}
+            >
+              {commandIsEmpty ? "Generate" : "Edit"}
+            </Text>
+            <AutoResizeTextarea
+              borderRadius={"none"}
+              minH={10}
+              maxH={40}
+              value={userQuestion}
+              border={"none"}
+              _focusVisible={{
+                border: "none",
+              }}
+              py={1}
+              placeholder={
+                commandIsEmpty
+                  ? "What query do you want to generate? E.g. List all orders from last week."
+                  : "Edit your query. E.g. Join with table X."
+              }
+              w="100%"
+              px={0}
+              onChange={handleChangeUserQuestion}
+            />
+            <HStack w="100%" justifyContent={"space-between"}>
+              <Flex alignItems="center">
+                {generateError !== undefined && (
+                  <Text fontSize={"sm"} color="red.300" fontWeight={"bold"}>
+                    {generateError}
+                  </Text>
+                )}
+              </Flex>
+              <HStack>
+                <SampleDataSwitch
+                  isChecked={useSampleData}
+                  onToggle={handleToggleSampleData}
+                />
+
+                <FastModeSwitch
+                  isChecked={useFastMode}
+                  onToggle={handleToggleFastMode}
+                />
+                <BasicButton
+                  onClick={handleGenerateCommand}
+                  bg={"purple.500"}
+                  color={"white"}
+                  display="flex"
+                  w={32}
+                  _hover={{
+                    bg: "purple.100",
+                    cursor: "pointer",
+                  }}
+                  _active={{
+                    bg: "purple.100",
+                    cursor: "pointer",
+                  }}
+                  _focus={{
+                    bg: "purple.100",
+                    cursor: "pointer",
+                  }}
+                  _disabled={{
+                    bg: "purple.100",
+                  }}
+                  isLoading={isLoadingGenerateCommand}
+                  isDisabled={generateCommandIsDisabled}
+                  spinner={<Spinner size="sm" />}
+                  loadingText={undefined}
                 >
-                  Error generating query.
+                  {commandIsEmpty ? "Generate" : "Edit Query"}
+                </BasicButton>
+              </HStack>
+            </HStack>
+          </VStack>
+          <Flex direction={"column"} w="100%">
+            <AutoResizeTextarea
+              value={command}
+              onChange={handleChangeSQLCommand}
+              minH={32}
+              px={2}
+              borderRadius={"none"}
+              border={"none"}
+              _focusVisible={{
+                border: "none",
+              }}
+              placeholder="Copy / paste a SQL query to edit, or generate one from above."
+            />
+            <Flex
+              direction="row"
+              w="100%"
+              bg="gray.50"
+              justify={"space-between"}
+              p={2}
+            >
+              <Flex alignItems="center">
+                {commandError !== undefined && (
+                  <Text fontSize={"sm"} color="red.300" fontWeight={"bold"}>
+                    {commandError}
+                  </Text>
+                )}
+              </Flex>
+              <BasicButton
+                onClick={handleExecute}
+                bg={"purple.500"}
+                color={"white"}
+                display="flex"
+                w={32}
+                _hover={{
+                  bg: "purple.100",
+                  cursor: "pointer",
+                }}
+                _active={{
+                  bg: "purple.100",
+                  cursor: "pointer",
+                }}
+                _focus={{
+                  bg: "purple.100",
+                  cursor: "pointer",
+                }}
+                _disabled={{
+                  bg: "purple.100",
+                }}
+                isDisabled={executeCommandIsDisabled}
+                spinner={<Spinner size="sm" />}
+                loadingText={undefined}
+              >
+                {"Execute"}
+              </BasicButton>
+            </Flex>
+          </Flex>
+        </VStack>
+
+        {/** Results tab */}
+        <Tabs
+          index={tabIndex}
+          colorScheme="purple"
+          w="100%"
+          border={"1px solid"}
+          borderColor={"gray.100"}
+          borderRadius={"sm"}
+          onChange={handleTabSelect}
+        >
+          <TabList display="flex" justifyContent={"space-between"}>
+            <HStack spacing={0} h={8}>
+              <Tab
+                onClick={() => {
+                  setTabIndex(0);
+                }}
+                h={8}
+                color={tabIndex === 0 ? "purple.500" : "gray.500"}
+                fontWeight={tabIndex === 0 ? "bold" : "normal"}
+                borderColor={tabIndex === 0 ? "purple.500" : "transparent"}
+              >
+                Result
+              </Tab>
+              <Tab
+                onClick={() => {
+                  setTabIndex(1);
+                }}
+                h={8}
+                color={tabIndex === 1 ? "purple.500" : "gray.500"}
+                fontWeight={tabIndex === 1 ? "bold" : "normal"}
+                borderColor={tabIndex === 1 ? "purple.500" : "transparent"}
+              >
+                Chart
+              </Tab>
+            </HStack>
+          </TabList>
+          <TabPanels>
+            {/** Results tab */}
+            <TabPanel
+              display="flex"
+              justifyContent={"flex-start"}
+              alignItems={"center"}
+            >
+              {!isLoadingExecuteSQLCommand &&
+                commandError === undefined &&
+                queryResult === undefined && (
+                  <Text fontSize="md" color="gray.500">
+                    {`Run the query by clicking 'Execute'.`}
+                  </Text>
+                )}
+              {isLoadingExecuteSQLCommand && <Spinner />}
+              {!isLoadingExecuteSQLCommand && commandError !== undefined && (
+                <Text fontSize={"sm"} color="red.300" fontWeight={"bold"}>
+                  Error: {commandError}
                 </Text>
               )}
-            </Flex>
-            <Button
-              fontSize={"md"}
+              {!isLoadingExecuteSQLCommand &&
+                commandError === undefined &&
+                queryResult !== undefined && <ResultTable data={queryResult} />}
+            </TabPanel>
+            {/** Chart tab */}
+            <TabPanel
               p={0}
-              my={0}
-              onClick={handleExecuteQuery}
-              h={8}
-              w={32}
-              borderRadius={"sm"}
-              bg={"purple.500"}
-              color={"white"}
-              _hover={{
-                bg: "purple.100",
-                cursor: "pointer",
-              }}
-              isLoading={isLoadingExecuteSQLQuery}
-              isDisabled={runQueryIsDisabled}
-              spinner={<Spinner size="sm" />}
-              loadingText={undefined}
+              display="flex"
+              flexDirection={"column"}
+              justifyContent={"center"}
+              alignItems={"center"}
             >
-              {"Execute"}
-            </Button>
-          </Flex>
-        </Flex>
+              <AutoResizeTextarea
+                value={chartRequest}
+                onChange={handleChangeChartRequest}
+                minH={16}
+                px={2}
+                borderRadius={"none"}
+                border={"none"}
+                _focusVisible={{
+                  border: "none",
+                }}
+                placeholder="Describe the chart. e.g. line chart with red line. Default: whatever is most appropriate. "
+              />
+              <Divider />
+              {!isLoadingGenerateChart &&
+                chartCode !== undefined &&
+                tabIndex === 1 && (
+                  <Flex
+                    flexDirection={"column"}
+                    w="100%"
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    minH={32}
+                  >
+                    <div dangerouslySetInnerHTML={{ __html: chartCode }} />
+                  </Flex>
+                )}
+              <HStack
+                direction="row"
+                w="100%"
+                bg="gray.50"
+                alignItems={"center"}
+                justifyContent={"space-between"}
+                p={2}
+              >
+                <Text fontSize={"sm"} color="red.300" fontWeight={"bold"}>
+                  {chartError !== undefined && `Error: ${chartError}`}
+                </Text>
+                <HStack>
+                  <Text
+                    fontSize="sm"
+                    color={"gray.600"}
+                  >{`Pro-tip: If you don't see a chart, try re-running or make the description a bit clearer.`}</Text>
+                  <BasicButton
+                    onClick={handleGenerateChart}
+                    bg={"purple.500"}
+                    color={"white"}
+                    display="flex"
+                    w={32}
+                    _hover={{
+                      bg: "purple.100",
+                      cursor: "pointer",
+                    }}
+                    _active={{
+                      bg: "purple.100",
+                      cursor: "pointer",
+                    }}
+                    _focus={{
+                      bg: "purple.100",
+                      cursor: "pointer",
+                    }}
+                    _disabled={{
+                      bg: "purple.100",
+                    }}
+                    isLoading={isLoadingGenerateChart}
+                    isDisabled={runChartGenerateIsDisabled}
+                    spinner={<Spinner size="sm" />}
+                  >
+                    {"Generate chart"}
+                  </BasicButton>
+                </HStack>
+              </HStack>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </VStack>
-      {queryResult !== undefined && <ResultTable data={queryResult} />}
     </VStack>
   );
 };

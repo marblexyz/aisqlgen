@@ -44,7 +44,7 @@ JOIN
         ON t.table_schema = c.table_schema
         AND t.table_name = c.table_name
 WHERE
-    t.table_schema NOT IN ('pg_catalog', 'information_schema')
+    t.table_schema = 'public'
 ORDER BY
     t.table_schema,
     t.table_name,
@@ -170,7 +170,7 @@ export const getSampleRowsForTable = async (
     return result.rows as Record<string, unknown>[];
   } catch (error) {
     console.error(error);
-    throw new Error(`Error getting sample rows for table ${tableName}.`);
+    throw error;
   }
 };
 

@@ -20,11 +20,13 @@ export default async function handler(
 ) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
+    return;
   }
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { body } = req;
   if (body === undefined || body === null) {
     res.status(400).json({ error: "Bad Request" });
+    return;
   }
   const { query, config } = body as ExecuteQueryRequest;
   try {
@@ -34,12 +36,16 @@ export default async function handler(
     const poolClient = await pgPool.connect();
     try {
       const result = await executeQuery(poolClient, query);
-      res.status(200).json({ result });
+      if (result.length > 600) {
+        res.status(200).json({ result: result.slice(0, 600) });
+      } else {
+        res.status(200).json({ result });
+      }
     } finally {
       poolClient.release();
     }
     // res.status(200).json({ schema: databaseSchema, sampleRows });
-  } catch (error) {
-    res.status(500).json({ error: "Error while executing query." });
+  } catch (error: Error | unknown) {
+    res.status(500).json({ error: (error as Error).message });
   }
 }

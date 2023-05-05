@@ -28,12 +28,14 @@ export default async function handler(
 ) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
+    return;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const body = req.body;
   if (body === undefined || body === null) {
     res.status(400).json({ error: "Bad Request" });
+    return;
   }
 
   const {
@@ -73,6 +75,7 @@ export default async function handler(
         openAIKey,
       });
       res.status(200).json({ result });
+      return;
     } else {
       const result = await editSQLCommandForQuery({
         userQuestion,
@@ -82,8 +85,11 @@ export default async function handler(
         openAIKey,
       });
       res.status(200).json({ result });
+      return;
     }
   } catch (error) {
-    res.status(500).json({ error: "Error getting table list." });
+    console.error(error);
+    res.status(500).json({ error: (error as Error).message });
+    return;
   }
 }

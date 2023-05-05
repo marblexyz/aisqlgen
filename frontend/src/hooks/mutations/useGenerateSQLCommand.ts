@@ -13,10 +13,13 @@ export type GenerateSQLQueryConfig = {
   openAIKey?: string;
 };
 
-export const useGenerateSQLQuery = (
-  onSuccess?: (result: string | undefined) => void,
-  onError?: (error: unknown) => void
-) => {
+export const useGenerateSQLCommand = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: (result: string | undefined) => void;
+  onError?: (error: unknown) => void;
+}) => {
   const mutationResult = useMutation({
     mutationKey: ["generateSQLQuery"],
     mutationFn: async ({

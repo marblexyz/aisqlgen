@@ -2,6 +2,7 @@ import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 
 export type GenerateChatCompletion = {
   messages: ChatCompletionRequestMessage[];
+  model?: string;
   openAIKey?: string;
   temperature?: number;
   topP?: number;
@@ -9,6 +10,7 @@ export type GenerateChatCompletion = {
 export const generateChatCompletion = async ({
   messages,
   openAIKey,
+  model = "gpt-4",
   temperature = 0,
   topP = undefined,
 }: GenerateChatCompletion) => {
@@ -22,7 +24,7 @@ export const generateChatCompletion = async ({
   });
   const openai = new OpenAIApi(configuration);
   const response = await openai.createChatCompletion({
-    model: "gpt-4",
+    model: model,
     messages: messages,
     temperature: temperature,
     top_p: topP,

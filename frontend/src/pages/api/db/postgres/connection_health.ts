@@ -33,7 +33,6 @@ export default async function handler(
     res.status(400).json({ error: "DB config was not submitted." });
     return;
   }
-
   try {
     const pgPool = createPool(config);
     // note: we don't try/catch this because if connecting throws an exception

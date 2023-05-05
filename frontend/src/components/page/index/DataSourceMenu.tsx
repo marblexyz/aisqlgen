@@ -1,17 +1,17 @@
-import { AddDatasourceModal } from "@/components/datasource/AddDatasourceModal";
+import { DatasourceInputModal } from "@/components/datasource/DatasourceInputModal";
 import { useAppSelector } from "@/hooks/reduxHooks";
 import { selectDatasourceMap } from "@/redux/slices/datasource/datasourceSliceSelectors";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
+  Flex,
   HStack,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   Text,
-  VStack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { FC } from "react";
@@ -26,7 +26,6 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
   value,
   onChange,
 }) => {
-  const dataSourceMap = useAppSelector(selectDatasourceMap);
   const {
     isOpen: datasourceModalIsOpen,
     onOpen: onOpenDatasourceModal,
@@ -35,13 +34,18 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
   const handleClick = (value: string) => {
     onChange(value);
   };
+  const dataSourceMap = useAppSelector(selectDatasourceMap);
   const selectedDataSourceConfig =
     value !== undefined
-      ? dataSourceMap[value].config
+      ? dataSourceMap[value]?.config
       : { resourceName: "Select a data source" };
+  const resourceName =
+    selectedDataSourceConfig?.resourceName !== undefined
+      ? selectedDataSourceConfig.resourceName
+      : "Select a data source";
 
   return (
-    <>
+    <Box>
       <Menu>
         <MenuButton
           as={Button}
@@ -57,10 +61,10 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
         >
           <HStack w="100%" justifyContent={"center"}>
             <BsDatabase />
-            <Text>{selectedDataSourceConfig.resourceName}</Text>
+            <Text>{resourceName}</Text>
           </HStack>
         </MenuButton>
-        <MenuList py={0}>
+        <MenuList>
           <Box w="100%" py={2} px={2}>
             <Text
               fontSize="xs"
@@ -88,7 +92,7 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
               Add connection
             </Button>
           </Box>
-          <VStack w="100%" spacing="0">
+          <Flex w="100%" direction="column">
             {Object.entries(dataSourceMap).map(([id, dataSource]) => (
               <MenuItem
                 display="flex"
@@ -104,19 +108,20 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
                 bgColor={id === value ? "purple.50" : "transparent"}
                 _hover={{
                   bgColor: id === value ? "purple.50" : "gray.50",
-                  fontWeight: "bold",
                 }}
               >
-                {dataSource.config.resourceName}
+                {dataSource?.config.resourceName}
               </MenuItem>
             ))}
-          </VStack>
+          </Flex>
         </MenuList>
       </Menu>
-      <AddDatasourceModal
-        isOpen={datasourceModalIsOpen}
-        onClose={onCloseDatasourceModal}
-      />
-    </>
+      {datasourceModalIsOpen && (
+        <DatasourceInputModal
+          isOpen={datasourceModalIsOpen}
+          onClose={onCloseDatasourceModal}
+        />
+      )}
+    </Box>
   );
 };

@@ -18,6 +18,7 @@ export const DatasourceListButton: FC<DatasourceListButtonProps> = ({
   const { resourceName } = datasource.config;
   return (
     <Button
+      w="100%"
       variant="unstyled"
       color={"gray.900"}
       _hover={{

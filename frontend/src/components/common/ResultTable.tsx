@@ -8,6 +8,7 @@ import {
   Th,
   Thead,
   Tr,
+  VStack,
 } from "@chakra-ui/react";
 import { FC } from "react";
 
@@ -23,26 +24,34 @@ export const ResultTable: FC<ResultTableProps> = ({ data }) => {
   keys.sort();
 
   return (
-    <TableContainer w="100%">
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            {keys.map((key) => (
-              <Th key={key}>{key}</Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {data.map((row, index) => (
-            <Tr key={index}>
+    <VStack w="100%" alignItems="left">
+      <Text fontSize="sm" color="gray.600" fontWeight="bold">
+        Showing {data.length} results.{" "}
+        {data.length === 600
+          ? "Results may have been trunctaed because it was too long."
+          : ""}
+      </Text>
+      <TableContainer w="100%">
+        <Table variant="simple">
+          <Thead>
+            <Tr>
               {keys.map((key) => (
-                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                <Td key={key}>{`${row[key]}`}</Td>
+                <Th key={key}>{key}</Th>
               ))}
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
+          </Thead>
+          <Tbody>
+            {data.map((row, index) => (
+              <Tr key={index}>
+                {keys.map((key) => (
+                  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                  <Td fontSize="sm" key={key}>{`${row[key]}`}</Td>
+                ))}
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </VStack>
   );
 };

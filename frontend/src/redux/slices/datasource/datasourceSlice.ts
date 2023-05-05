@@ -20,7 +20,7 @@ export const datasourceConnector = createSlice({
     ) => {
       state.datasourceMap = action.payload;
     },
-    addDatasource: (
+    upsertDatasource: (
       state,
       action: PayloadAction<{
         id: string;
@@ -41,5 +41,8 @@ export const datasourceConnector = createSlice({
   },
 });
 
-export const { hydrateDatasourceConnector, addDatasource, deleteDatasource } =
-  datasourceConnector.actions;
+export const {
+  hydrateDatasourceConnector,
+  upsertDatasource,
+  deleteDatasource,
+} = datasourceConnector.actions;

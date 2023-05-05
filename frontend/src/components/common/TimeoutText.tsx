@@ -44,7 +44,7 @@ export const TimeoutText: FC<TimeoutTextProps> = ({
   }, [trigger]);
 
   return (
-    <Text color="gray.600" fontSize="md" {...rest}>
+    <Text color="gray.600" {...rest}>
       {text}
     </Text>
   );

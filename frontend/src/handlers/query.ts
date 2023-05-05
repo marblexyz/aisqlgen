@@ -41,7 +41,8 @@ export const generateSQLQuery = async ({
     })
   );
   if (response.status >= 400) {
-    throw new Error("Error getting sample data.");
+    const data = (await response.json()) as GenerateSQLQueryResult;
+    throw new Error(`error while generating SQL query: ${data.error}`);
   }
   const data = (await response.json()) as GenerateSQLQueryResult;
   return data.result;
@@ -57,16 +58,21 @@ export type ExecuteSQLQueryResult = {
   result?: DatabaseRow[];
 };
 
-export const executeSQLQuery = async ({ query }: ExecuteSQLQueryConfig) => {
+export const executeSQLQuery = async ({
+  query,
+  config,
+}: ExecuteSQLQueryConfig) => {
   const response = await callServerlessApi(
     "/api/query/execute",
     HttpMethod.POST,
     JSON.stringify({
       query,
+      config,
     })
   );
   if (response.status >= 400) {
-    throw new Error("Error executing query.");
+    const data = (await response.json()) as ExecuteSQLQueryResult;
+    throw new Error(data.error);
   }
   const data = (await response.json()) as ExecuteSQLQueryResult;
   return data.result;
