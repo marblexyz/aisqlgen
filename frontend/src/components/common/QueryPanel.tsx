@@ -18,7 +18,6 @@ import { selectQuery } from "@/redux/slices/query/querySliceSelectors";
 import { DatabaseRow } from "@/types/schema";
 import {
   Button,
-  Divider,
   Flex,
   HStack,
   Input,
@@ -41,6 +40,7 @@ import {
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { v4 } from "uuid";
 import { DataSourceMenu } from "../page/index/DataSourceMenu";
+import { GPT4Switch } from "../page/index/GPT4Switch";
 import { BasicButton } from "./BasicButton";
 import { ResultTable } from "./ResultTable";
 import { TimeoutText } from "./TimeoutText";
@@ -58,7 +58,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     (a, b) => b.timestamp - a.timestamp
   );
   const lastQueryExecutionLog = queryExecutionLogSorted[0];
-
+  const [useGPT4, setUseGPT4] = useBoolean(false);
   const [command, setCommand] = useState<string>(
     queryExecutionLogSorted.length === 0 ? "" : lastQueryExecutionLog.command
   );
@@ -219,8 +219,9 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
       openAIKey,
       chartRequest,
       canvasId: id,
+      model: useGPT4 ? "gpt-4" : "gpt-3.5-turbo",
       scriptId: `${id}-setupChartScript`,
-      data: JSON.stringify(queryResult?.slice(0, 3)),
+      data: JSON.stringify(queryResult?.slice(0, 5)),
     });
   };
 
@@ -352,11 +353,16 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
 
   const handleGenerateCommand = () => {
     if (userQuestion === "") {
+      setGenerateError("User input is empty.");
       return;
     }
     if (samplePostgresData?.schema === undefined) {
+      setGenerateError(
+        "No schema found. Set the database connection or make sure that the connection works. "
+      );
       return;
     }
+    setGenerateError("");
     generateSQLCommand({
       userQuestion,
       query: command,
@@ -682,20 +688,6 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                 }}
                 placeholder="Describe the chart. e.g. line chart with red line. Default: whatever is most appropriate. "
               />
-              <Divider />
-              {!isLoadingGenerateChart &&
-                chartCode !== undefined &&
-                tabIndex === 1 && (
-                  <Flex
-                    flexDirection={"column"}
-                    w="100%"
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    minH={32}
-                  >
-                    <div dangerouslySetInnerHTML={{ __html: chartCode }} />
-                  </Flex>
-                )}
               <HStack
                 direction="row"
                 w="100%"
@@ -703,15 +695,24 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                 alignItems={"center"}
                 justifyContent={"space-between"}
                 p={2}
+                position="relative"
               >
-                <Text fontSize={"sm"} color="red.300" fontWeight={"bold"}>
-                  {chartError !== undefined && `Error: ${chartError}`}
-                </Text>
-                <HStack position="relative">
+                {chartError !== undefined && (
+                  <Text fontSize={"sm"} color="red.300" fontWeight={"bold"}>
+                    `Error: ${chartError}`
+                  </Text>
+                )}
+                {chartError === undefined && (
                   <Text
                     fontSize="sm"
                     color={"gray.600"}
                   >{`Pro-tip: If you don't see a chart, try re-running or make the description a bit clearer.`}</Text>
+                )}
+                <HStack>
+                  <GPT4Switch
+                    isChecked={useGPT4}
+                    onToggle={setUseGPT4.toggle}
+                  />
                   <Popover placement="end">
                     <PopoverTrigger>
                       <BasicButton variant="unstyled" display="flex" w={32}>
@@ -725,7 +726,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                     >
                       <PopoverArrow />
                       <PopoverCloseButton />
-                      <PopoverBody>{chartCode}</PopoverBody>
+                      <PopoverBody mr="8">{chartCode}</PopoverBody>
                     </PopoverContent>
                   </Popover>
                   <BasicButton
@@ -757,6 +758,27 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                   </BasicButton>
                 </HStack>
               </HStack>
+              <Flex
+                w="100%"
+                minH={48}
+                alignItems={"center"}
+                justifyContent={"center"}
+              >
+                {isLoadingGenerateChart && <Spinner />}
+                {!isLoadingGenerateChart &&
+                  chartCode !== undefined &&
+                  tabIndex === 1 && (
+                    <Flex
+                      flexDirection={"column"}
+                      w="100%"
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                      minH={32}
+                    >
+                      <div dangerouslySetInnerHTML={{ __html: chartCode }} />
+                    </Flex>
+                  )}
+              </Flex>
             </TabPanel>
           </TabPanels>
         </Tabs>

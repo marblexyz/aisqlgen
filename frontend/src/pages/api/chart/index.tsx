@@ -6,6 +6,7 @@ export type GenerateChartRequest = {
   scriptId: string;
   canvasId: string;
   chartRequest: string;
+  model?: string;
   openAIKey?: string;
 };
 
@@ -28,7 +29,7 @@ export default async function handler(
     res.status(400).json({ error: "Bad Request" });
     return;
   }
-  const { data, scriptId, canvasId, openAIKey, chartRequest } =
+  const { data, scriptId, canvasId, openAIKey, model, chartRequest } =
     body as GenerateChartRequest;
   try {
     const chartCode = await getChart({
@@ -36,6 +37,7 @@ export default async function handler(
       scriptId,
       canvasId,
       openAIKey,
+      model,
       chartRequest,
     });
     res.status(200).json({ chartCode });

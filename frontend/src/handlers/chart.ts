@@ -6,6 +6,7 @@ export type GenerateChartCodeConfig = {
   chartRequest: string;
   scriptId: string;
   canvasId: string;
+  model?: string;
   openAIKey?: string;
 };
 
@@ -14,6 +15,7 @@ export const generateChartCode = async ({
   scriptId,
   canvasId,
   chartRequest,
+  model,
   openAIKey,
 }: GenerateChartCodeConfig) => {
   const response = await callServerlessApi(
@@ -24,6 +26,7 @@ export const generateChartCode = async ({
       scriptId,
       canvasId,
       chartRequest,
+      model,
       openAIKey,
     })
   );

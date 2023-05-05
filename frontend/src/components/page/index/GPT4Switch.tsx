@@ -1,27 +1,20 @@
 import { HStack, Stack, Switch, Text, Tooltip } from "@chakra-ui/react";
 import { FC } from "react";
 
-export type SampleDataSwitchProps = {
+export type GPT4SwitchProps = {
   isChecked: boolean;
   onToggle: () => void;
 };
 
-export const SampleDataSwitch: FC<SampleDataSwitchProps> = ({
-  isChecked,
-  onToggle,
-}) => {
+export const GPT4Switch: FC<GPT4SwitchProps> = ({ isChecked, onToggle }) => {
   return (
     <HStack align={"center"} direction={"row"} spacing={1}>
       <Tooltip
         label={
           <Stack>
             <Text>
-              Using sample data helps with accuracy but will spend much more
-              OpenAI credit.
-            </Text>
-            <Text>
-              We sample 3 rows from the table to infer better the structure of
-              the data when generating the query.
+              GPT-3.5 is typically sufficient, but if you are having trouble
+              with the results, you can try GPT-4.
             </Text>
           </Stack>
         }
@@ -34,7 +27,7 @@ export const SampleDataSwitch: FC<SampleDataSwitchProps> = ({
           color={isChecked ? "yellow.500" : "gray.400"}
           fontWeight={"bold"}
         >
-          Sample Data
+          GPT4
         </Text>
       </Tooltip>
       <Switch isChecked={isChecked} onChange={onToggle} colorScheme="yellow" />

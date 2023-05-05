@@ -5,6 +5,7 @@ export type GenerateSQLQueryConfig = {
   data: string;
   scriptId: string;
   canvasId: string;
+  model?: string;
   chartRequest?: string;
   openAIKey?: string;
 };
@@ -22,6 +23,7 @@ export const useGenerateChart = ({
       data,
       scriptId,
       canvasId,
+      model,
       chartRequest = "default",
       openAIKey,
     }: GenerateSQLQueryConfig) => {
@@ -29,6 +31,7 @@ export const useGenerateChart = ({
         data,
         scriptId,
         canvasId,
+        model,
         chartRequest,
         openAIKey,
       });

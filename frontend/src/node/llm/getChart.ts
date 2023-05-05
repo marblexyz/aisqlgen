@@ -44,6 +44,7 @@ type GetChartConfig = {
   scriptId: string;
   canvasId: string;
   chartRequest: string;
+  model?: string;
   openAIKey?: string;
 };
 
@@ -52,6 +53,7 @@ export const getChart = async ({
   scriptId,
   canvasId,
   chartRequest,
+  model = "gpt-3.5-turbo",
   openAIKey,
 }: GetChartConfig) => {
   const prompt = getChartPrompt({
@@ -72,7 +74,7 @@ export const getChart = async ({
       openAIKey,
       messages,
       temperature: 0,
-      model: "gpt-4",
+      model,
     });
     if (result.data.choices.length === 0) {
       throw new Error("No choices returned from OpenAI");

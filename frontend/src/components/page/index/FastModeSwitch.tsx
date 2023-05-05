@@ -33,7 +33,7 @@ export const FastModeSwitch: FC<FastModeSwitchProps> = ({
           fontSize={"sm"}
           whiteSpace={"nowrap"}
           textTransform={"uppercase"}
-          color="yellow.500"
+          color={isChecked ? "yellow.500" : "gray.400"}
           fontWeight={"bold"}
         >
           Fast mode
