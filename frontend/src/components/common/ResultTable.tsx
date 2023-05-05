@@ -24,14 +24,14 @@ export const ResultTable: FC<ResultTableProps> = ({ data }) => {
   keys.sort();
 
   return (
-    <VStack w="100%" alignItems="left">
+    <VStack alignItems="left">
       <Text fontSize="sm" color="gray.600" fontWeight="bold">
         Showing {data.length} results.{" "}
         {data.length === 600
           ? "Results may have been trunctaed because it was too long."
           : ""}
       </Text>
-      <TableContainer w="100%">
+      <TableContainer>
         <Table variant="simple">
           <Thead>
             <Tr>
@@ -45,7 +45,7 @@ export const ResultTable: FC<ResultTableProps> = ({ data }) => {
               <Tr key={index}>
                 {keys.map((key) => (
                   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                  <Td fontSize="sm" key={key}>{`${row[key]}`}</Td>
+                  <Td py={1} fontSize="sm" key={key}>{`${row[key]}`}</Td>
                 ))}
               </Tr>
             ))}

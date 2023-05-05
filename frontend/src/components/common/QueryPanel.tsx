@@ -22,6 +22,12 @@ import {
   Flex,
   HStack,
   Input,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverTrigger,
   Spinner,
   Tab,
   TabList,
@@ -701,11 +707,27 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                 <Text fontSize={"sm"} color="red.300" fontWeight={"bold"}>
                   {chartError !== undefined && `Error: ${chartError}`}
                 </Text>
-                <HStack>
+                <HStack position="relative">
                   <Text
                     fontSize="sm"
                     color={"gray.600"}
                   >{`Pro-tip: If you don't see a chart, try re-running or make the description a bit clearer.`}</Text>
+                  <Popover placement="end">
+                    <PopoverTrigger>
+                      <BasicButton variant="unstyled" display="flex" w={32}>
+                        View chart code
+                      </BasicButton>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      position={"absolute"}
+                      w="container.md"
+                      left="0"
+                    >
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverBody>{chartCode}</PopoverBody>
+                    </PopoverContent>
+                  </Popover>
                   <BasicButton
                     onClick={handleGenerateChart}
                     bg={"purple.500"}
