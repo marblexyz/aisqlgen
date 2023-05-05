@@ -37,7 +37,6 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/babel__standalone": "^7.1.4",
     "@types/localforage": "^0.0.34",
     "@types/node": "18.14.0",
     "@types/pg": "^8.6.6",
