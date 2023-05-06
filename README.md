@@ -31,19 +31,15 @@ yarn dev
 
 6. Generate or edit your query!
 
-## Implementation
+## Features
 
-We take inspiration from previous work from the Langchain's implementation of SQL Chain.
-
-### UI
-
-1. Create a query
+### 1. Create a query
 
 A "query" is a single notebook for which you can iterate on a SQL statement with natural language. You can create more by clicking 'create new query'.
 
 ![Screenshot](docs/screenshot-query-start.png)
 
-2. Generate a query
+### 2. Generate a query
 
 Write plain-text in the input box to generate the appropriate sql query. Run generate.
 
@@ -57,7 +53,7 @@ The more descriptive the question is, the better the performance will be.
 
 The above SQL query is generated in one-shot.
 
-3. Edit / fix a query
+### 3. Edit / fix a query
 
 However, other times, the query may not be generated properly and may not run.
 
@@ -73,7 +69,7 @@ The UI is designed such that you can make modifications on the SQL by hand manua
 
 You can see that the WHERE clause is added to the query properly given the context.
 
-4. Run the query and generate a chart
+### 4. Run the query and generate a chart
 
 With a simple description, you will be able to visualize your data. Currently, we've only tested charts that would work with Chart.js, but we will be able to support all types of visualization in the near future.
 
@@ -81,15 +77,15 @@ For 60~70% of the time, 3.5 is sufficient to generate the query, and since it's 
 
 ![Screenshot](docs/screenshot-query-chart.png)
 
-5. View history
+### 5. View history
 
 For each query item you set up, you can view its history.
 
-### Architecture
+## Architecture
 
 ![Screenshot](docs/aisqlgen-diagram.png)
 
-The architecture is straightforward. Blue are user inputs and purple are generated artifacts. We use next.js API routes for conveniency since it runs on Node. The routes establish connection with the Database and LLM (currently GPT).
+Blue represent user inputs and purple represent generated artifacts. We use next.js API routes for conveniency since it runs on Node. The routes establish connection with the Database and LLM (currently GPT).
 
 ### Security
 
