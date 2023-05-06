@@ -97,4 +97,4 @@ All data is saved locally - none of your API Key or data source information is s
 
 1. More database connectors
 2. More visualization outside of Chart.js
-3. Email us at
+3. Email us at founders@aisqlgen.com

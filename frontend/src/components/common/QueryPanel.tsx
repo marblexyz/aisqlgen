@@ -59,7 +59,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     (a, b) => b.timestamp - a.timestamp
   );
   const lastQueryExecutionLog = queryExecutionLogSorted[0];
-  const [useGPT4, setUseGPT4] = useBoolean(false);
+  const [useGPT4, setUseGPT4] = useBoolean(true);
   const [command, setCommand] = useState<string>(
     queryExecutionLogSorted.length === 0 ? "" : lastQueryExecutionLog.command
   );
