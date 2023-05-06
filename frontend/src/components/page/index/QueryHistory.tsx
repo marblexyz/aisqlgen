@@ -61,7 +61,7 @@ export const QueryHistory: FC<QueryHistoryProps> = ({
             </Text>
           </ModalHeader>
           <ModalBody w="100%" overflowY={"auto"}>
-            <VStack w="100%" alignItems={"left"}>
+            <VStack w="100%" alignItems={"left"} spacing={2}>
               {executionLog.length === 0 && (
                 <Text color="gray.600" fontSize="md">
                   No queries exist.

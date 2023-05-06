@@ -83,6 +83,8 @@ For 60~70% of the time, 3.5 is sufficient to generate the query, and since it's 
 
 For each query item you set up, you can view its history.
 
+![Screenshot](docs/screenshot-history.png)
+
 ## Architecture
 
 ![Screenshot](docs/aisqlgen-diagram.png)
