@@ -1,6 +1,8 @@
 # AI SQL Gen
 
-Don't write SQL by hand. Use LLMs to link to your SQL database, then generate, edit SQL, and auto-generate visualization.
+Don't write SQL by hand. Use LLMs to link to your SQL database, then generate, edit SQL, and auto-generate visualization. Run it locally.
+
+![Screenshot](docs/screenshot-index.png)
 
 ## ⚡ Quick Start
 

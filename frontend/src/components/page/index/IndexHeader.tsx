@@ -52,19 +52,19 @@ export const IndexHeader = () => {
           >
             <HStack w={"100%"}>
               <Circle bg="purple.500">
-                <Icon as={IoCheckmark} w={"75%"} />
+                <Icon as={IoCheckmark} />
               </Circle>
               <Text>Connect your data directly</Text>
             </HStack>
             <HStack w={"100%"}>
               <Circle bg="purple.500">
-                <Icon as={IoCheckmark} w={"75%"} />
+                <Icon as={IoCheckmark} />
               </Circle>
               <Text>Write your questions in natural language</Text>
             </HStack>
             <HStack w={"100%"}>
               <Circle bg="purple.500">
-                <Icon as={IoCheckmark} w={"75%"} />
+                <Icon as={IoCheckmark} />
               </Circle>
               <Text>Query multiple data sources at once</Text>
             </HStack>
