@@ -1,3 +1,5 @@
+> 👾 📢 Join our [Discord](https://discord.gg/4DGNMe6pzW) or email us at [founders@aisqlgen.com](mailto:founders@aisqlgen.com) for updates, support, and more!
+
 # AI SQL Gen
 
 Don't write SQL by hand. Use LLMs to link to your SQL database, then generate, edit SQL, and auto-generate visualization. Run it locally.
