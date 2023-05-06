@@ -1,9 +1,21 @@
-import { Flex, Heading } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Heading,
+  IconButton,
+  useDisclosure,
+} from "@chakra-ui/react";
 import Link from "next/link";
 import { FC } from "react";
-import { APIKeyInput } from "../common/APIKeyInput";
+import { IoSettingsSharp } from "react-icons/io5";
+import { OpenAIKeyModal } from "../common/OpenAIKeyModal";
 
 export const Navbar: FC = () => {
+  const {
+    isOpen: isOpenOpenAIKeyModal,
+    onClose: onCloseOpenAIKeyModal,
+    onOpen: onOpenOpenAIKeyModal,
+  } = useDisclosure();
   return (
     <Flex
       as="nav"
@@ -26,11 +38,22 @@ export const Navbar: FC = () => {
           borderColor={"gray.200"}
         >
           <Heading size={"md"} color="purple.600" textAlign={"center"}>
-            🤖 SQLGen
+            🤖 AISQLGen
           </Heading>
         </Flex>
       </Link>
-      <APIKeyInput />
+      <Box mr={2}>
+        <IconButton
+          variant={"ghost"}
+          aria-label="Settings"
+          icon={<IoSettingsSharp />}
+          onClick={onOpenOpenAIKeyModal}
+        />
+      </Box>
+      <OpenAIKeyModal
+        isOpen={isOpenOpenAIKeyModal}
+        onClose={onCloseOpenAIKeyModal}
+      />
     </Flex>
   );
 };

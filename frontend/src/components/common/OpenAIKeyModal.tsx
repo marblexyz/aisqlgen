@@ -41,7 +41,7 @@ export const OpenAIKeyModal: FC<OpenAIKeyModalProps> = ({
           >
             <APIKeyInput onSave={handleSave} />
             <Text textAlign="center">
-              we will never upload, log, or store your API key outside of your
+              We do not upload, log, or store your API key outside of your
               browser storage.{" "}
             </Text>
           </VStack>

@@ -25,12 +25,6 @@ export const ResultTable: FC<ResultTableProps> = ({ data }) => {
 
   return (
     <VStack alignItems="left">
-      <Text fontSize="sm" color="gray.600" fontWeight="bold">
-        Showing {data.length} results.{" "}
-        {data.length === 600
-          ? "Results may have been trunctaed because it was too long."
-          : ""}
-      </Text>
       <TableContainer>
         <Table variant="simple">
           <Thead>

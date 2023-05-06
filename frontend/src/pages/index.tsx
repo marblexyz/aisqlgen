@@ -62,7 +62,7 @@ export default function Home() {
         <Flex direction={"column"} w="100%" overflowY="auto" pb={24}>
           <IndexHeader />
           <Flex w={"100%"} justify={"center"} align={"center"} px={4} pt={8}>
-            <VStack w="container.lg" spacing={4}>
+            <VStack w="100%" maxW="container.lg" spacing={4}>
               <Heading size="md" textAlign={"left"} w="100%">
                 Generate query
               </Heading>

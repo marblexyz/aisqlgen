@@ -3,16 +3,16 @@ import {
   Box,
   Button,
   Flex,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverFooter,
-  PopoverHeader,
-  PopoverTrigger,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { FC } from "react";
 
@@ -25,37 +25,43 @@ export const QueryHistory: FC<QueryHistoryProps> = ({
   executionLog,
   onClearHistory,
 }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
-    <Flex justifyContent={"flex-start"}>
-      <Popover placement="bottom-start">
-        <PopoverTrigger>
-          <Button
-            h={8}
-            w={32}
-            borderRadius={"sm"}
-            textTransform={"uppercase"}
-            fontWeight={"bold"}
-            color={"purple.500"}
-            fontSize={"xs"}
-            variant="outline"
-            borderColor={"purple.500"}
-          >
-            {`History: ${executionLog.length}`}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent w="container.md" maxH="container.md" borderRadius={0}>
-          <PopoverArrow />
-          <PopoverCloseButton _hover={{ backgroundColor: "none" }} />
-          <PopoverHeader bg={"purple.50"}>
+    <>
+      <Button
+        h={8}
+        w={32}
+        borderRadius={"sm"}
+        textTransform={"uppercase"}
+        fontWeight={"bold"}
+        color={"purple.500"}
+        fontSize={"xs"}
+        variant="outline"
+        borderColor={"purple.500"}
+        onClick={onOpen}
+      >
+        {`History: ${executionLog.length}`}
+      </Button>
+      <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
+        <ModalOverlay />
+        <ModalContent
+          w="100%"
+          maxW="container.md"
+          maxH="container.md"
+          borderRadius={0}
+        >
+          <ModalCloseButton _hover={{ backgroundColor: "none" }} />
+          <ModalHeader bg={"purple.50"}>
             <Text color="purple.500" fontWeight={"bold"} fontSize={"sm"}>
               History -{" "}
               {`${executionLog.length} quer${
                 executionLog.length === 1 ? "y" : "ies"
               }`}
             </Text>
-          </PopoverHeader>
-          <PopoverBody overflowY={"auto"}>
-            <VStack alignItems={"left"}>
+          </ModalHeader>
+          <ModalBody w="100%" overflowY={"auto"}>
+            <VStack w="100%" alignItems={"left"}>
               {executionLog.length === 0 && (
                 <Text color="gray.600" fontSize="md">
                   No queries exist.
@@ -105,16 +111,16 @@ export const QueryHistory: FC<QueryHistoryProps> = ({
                 </>
               )}
             </VStack>
-          </PopoverBody>
-          <PopoverFooter>
+          </ModalBody>
+          <ModalFooter>
             <Flex justifyContent={"flex-end"}>
               <Button variant="link" onClick={onClearHistory}>
                 Clear
               </Button>
             </Flex>
-          </PopoverFooter>
-        </PopoverContent>
-      </Popover>
-    </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };

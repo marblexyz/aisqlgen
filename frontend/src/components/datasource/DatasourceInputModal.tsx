@@ -35,6 +35,7 @@ import { BasicInput } from "../common/Input";
 type AddDatasourceModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  onAddDatasource?: (id: string) => void;
   initialValues?: PostgresFormValues & { id: string };
 };
 
@@ -93,6 +94,7 @@ const validateFormValues = (values: PostgresFormValues) => {
 export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
   isOpen,
   onClose,
+  onAddDatasource,
   initialValues,
 }) => {
   const dispatch = useAppDispatch();
@@ -135,6 +137,7 @@ export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
     dispatch(upsertDatasource(datasource));
     resetForm();
     onClose();
+    onAddDatasource?.(datasource.id);
   };
 
   const handleCheckPgConnectionClick = async () => {

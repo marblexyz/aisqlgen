@@ -120,6 +120,7 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
         <DatasourceInputModal
           isOpen={datasourceModalIsOpen}
           onClose={onCloseDatasourceModal}
+          onAddDatasource={handleClick}
         />
       )}
     </Box>

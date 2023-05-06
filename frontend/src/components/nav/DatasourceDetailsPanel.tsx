@@ -10,6 +10,7 @@ import {
   Flex,
   HStack,
   Heading,
+  Spinner,
   Text,
   VStack,
   useDisclosure,
@@ -128,7 +129,7 @@ export const DatasourceDetailsPanel: FC<DatasourceDetailsPanelProps> = ({
             </HStack>
           </VStack>
           <Flex h="100%" justifyContent={"center"} alignItems={"center"}>
-            {isLoading && <Text>Loading...</Text>}
+            {isLoading && <Spinner size="sm" />}
             {isError && <Text>Error loading schema</Text>}
           </Flex>
           {data?.schema !== undefined && <SchemaSidebar schema={data.schema} />}

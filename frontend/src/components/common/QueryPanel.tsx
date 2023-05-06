@@ -18,6 +18,7 @@ import { selectQuery } from "@/redux/slices/query/querySliceSelectors";
 import { DatabaseRow } from "@/types/schema";
 import {
   Button,
+  Collapse,
   Flex,
   HStack,
   Input,
@@ -85,7 +86,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
   const [generateError, setGenerateError] = useState<string | undefined>(
     undefined
   );
-  const [commandError, setCommandError] = useState<string | undefined>(
+  const [executeError, setExecuteError] = useState<string | undefined>(
     undefined
   );
   const [chartError, setChartError] = useState<string | undefined>(undefined);
@@ -94,6 +95,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     selectedDataSourceId !== undefined
       ? dataSourceMap[selectedDataSourceId]
       : undefined;
+  const [isResultOpen, setIsResultOpen] = useBoolean(true);
 
   const sampleDataInTableInfoRowCount = useSampleData ? 3 : 0;
   const {
@@ -162,7 +164,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
   const { mutate: executeSQLCommand, isLoading: isLoadingExecuteSQLCommand } =
     useExecuteSQLCommand({
       onSuccess: handleExecuteCommandSuccess,
-      onError: (error) => setCommandError((error as Error).message),
+      onError: (error) => setExecuteError((error as Error).message),
     });
 
   const handleToggleFastMode = () => {
@@ -263,6 +265,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
 
   /** chart related end */
   const handleExecute = () => {
+    setExecuteError(undefined);
     executeSQLCommand({
       query: command,
       config:
@@ -405,22 +408,24 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     >
       {/** Title */}
       <HStack w="100%" justifyContent="space-between">
-        <VStack spacing={0}>
-          <Text fontSize="xs" color="gray.500" fontWeight="bold">
-            {id}
-          </Text>
+        <VStack spacing={0} w="100%" alignItems={"left"}>
           <Input
             w="100%"
             h={12}
             value={description}
             onChange={handleDescriptionChange}
-            placeholder="What is this query about?"
+            placeholder="Input a title of the query"
             variant="unstyled"
-            fontSize="md"
+            fontSize="lg"
             fontWeight="bold"
           />
         </VStack>
-        <TimeoutText baseText="" timeoutText="Saved" trigger={saveCount} />
+        <TimeoutText
+          fontSize="sm"
+          baseText=""
+          timeoutText="Saved"
+          trigger={saveCount}
+        />
       </HStack>
       {/** Action Options */}
       <HStack w="100%" justifyContent={"space-between"}>
@@ -571,9 +576,9 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
               p={2}
             >
               <Flex alignItems="center">
-                {commandError !== undefined && (
+                {executeError !== undefined && (
                   <Text fontSize={"sm"} color="red.300" fontWeight={"bold"}>
-                    {commandError}
+                    {executeError}
                   </Text>
                 )}
               </Flex>
@@ -647,26 +652,50 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
           <TabPanels>
             {/** Results tab */}
             <TabPanel
+              w="100%"
+              px={2}
               display="flex"
               justifyContent={"flex-start"}
               alignItems={"center"}
             >
               {!isLoadingExecuteSQLCommand &&
-                commandError === undefined &&
+                executeError === undefined &&
                 queryResult === undefined && (
                   <Text fontSize="md" color="gray.500">
                     {`Run the query by clicking 'Execute'.`}
                   </Text>
                 )}
               {isLoadingExecuteSQLCommand && <Spinner />}
-              {!isLoadingExecuteSQLCommand && commandError !== undefined && (
+              {!isLoadingExecuteSQLCommand && executeError !== undefined && (
                 <Text fontSize={"sm"} color="red.300" fontWeight={"bold"}>
-                  Error: {commandError}
+                  Error: {executeError}
                 </Text>
               )}
               {!isLoadingExecuteSQLCommand &&
-                commandError === undefined &&
-                queryResult !== undefined && <ResultTable data={queryResult} />}
+                executeError === undefined &&
+                queryResult !== undefined && (
+                  <VStack w="100%" alignItems={"flex-start"}>
+                    <HStack w="100%" justifyContent={"space-between"}>
+                      <Text fontSize="sm" color="gray.600" fontWeight="bold">
+                        Showing {queryResult.length} results.{" "}
+                        {queryResult.length === 600
+                          ? "Results may have been trunctaed because it was too long."
+                          : ""}
+                      </Text>
+                      <BasicButton
+                        variant="unstyled"
+                        display="flex"
+                        w={32}
+                        onClick={() => {
+                          setIsResultOpen.toggle();
+                        }}
+                      >{`${isResultOpen ? "Hide" : "Show"}`}</BasicButton>
+                    </HStack>
+                    <Collapse in={isResultOpen} animateOpacity>
+                      <ResultTable data={queryResult} />
+                    </Collapse>
+                  </VStack>
+                )}
             </TabPanel>
             {/** Chart tab */}
             <TabPanel
@@ -721,12 +750,15 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                     </PopoverTrigger>
                     <PopoverContent
                       position={"absolute"}
+                      top={"10"}
                       w="container.md"
                       left="0"
                     >
                       <PopoverArrow />
                       <PopoverCloseButton />
-                      <PopoverBody mr="8">{chartCode}</PopoverBody>
+                      <PopoverBody fontSize="md" mr="8">
+                        {chartCode}
+                      </PopoverBody>
                     </PopoverContent>
                   </Popover>
                   <BasicButton
