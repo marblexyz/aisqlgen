@@ -5,7 +5,7 @@ import { SampleDataSwitch } from "@/components/page/index/SampleDataSwitch";
 import { useExecuteSQLCommand } from "@/hooks/mutations/useExecuteSQLCommand";
 import { useGenerateChart } from "@/hooks/mutations/useGenerateChart";
 import { useGenerateSQLCommand } from "@/hooks/mutations/useGenerateSQLCommand";
-import { useGetPostgresSchema } from "@/hooks/queries/useGetPostgresSchema";
+import { useGetSchema } from "@/hooks/queries/useGetSchema";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { selectOpenAIKey } from "@/redux/slices/config/configSliceSelector";
 import { selectDatasourceMap } from "@/redux/slices/datasource/datasourceSliceSelectors";
@@ -17,6 +17,7 @@ import {
 import { selectQuery } from "@/redux/slices/query/querySliceSelectors";
 import { DatabaseRow } from "@/types/schema";
 import {
+  Box,
   Button,
   Collapse,
   Flex,
@@ -102,7 +103,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     data: samplePostgresData,
     isLoading: isLoadingDbSchema,
     isError: isErrorDbSchema,
-  } = useGetPostgresSchema({
+  } = useGetSchema({
     sampleRowsInTableInfo: sampleDataInTableInfoRowCount,
     datasource,
   });
@@ -268,16 +269,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     setExecuteError(undefined);
     executeSQLCommand({
       query: command,
-      config:
-        datasource !== undefined
-          ? {
-              host: datasource.config.host,
-              port: datasource.config.port,
-              user: datasource.config.user,
-              password: datasource.config.password,
-              database: datasource.config.database,
-            }
-          : undefined,
+      datasource,
     });
     setTabIndex(0);
   };
@@ -359,6 +351,10 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
       setGenerateError("User input is empty.");
       return;
     }
+    if (datasource === undefined) {
+      setGenerateError("No datasource found. Set the database connection.");
+      return;
+    }
     if (samplePostgresData?.schema === undefined) {
       setGenerateError(
         "No schema found. Set the database connection or make sure that the connection works. "
@@ -368,8 +364,9 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     setGenerateError("");
     generateSQLCommand({
       userQuestion,
-      query: command,
+      datasourceType: datasource.config.type,
       dbSchema: samplePostgresData.schema,
+      query: command,
       sampleRows: samplePostgresData.sampleRows,
       sequential: useFastMode,
       previousQueries: queryExecutionLogSorted
@@ -444,8 +441,6 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
           w={32}
           borderRadius={"sm"}
           onClick={handleDeleteQuery}
-          textTransform={"uppercase"}
-          fontWeight={"bold"}
           color={"red.500"}
           fontSize={"xs"}
           variant="outline"
@@ -478,13 +473,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
             px={2}
             py={2}
           >
-            <Text
-              textTransform={"uppercase"}
-              fontWeight={"bold"}
-              color={"purple.500"}
-              fontSize={"xs"}
-              whiteSpace={"nowrap"}
-            >
+            <Text color={"purple.500"} fontSize={"xs"} whiteSpace={"nowrap"}>
               {commandIsEmpty ? "Generate" : "Edit"}
             </Text>
             <AutoResizeTextarea
@@ -691,9 +680,11 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                         }}
                       >{`${isResultOpen ? "Hide" : "Show"}`}</BasicButton>
                     </HStack>
-                    <Collapse in={isResultOpen} animateOpacity>
-                      <ResultTable data={queryResult} />
-                    </Collapse>
+                    <Box overflowX={"auto"} w="100%">
+                      <Collapse in={isResultOpen} animateOpacity>
+                        <ResultTable data={queryResult} />
+                      </Collapse>
+                    </Box>
                   </VStack>
                 )}
             </TabPanel>
@@ -742,22 +733,26 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                     isChecked={useGPT4}
                     onToggle={setUseGPT4.toggle}
                   />
-                  <Popover placement="end">
+                  <Popover placement="bottom">
                     <PopoverTrigger>
-                      <BasicButton variant="unstyled" display="flex" w={32}>
-                        View chart code
-                      </BasicButton>
+                      <Button
+                        fontWeight="normal"
+                        fontSize="sm"
+                        borderRadius="sm"
+                        h="8"
+                      >
+                        <Text>View chart code</Text>
+                      </Button>
                     </PopoverTrigger>
-                    <PopoverContent
-                      position={"absolute"}
-                      top={"10"}
-                      w="container.md"
-                      left="0"
-                    >
+                    <PopoverContent w="100%" maxW="container.md">
                       <PopoverArrow />
                       <PopoverCloseButton />
-                      <PopoverBody fontSize="md" mr="8">
-                        {chartCode}
+                      <PopoverBody fontSize="md" mr="8" mt="6" minH={10}>
+                        <Text>
+                          {chartCode !== undefined
+                            ? chartCode
+                            : "No existing chart code."}
+                        </Text>
                       </PopoverBody>
                     </PopoverContent>
                   </Popover>

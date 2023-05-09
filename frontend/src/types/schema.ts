@@ -1,4 +1,4 @@
-export type PGColumnType = {
+export type SQLColumnType = {
   name: string;
   columnType: string;
   isPrimaryKey?: boolean;
@@ -8,20 +8,14 @@ export type PGColumnType = {
   };
 };
 
-export type PGTableSchema = {
+export type SQLTableSchema = {
   tableName: string;
-  columns: PGColumnType[];
+  columns: SQLColumnType[];
 };
-export type DatabaseSchemaObject = Record<string, PGTableSchema>;
+// tableName: SQLTableSchema
+export type DatabaseSchemaMap = Map<string, SQLTableSchema>;
+export type DatabaseSchemaObject = Record<string, SQLTableSchema>;
 
 export type DatabaseRow = { [key: string]: unknown };
-
-export type CreatePGPoolConfig = {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
-};
 
 export type SampleRowsObject = Record<string, Record<string, unknown>[]>;

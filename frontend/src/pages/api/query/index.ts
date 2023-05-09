@@ -7,9 +7,10 @@ import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { getSchemaAsString } from "@/utils/getSchemaAsString";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export type GenerateSQLCommandBody = {
+export type GenerateSQLCommandRequest = {
   userQuestion: string;
   dbSchema: DatabaseSchemaObject;
+  datasourceType: string;
   query?: string;
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
@@ -46,7 +47,7 @@ export default async function handler(
     sequential,
     previousQueries,
     openAIKey,
-  } = body as GenerateSQLCommandBody;
+  } = body as GenerateSQLCommandRequest;
 
   const tableNames = Object.keys(dbSchema).join(", ");
   const validTableNames = Object.keys(dbSchema);

@@ -1,12 +1,14 @@
 import { generateSQLQuery } from "@/handlers/query";
 import { ExecutionLogItem } from "@/types/api";
+import { DatasourceType } from "@/types/redux/slices/datasource";
 import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { useMutation } from "@tanstack/react-query";
 
 export type GenerateSQLQueryConfig = {
   userQuestion: string;
+  datasourceType: DatasourceType;
+  dbSchema: DatabaseSchemaObject;
   query?: string;
-  dbSchema?: DatabaseSchemaObject;
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
   previousQueries?: ExecutionLogItem[];
@@ -24,6 +26,7 @@ export const useGenerateSQLCommand = ({
     mutationKey: ["generateSQLQuery"],
     mutationFn: async ({
       userQuestion,
+      datasourceType,
       query,
       dbSchema,
       sampleRows,
@@ -33,6 +36,7 @@ export const useGenerateSQLCommand = ({
     }: GenerateSQLQueryConfig) => {
       const result = await generateSQLQuery({
         userQuestion,
+        datasourceType,
         query,
         dbSchema,
         sampleRows,

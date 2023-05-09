@@ -1,4 +1,4 @@
-import { DatabaseSchemaObject, PGTableSchema } from "@/types/schema";
+import { DatabaseSchemaObject, SQLTableSchema } from "@/types/schema";
 import { TriangleDownIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -14,7 +14,7 @@ export type SchemaSidebarProps = {
   schema: DatabaseSchemaObject;
 };
 
-const SchemaInfoItem: FC<{ tableSchema: PGTableSchema }> = ({
+const SchemaInfoItem: FC<{ tableSchema: SQLTableSchema }> = ({
   tableSchema,
 }) => {
   const { isOpen, onToggle } = useDisclosure();

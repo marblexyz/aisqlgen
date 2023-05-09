@@ -1,10 +1,6 @@
-import { useCheckPgConnection } from "@/hooks/mutations/useCheckPgConnection";
+import { useCheckConnection } from "@/hooks/mutations/useCheckConnection";
 import { useAppDispatch } from "@/hooks/reduxHooks";
 import { upsertDatasource } from "@/redux/slices/datasource/datasourceSlice";
-import {
-  DatasourceConfigType,
-  DatasourceType,
-} from "@/types/redux/slices/datasource";
 import {
   Box,
   FormControl,
@@ -31,6 +27,10 @@ import { v4 as uuidv4 } from "uuid";
 import { BasicButton } from "../common/BasicButton";
 import { BasicLinkButton } from "../common/BasicLinkButton";
 import { BasicInput } from "../common/Input";
+import {
+  DatasourceType,
+  PGConnectionConfig,
+} from "@/types/redux/slices/datasource";
 
 type AddDatasourceModalProps = {
   isOpen: boolean;
@@ -87,7 +87,7 @@ const validateFormValues = (values: PostgresFormValues) => {
     values: {
       ...values,
       port: parseInt(values.port),
-    } as DatasourceConfigType,
+    },
   };
 };
 
@@ -100,10 +100,10 @@ export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
   const dispatch = useAppDispatch();
   const {
     mutate: checkPgConnection,
-    isLoading: isCheckingPgConnection,
-    isError: isErrorCheckingPgConnection,
-    isSuccess: isSuccessCheckingPgConnection,
-  } = useCheckPgConnection();
+    isLoading: isCheckingConnection,
+    isError: isErrorCheckingConnection,
+    isSuccess: isSuccessCheckingConnection,
+  } = useCheckConnection();
   const formik = useFormik({
     initialValues: {
       resourceName:
@@ -132,7 +132,10 @@ export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
     const datasource = {
       id: initialValues !== undefined ? initialValues.id : uuidv4(),
       type: DatasourceType.Postgres,
-      config: validatedValues,
+      config: {
+        ...validatedValues,
+        type: DatasourceType.Postgres,
+      } as PGConnectionConfig,
     };
     dispatch(upsertDatasource(datasource));
     resetForm();
@@ -149,8 +152,12 @@ export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
 
     const datasource = {
       type: DatasourceType.Postgres,
-      config: validatedValues,
+      config: {
+        ...validatedValues,
+        type: DatasourceType.Postgres,
+      } as PGConnectionConfig,
     };
+    // Type 'DatasourceType' is not assignable to type 'DatasourceType.Postgres'.ts(2345)
     checkPgConnection(datasource);
   };
   const action = initialValues !== undefined ? "Edit" : "Add";
@@ -285,17 +292,17 @@ export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
                 >
                   <HStack w="100%">
                     <Text w="100%">
-                      {isCheckingPgConnection
+                      {isCheckingConnection
                         ? "Testing connection"
                         : "Test connection"}
                     </Text>
-                    {isErrorCheckingPgConnection && (
+                    {isErrorCheckingConnection && (
                       <Icon as={IoBanSharp} color="red.500" />
                     )}
-                    {isSuccessCheckingPgConnection && (
+                    {isSuccessCheckingConnection && (
                       <Icon as={IoCheckmarkCircleSharp} color="green.500" />
                     )}
-                    {isCheckingPgConnection && (
+                    {isCheckingConnection && (
                       <Spinner size="xs" color="purple.500" />
                     )}
                   </HStack>
@@ -322,7 +329,7 @@ export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
                   {action} datasource
                 </BasicButton>
               </HStack>
-              {isErrorCheckingPgConnection && (
+              {isErrorCheckingConnection && (
                 <Text color="red.500" fontSize={"sm"} textAlign={"center"}>
                   The connection test failed. Please check your credentials and
                   try again.

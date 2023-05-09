@@ -1,4 +1,4 @@
-import { useGetPostgresSchema } from "@/hooks/queries/useGetPostgresSchema";
+import { useGetSchema } from "@/hooks/queries/useGetSchema";
 import { useAppDispatch } from "@/hooks/reduxHooks";
 import { deleteDatasource } from "@/redux/slices/datasource/datasourceSlice";
 import { CHAKRA_100VH } from "@/style/constants";
@@ -36,9 +36,8 @@ export const DatasourceDetailsPanel: FC<DatasourceDetailsPanelProps> = ({
     onOpen: onOpenDatasourceModal,
     onClose: onCloseDatasourceModal,
   } = useDisclosure();
-  const { data, isLoading, isError } = useGetPostgresSchema({
+  const { data, isLoading, isError } = useGetSchema({
     datasource,
-    enabled: datasource.type === DatasourceType.Postgres,
   });
   const dispatch = useAppDispatch();
   const handleDatasourceDelete = () => {
@@ -95,10 +94,10 @@ export const DatasourceDetailsPanel: FC<DatasourceDetailsPanelProps> = ({
                   bg: "gray.100",
                 }}
               >
-                <HStack>
+                <HStack alignItems={"center"} justifyContent={"center"}>
                   <Image
                     src={`/logos/${datasource.type.toLowerCase()}.png`}
-                    alt={`${datasource.type} Logo}`}
+                    alt={`${datasource.type} Logo`}
                     width={"15"}
                     height={"15"}
                   />
@@ -110,8 +109,6 @@ export const DatasourceDetailsPanel: FC<DatasourceDetailsPanelProps> = ({
               <Button
                 aria-label="Edit datasource"
                 variant="unstyled"
-                textTransform={"uppercase"}
-                fontWeight={"bold"}
                 color={"red.500"}
                 fontSize={"xs"}
                 borderColor={"red.500"}
@@ -135,17 +132,18 @@ export const DatasourceDetailsPanel: FC<DatasourceDetailsPanelProps> = ({
           {data?.schema !== undefined && <SchemaSidebar schema={data.schema} />}
         </VStack>
       </Flex>
-      {datasourceModalIsOpen && (
-        <DatasourceInputModal
-          isOpen={datasourceModalIsOpen}
-          onClose={onCloseDatasourceModal}
-          initialValues={{
-            ...datasource.config,
-            port: datasource.config.port.toString(),
-            id: datasourceId,
-          }}
-        />
-      )}
+      {datasourceModalIsOpen &&
+        datasource.config.type === DatasourceType.Postgres && (
+          <DatasourceInputModal
+            isOpen={datasourceModalIsOpen}
+            onClose={onCloseDatasourceModal}
+            initialValues={{
+              ...datasource.config,
+              port: datasource.config.port.toString(),
+              id: datasourceId,
+            }}
+          />
+        )}
     </>
   );
 };

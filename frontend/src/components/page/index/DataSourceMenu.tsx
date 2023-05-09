@@ -1,6 +1,9 @@
 import { DatasourceInputModal } from "@/components/datasource/DatasourceInputModal";
 import { useAppSelector } from "@/hooks/reduxHooks";
-import { selectDatasourceMap } from "@/redux/slices/datasource/datasourceSliceSelectors";
+import {
+  selectDatasource,
+  selectDatasourceMap,
+} from "@/redux/slices/datasource/datasourceSliceSelectors";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -34,14 +37,11 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
   const handleClick = (value: string) => {
     onChange(value);
   };
-  const dataSourceMap = useAppSelector(selectDatasourceMap);
-  const selectedDataSourceConfig =
-    value !== undefined
-      ? dataSourceMap[value]?.config
-      : { resourceName: "Select a data source" };
+  const datasourceMap = useAppSelector(selectDatasourceMap);
+  const datasource = useAppSelector(selectDatasource(value));
   const resourceName =
-    selectedDataSourceConfig?.resourceName !== undefined
-      ? selectedDataSourceConfig.resourceName
+    datasource !== undefined
+      ? datasource.config.resourceName
       : "Select a data source";
 
   return (
@@ -52,8 +52,6 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
           h={8}
           w={48}
           borderRadius={"sm"}
-          textTransform={"uppercase"}
-          fontWeight={"bold"}
           color={"purple.500"}
           fontSize={"xs"}
           variant="outline"
@@ -80,8 +78,6 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
               w="100%"
               display="flex"
               borderRadius={"sm"}
-              textTransform={"uppercase"}
-              fontWeight={"bold"}
               color={"purple.500"}
               fontSize={"xs"}
               variant="outline"
@@ -93,7 +89,7 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
             </Button>
           </Box>
           <Flex w="100%" direction="column">
-            {Object.entries(dataSourceMap).map(([id, dataSource]) => (
+            {Object.entries(datasourceMap).map(([id, dataSource]) => (
               <MenuItem
                 display="flex"
                 borderRadius={"sm"}
@@ -102,8 +98,9 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
                 onClick={() => {
                   handleClick(id);
                 }}
+                fontSize="sm"
+                fontWeight="bold"
                 as={Button}
-                fontWeight={id === value ? "bold" : "normal"}
                 color={id === value ? "purple.500" : "gray.600"}
                 bgColor={id === value ? "purple.50" : "transparent"}
                 _hover={{

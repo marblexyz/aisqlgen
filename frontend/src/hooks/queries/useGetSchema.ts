@@ -1,35 +1,33 @@
-import { getSamplePGData } from "@/handlers/postgres/sample";
+import { getSampleData } from "@/handlers/db/sample";
 import { Datasource } from "@/types/redux/slices/datasource";
 import { useQuery } from "@tanstack/react-query";
 
 export type UseSampleRowsInTableInfo = {
-  sampleRowsInTableInfo?: number;
   datasource?: Datasource;
+  sampleRowsInTableInfo?: number;
   enabled?: boolean;
 };
 
-export const useGetPostgresSchema = ({
+export const useGetSchema = ({
   datasource,
   sampleRowsInTableInfo,
 }: UseSampleRowsInTableInfo) => {
-  const pgConfig = datasource?.config;
-  const resourceName = pgConfig?.resourceName ?? "sample";
+  const resourceName = datasource?.config.resourceName;
   const queryResult = useQuery({
     queryKey: ["samplePostgresData", resourceName, sampleRowsInTableInfo ?? 0],
     queryFn: async () => {
-      if (datasource === undefined) {
-        return {};
+      if (datasource?.config === undefined) {
+        return null;
       }
-      const data = await getSamplePGData({
-        config: pgConfig,
+      const data = await getSampleData({
+        config: datasource.config,
         sampleRowsInTableInfo,
       });
       if (data.error !== undefined) {
-        throw new Error("Error getting sample data.");
+        throw new Error(`Error getting sample data. ${data.error}`);
       }
       return data;
     },
   });
-
   return queryResult;
 };

@@ -5,7 +5,7 @@ import {
   HStack,
   Heading,
   Icon,
-  SimpleGrid,
+  Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -13,13 +13,15 @@ import { IoCheckmark } from "react-icons/io5";
 
 export const IndexHeader = () => {
   return (
-    <Flex w={"100%"} bg={"gray.50"} align={"center"} justify={"center"} py={6}>
-      <SimpleGrid
+    <Flex justifyContent="center" w={"100%"} bg={"gray.50"} py={6} px={4}>
+      <Stack
+        direction={{ base: "column", md: "row" }}
         h={"100%"}
-        w={"100%"}
+        w="100%"
         maxW={"container.lg"}
-        minChildWidth={48}
         spacing={2}
+        alignSelf={"center"}
+        justifyContent={"space-between"}
       >
         <VStack h={"100%"} w={"100%"} justify={"end"} spacing={8}>
           <Heading color={"purple.500"}>Generate SQL queries using AI</Heading>
@@ -38,7 +40,7 @@ export const IndexHeader = () => {
           h={"100%"}
           display="flex"
           alignItems={"end"}
-          justifyContent={{ base: "start", md: "center" }}
+          justifyContent={{ base: "start", md: "end" }}
         >
           <VStack
             bg={"gray.900"}
@@ -70,7 +72,7 @@ export const IndexHeader = () => {
             </HStack>
           </VStack>
         </Box>
-      </SimpleGrid>
+      </Stack>
     </Flex>
   );
 };

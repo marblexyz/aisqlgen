@@ -1,12 +1,13 @@
+import { PGConnectionConfig } from "@/types/redux/slices/datasource";
 import {
-  CreatePGPoolConfig,
   DatabaseSchemaObject,
-  PGTableSchema,
+  SQLTableSchema,
+  SampleRowsObject,
 } from "@/types/schema";
 import { isNullOrUndefined } from "@/utils";
 import { Pool, PoolClient, QueryResult } from "pg";
 
-export const createPool = (config: CreatePGPoolConfig) => {
+export const createPool = (config: PGConnectionConfig) => {
   try {
     const pool = new Pool(config);
     return pool;
@@ -16,13 +17,83 @@ export const createPool = (config: CreatePGPoolConfig) => {
   }
 };
 
-export type DatabaseSchemaRow = {
+export const getPostgresSchema = async (
+  config: PGConnectionConfig,
+  sampleRowsInTableInfo?: number
+) => {
+  try {
+    const pgPool = createPool(config);
+    // note: we don't try/catch this because if connecting throws an exception
+    // we don't need to dispose of the client (it will be undefined)
+    const poolClient = await pgPool.connect();
+
+    let databaseSchema: DatabaseSchemaObject;
+    let sampleRows: SampleRowsObject | undefined;
+    try {
+      databaseSchema = await getBasicDatabaseSchema(poolClient);
+      const tableNames = Object.keys(databaseSchema);
+
+      if (sampleRowsInTableInfo !== undefined) {
+        sampleRows = {};
+        for (const tableName of tableNames) {
+          try {
+            const res = await getSampleRowsForTable(
+              poolClient,
+              tableName,
+              sampleRowsInTableInfo
+            );
+            sampleRows[tableName] = res;
+          } catch {
+            delete databaseSchema[tableName];
+          }
+        }
+      }
+    } finally {
+      poolClient.release();
+    }
+    return { schema: databaseSchema, sampleRows };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const checkPostgresConnection = async (config: PGConnectionConfig) => {
+  const pgPool = createPool(config);
+  // note: we don't try/catch this because if connecting throws an exception
+  // we don't need to dispose of the client (it will be undefined)
+  const poolClient = await pgPool.connect();
+  try {
+    await poolClient.query("SELECT NOW() as now");
+  } finally {
+    poolClient.release();
+  }
+};
+
+export const executePostgresQuery = async (
+  config: PGConnectionConfig,
+  query: string
+) => {
+  const pgPool = createPool(config);
+  // note: we don't try/catch this because if connecting throws an exception
+  // we don't need to dispose of the client (it will be undefined)
+  const poolClient = await pgPool.connect();
+
+  const result = await poolClient.query(query);
+  const rows = result.rows as Record<string, string>[];
+  if (rows.length > 600) {
+    return rows.slice(0, 600);
+  }
+  return rows;
+};
+
+type DatabaseSchemaRow = {
   table_name: string;
   column_name: string;
   udt_name: string;
 };
 
-export type DatabaseRelationshipRow = {
+type DatabaseRelationshipRow = {
   table_name: string;
   column_name: string;
   key_type: "pk" | "fk";
@@ -30,7 +101,7 @@ export type DatabaseRelationshipRow = {
   referenced_column?: string;
 };
 
-export type DatabaseSchemaMap = Map<string, PGTableSchema>;
+type DatabaseSchemaMap = Map<string, SQLTableSchema>;
 
 const DB_SCHEMA_QUERY = `
 SELECT
@@ -86,7 +157,8 @@ ORDER BY
     key_type,
     kcu.column_name;
 `;
-export const getBasicDatabaseSchema = async (
+
+const getBasicDatabaseSchema = async (
   client: PoolClient
 ): Promise<DatabaseSchemaObject> => {
   let databaseSchema: QueryResult<DatabaseSchemaRow>;
@@ -158,7 +230,7 @@ export const getBasicDatabaseSchema = async (
   return Object.fromEntries(schema);
 };
 
-export const getSampleRowsForTable = async (
+const getSampleRowsForTable = async (
   poolClient: PoolClient,
   tableName: string,
   limit = 3
@@ -171,14 +243,5 @@ export const getSampleRowsForTable = async (
   } catch (error) {
     console.error(error);
     throw error;
-  }
-};
-
-export const checkDBConnection = async (pool: Pool) => {
-  try {
-    await pool.query("SELECT NOW()");
-  } catch (error) {
-    console.error(error);
-    throw new Error(`Error checking database connection.`);
   }
 };

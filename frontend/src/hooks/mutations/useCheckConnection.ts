@@ -1,12 +1,12 @@
-import { checkPgConnection } from "@/handlers/postgres/connection_health";
+import { checkConnection } from "@/handlers/db/connection_health";
 import { Datasource } from "@/types/redux/slices/datasource";
 import { useMutation } from "@tanstack/react-query";
 
-export const useCheckPgConnection = () => {
+export const useCheckConnection = () => {
   const mutationResult = useMutation({
-    mutationKey: ["checkPgConnection"],
+    mutationKey: ["checkConnection"],
     mutationFn: async (datasource: Datasource) => {
-      const result = await checkPgConnection(datasource);
+      const result = await checkConnection({ config: datasource.config });
       return result;
     },
   });

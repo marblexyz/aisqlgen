@@ -2,15 +2,12 @@ import { ChatCompletionRequestMessageRoleEnum } from "openai";
 import { printPromptEncodingLength } from "../utils";
 import { generateChatCompletion } from "./openai";
 
-export type GetPostgresPromptConfig = {
+export type GetPromptConfig = {
   userQuestion: string;
   tableInfo: string;
 };
 
-export const getPostgresPrompt = ({
-  tableInfo,
-  userQuestion,
-}: GetPostgresPromptConfig) => {
+export const getPrompt = ({ tableInfo, userQuestion }: GetPromptConfig) => {
   const PROMPT = `
 You are a PostgreSQL expert. Given an input question, your goal is to create a syntactically correct PostgreSQL query to run.
 You can order the results to return the most informative data in the database.
@@ -37,7 +34,7 @@ export const generateSQLCommandForQuery = async ({
   openAIKey,
 }: GenerateSQLCommandForQueryConfig) => {
   // TODO: Generalize this to work with any database type prompt
-  const psqlCmdPrompt = getPostgresPrompt({ userQuestion, tableInfo });
+  const psqlCmdPrompt = getPrompt({ userQuestion, tableInfo });
   printPromptEncodingLength(psqlCmdPrompt);
   const messages = [
     {
