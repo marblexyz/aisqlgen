@@ -10,13 +10,13 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { FC } from "react";
+import { FC, memo } from "react";
 
 type ResultTableProps = {
   data: DatabaseRow[];
 };
 
-export const ResultTable: FC<ResultTableProps> = ({ data }) => {
+const _ResultTable: FC<ResultTableProps> = ({ data }) => {
   if (data.length === 0) {
     return <Text>No results found.</Text>;
   }
@@ -49,3 +49,6 @@ export const ResultTable: FC<ResultTableProps> = ({ data }) => {
     </VStack>
   );
 };
+
+// https://react.dev/reference/react/memo
+export const ResultTable = memo(_ResultTable);
