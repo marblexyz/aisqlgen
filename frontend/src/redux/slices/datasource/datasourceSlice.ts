@@ -1,8 +1,7 @@
 import {
-  DatasourceConfigType,
+  Datasource,
   DatasourceMap,
   DatasourceMapState,
-  DatasourceType,
 } from "@/types/redux/slices/datasource";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
@@ -19,19 +18,25 @@ export const datasourceConnector = createSlice({
       action: PayloadAction<DatasourceMap>
     ) => {
       state.datasourceMap = action.payload;
+      // backfill config to postgresConfig
+      Object.entries(action.payload).map(([key, datasource]) => {
+        if (datasource === undefined) return;
+        state.datasourceMap[key] = {
+          ...datasource,
+        };
+      });
     },
     upsertDatasource: (
       state,
-      action: PayloadAction<{
-        id: string;
-        type: DatasourceType;
-        config: DatasourceConfigType;
-      }>
+      action: PayloadAction<
+        {
+          id: string;
+        } & Datasource
+      >
     ) => {
       const { id } = action.payload;
       state.datasourceMap[id] = {
-        type: action.payload.type,
-        config: action.payload.config,
+        ...action.payload,
       };
     },
     deleteDatasource: (state, action: PayloadAction<string>) => {

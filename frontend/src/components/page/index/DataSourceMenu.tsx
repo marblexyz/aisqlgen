@@ -1,6 +1,9 @@
 import { DatasourceInputModal } from "@/components/datasource/DatasourceInputModal";
 import { useAppSelector } from "@/hooks/reduxHooks";
-import { selectDatasourceMap } from "@/redux/slices/datasource/datasourceSliceSelectors";
+import {
+  selectDatasource,
+  selectDatasourceMap,
+} from "@/redux/slices/datasource/datasourceSliceSelectors";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -34,14 +37,11 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
   const handleClick = (value: string) => {
     onChange(value);
   };
-  const dataSourceMap = useAppSelector(selectDatasourceMap);
-  const selectedDataSourceConfig =
-    value !== undefined
-      ? dataSourceMap[value]?.config
-      : { resourceName: "Select a data source" };
+  const datasourceMap = useAppSelector(selectDatasourceMap);
+  const datasource = useAppSelector(selectDatasource(value));
   const resourceName =
-    selectedDataSourceConfig?.resourceName !== undefined
-      ? selectedDataSourceConfig.resourceName
+    datasource !== undefined
+      ? datasource.config.resourceName
       : "Select a data source";
 
   return (
@@ -93,7 +93,7 @@ export const DataSourceMenu: FC<DataSourceMenuProps> = ({
             </Button>
           </Box>
           <Flex w="100%" direction="column">
-            {Object.entries(dataSourceMap).map(([id, dataSource]) => (
+            {Object.entries(datasourceMap).map(([id, dataSource]) => (
               <MenuItem
                 display="flex"
                 borderRadius={"sm"}

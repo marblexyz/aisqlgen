@@ -5,7 +5,7 @@ import { SampleDataSwitch } from "@/components/page/index/SampleDataSwitch";
 import { useExecuteSQLCommand } from "@/hooks/mutations/useExecuteSQLCommand";
 import { useGenerateChart } from "@/hooks/mutations/useGenerateChart";
 import { useGenerateSQLCommand } from "@/hooks/mutations/useGenerateSQLCommand";
-import { useGetPostgresSchema } from "@/hooks/queries/useGetPostgresSchema";
+import { useGetSchema } from "@/hooks/queries/useGetSchema";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { selectOpenAIKey } from "@/redux/slices/config/configSliceSelector";
 import { selectDatasourceMap } from "@/redux/slices/datasource/datasourceSliceSelectors";
@@ -17,6 +17,7 @@ import {
 import { selectQuery } from "@/redux/slices/query/querySliceSelectors";
 import { DatabaseRow } from "@/types/schema";
 import {
+  Box,
   Button,
   Collapse,
   Flex,
@@ -102,7 +103,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     data: samplePostgresData,
     isLoading: isLoadingDbSchema,
     isError: isErrorDbSchema,
-  } = useGetPostgresSchema({
+  } = useGetSchema({
     sampleRowsInTableInfo: sampleDataInTableInfoRowCount,
     datasource,
   });
@@ -268,16 +269,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
     setExecuteError(undefined);
     executeSQLCommand({
       query: command,
-      config:
-        datasource !== undefined
-          ? {
-              host: datasource.config.host,
-              port: datasource.config.port,
-              user: datasource.config.user,
-              password: datasource.config.password,
-              database: datasource.config.database,
-            }
-          : undefined,
+      datasource,
     });
     setTabIndex(0);
   };
@@ -691,9 +683,11 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                         }}
                       >{`${isResultOpen ? "Hide" : "Show"}`}</BasicButton>
                     </HStack>
-                    <Collapse in={isResultOpen} animateOpacity>
-                      <ResultTable data={queryResult} />
-                    </Collapse>
+                    <Box overflowX={"auto"} w="100%">
+                      <Collapse in={isResultOpen} animateOpacity>
+                        <ResultTable data={queryResult} />
+                      </Collapse>
+                    </Box>
                   </VStack>
                 )}
             </TabPanel>

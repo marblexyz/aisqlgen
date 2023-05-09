@@ -1,10 +1,11 @@
-import { executeSQLQuery } from "@/handlers/query";
-import { CreatePGPoolConfig, DatabaseRow } from "@/types/schema";
+import { executeSQLQuery } from "@/handlers/db/execute";
+import { Datasource } from "@/types/redux/slices/datasource";
+import { DatabaseRow } from "@/types/schema";
 import { useMutation } from "@tanstack/react-query";
 
 export type ExecuteSQLQueryConfig = {
   query: string;
-  config?: CreatePGPoolConfig;
+  datasource?: Datasource;
 };
 export const useExecuteSQLCommand = ({
   onSuccess,
@@ -15,10 +16,13 @@ export const useExecuteSQLCommand = ({
 }) => {
   const mutationResult = useMutation({
     mutationKey: ["executeSQLQuery"],
-    mutationFn: async ({ query, config }: ExecuteSQLQueryConfig) => {
+    mutationFn: async ({ query, datasource }: ExecuteSQLQueryConfig) => {
+      if (datasource?.config === undefined) {
+        throw new Error("Datasource config is undefined.");
+      }
       const result = await executeSQLQuery({
         query,
-        config,
+        config: datasource.config,
       });
       return result;
     },

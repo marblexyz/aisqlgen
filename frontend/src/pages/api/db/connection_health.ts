@@ -1,11 +1,15 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { createPool } from "@/node/db/postgres";
-import { CreatePGPoolConfig } from "@/types/schema";
+import { checkPostgresConnection } from "@/node/db/postgres";
+import { checkSqliteConnection } from "@/node/db/sqlite";
+import {
+  DatasourceConnectionConfig,
+  DatasourceType,
+} from "@/types/redux/slices/datasource";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export type CheckDBConnection = {
-  config?: CreatePGPoolConfig | null | undefined;
+export type CheckDBConnectionRequest = {
+  config?: DatasourceConnectionConfig | null | undefined;
 };
 
 export type CheckDBConnectionResult = {
@@ -28,22 +32,24 @@ export default async function handler(
   if (body === undefined || body === null) {
     res.status(400).json({ error: "Bad Request" });
   }
-  const { config } = body as CheckDBConnection;
+  const { config } = body as CheckDBConnectionRequest;
   if (config === undefined || config === null) {
     res.status(400).json({ error: "DB config was not submitted." });
     return;
   }
   try {
-    const pgPool = createPool(config);
-    // note: we don't try/catch this because if connecting throws an exception
-    // we don't need to dispose of the client (it will be undefined)
-    const poolClient = await pgPool.connect();
-    try {
-      await poolClient.query("SELECT NOW() as now");
-    } finally {
-      poolClient.release();
+    switch (config.type) {
+      case DatasourceType.Postgres: {
+        await checkPostgresConnection(config);
+        res.status(200).json({ isConnected: true });
+        break;
+      }
+      case DatasourceType.Sqlite: {
+        await checkSqliteConnection(config);
+        res.status(200).json({ isConnected: true });
+        break;
+      }
     }
-    res.status(200).json({ isConnected: true });
   } catch (error) {
     res.status(401).json({ error: `${error}`, isConnected: false });
   }
