@@ -1,32 +1,25 @@
-import { GenerateSQLQueryResult } from "@/pages/api/query";
-import { ExecutionLogItem } from "@/types/api";
-import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
+import {
+  GenerateSQLCommandRequest,
+  GenerateSQLQueryResult,
+} from "@/pages/api/query";
 import { HttpMethod, callServerlessApi } from ".";
-
-export type GenerateSQLQueryConfig = {
-  userQuestion: string;
-  query?: string;
-  dbSchema?: DatabaseSchemaObject;
-  sampleRows?: SampleRowsObject;
-  sequential?: boolean;
-  previousQueries?: ExecutionLogItem[];
-  openAIKey?: string;
-};
 
 export const generateSQLQuery = async ({
   userQuestion,
+  datasourceType,
   query,
   dbSchema,
   sampleRows,
   sequential,
   previousQueries,
   openAIKey,
-}: GenerateSQLQueryConfig) => {
+}: GenerateSQLCommandRequest) => {
   const response = await callServerlessApi(
     "/api/query",
     HttpMethod.POST,
     JSON.stringify({
       userQuestion,
+      datasourceType,
       previousQueries,
       query,
       dbSchema,

@@ -8,12 +8,14 @@ import { DatasourceListButton } from "./DatasourceListButton";
 export type DatasourceListPanelProps = {
   datasourceMap: DatasourceMap;
   onClickDatasourceListItem: (id: string) => void;
+  onClickUpdateLocal: () => void;
   onOpenDatasourceModal: () => void;
 };
 
 export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
   datasourceMap,
   onClickDatasourceListItem,
+  onClickUpdateLocal,
   onOpenDatasourceModal,
 }) => {
   const datasourceMapKeys = Object.keys(datasourceMap);
@@ -27,29 +29,36 @@ export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
           Connections to external databases to be used when generating queries.
         </Text>
       </VStack>
-      <BasicButton
-        onClick={onOpenDatasourceModal}
-        borderRadius={"sm"}
-        bg={"purple.500"}
-        color={"white"}
-        _hover={{
-          bg: "purple.100",
-          cursor: "pointer",
-        }}
-        _active={{
-          bg: "purple.100",
-          cursor: "pointer",
-        }}
-        _focus={{
-          bg: "purple.100",
-          cursor: "pointer",
-        }}
-      >
-        <HStack w="100%" align={"center"} justify={"center"}>
-          <Icon as={IoAddSharp} />
-          <Text>Add datasource</Text>
-        </HStack>
-      </BasicButton>
+      <VStack w="100%">
+        <BasicButton
+          w="100%"
+          onClick={onOpenDatasourceModal}
+          borderRadius={"sm"}
+          bg={"purple.500"}
+          color={"white"}
+          _hover={{
+            bg: "purple.100",
+            cursor: "pointer",
+          }}
+          _active={{
+            bg: "purple.100",
+            cursor: "pointer",
+          }}
+          _focus={{
+            bg: "purple.100",
+            cursor: "pointer",
+          }}
+        >
+          <HStack w="100%" align={"center"} justify={"center"}>
+            <Icon as={IoAddSharp} />
+            <Text>Add datasource</Text>
+          </HStack>
+        </BasicButton>
+        <BasicButton w="100%" onClick={onClickUpdateLocal}>
+          Sync local dataset
+        </BasicButton>
+      </VStack>
+
       <Flex w="100%" direction={"column"} flex={1}>
         <Text
           fontSize="xs"

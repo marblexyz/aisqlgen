@@ -33,8 +33,6 @@ export const QueryHistory: FC<QueryHistoryProps> = ({
         h={8}
         w={32}
         borderRadius={"sm"}
-        textTransform={"uppercase"}
-        fontWeight={"bold"}
         color={"purple.500"}
         fontSize={"xs"}
         variant="outline"
@@ -86,7 +84,7 @@ export const QueryHistory: FC<QueryHistoryProps> = ({
                         <VStack w="100%" alignItems={"left"} spacing={0}>
                           <Text
                             fontSize="xs"
-                            color="purple.500"
+                            color="gray.400"
                             textTransform={"uppercase"}
                             fontWeight={"bold"}
                           >
@@ -97,7 +95,7 @@ export const QueryHistory: FC<QueryHistoryProps> = ({
                         <VStack w="100%" alignItems={"left"} spacing={0}>
                           <Text
                             fontSize="xs"
-                            color="purple.500"
+                            color="gray.400"
                             textTransform={"uppercase"}
                             fontWeight={"bold"}
                           >

@@ -4,11 +4,12 @@ export enum DatasourceType {
 }
 
 export type ConnectionBase = {
+  type: DatasourceType;
   resourceName: string;
 };
 
 export type PGConnectionConfig = ConnectionBase & {
-  type: DatasourceType.Postgres;
+  type: typeof DatasourceType.Postgres;
   host: string;
   port: number;
   database: string;
@@ -17,7 +18,7 @@ export type PGConnectionConfig = ConnectionBase & {
 };
 
 export type SQLiteConnectionConfig = ConnectionBase & {
-  type: DatasourceType.Sqlite;
+  type: typeof DatasourceType.Sqlite;
   filename: string;
 };
 

@@ -77,8 +77,6 @@ export default function Home() {
                   h={8}
                   w={48}
                   borderRadius={0}
-                  textTransform={"uppercase"}
-                  fontWeight={"bold"}
                   color={"purple.500"}
                   fontSize={"xs"}
                   variant="outline"

@@ -157,6 +157,7 @@ export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
         type: DatasourceType.Postgres,
       } as PGConnectionConfig,
     };
+    // Type 'DatasourceType' is not assignable to type 'DatasourceType.Postgres'.ts(2345)
     checkPgConnection(datasource);
   };
   const action = initialValues !== undefined ? "Edit" : "Add";

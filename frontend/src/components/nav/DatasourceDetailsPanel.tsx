@@ -94,10 +94,10 @@ export const DatasourceDetailsPanel: FC<DatasourceDetailsPanelProps> = ({
                   bg: "gray.100",
                 }}
               >
-                <HStack>
+                <HStack alignItems={"center"} justifyContent={"center"}>
                   <Image
                     src={`/logos/${datasource.type.toLowerCase()}.png`}
-                    alt={`${datasource.type} Logo}`}
+                    alt={`${datasource.type} Logo`}
                     width={"15"}
                     height={"15"}
                   />
@@ -109,8 +109,6 @@ export const DatasourceDetailsPanel: FC<DatasourceDetailsPanelProps> = ({
               <Button
                 aria-label="Edit datasource"
                 variant="unstyled"
-                textTransform={"uppercase"}
-                fontWeight={"bold"}
                 color={"red.500"}
                 fontSize={"xs"}
                 borderColor={"red.500"}

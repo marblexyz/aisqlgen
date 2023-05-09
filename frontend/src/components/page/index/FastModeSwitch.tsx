@@ -30,7 +30,7 @@ export const FastModeSwitch: FC<FastModeSwitchProps> = ({
         aria-label="Disable fast mode for slower and potentially more accurate responses."
       >
         <Text
-          fontSize={"sm"}
+          fontSize={"xs"}
           whiteSpace={"nowrap"}
           textTransform={"uppercase"}
           color={isChecked ? "yellow.500" : "gray.400"}
