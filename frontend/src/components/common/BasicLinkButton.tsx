@@ -21,7 +21,7 @@ export const BasicLinkButton: FC<BasicLinkButtonProps> = ({
       h={8}
       fontWeight={"normal"}
       color={"gray.900"}
-      borderRadius={"none"}
+      borderRadius={"sm"}
       fontSize={"sm"}
       _hover={{
         bg: "gray.50",

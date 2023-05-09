@@ -48,7 +48,7 @@ export const APIKeyInput: FC<APIKeyInputProps> = ({ onSave }) => {
         <Input
           pr={10}
           h={8}
-          borderRadius={0}
+          borderRadius={"sm"}
           variant={"ghost"}
           placeholder="OpenAI API Key"
           type={show ? "text" : "password"}

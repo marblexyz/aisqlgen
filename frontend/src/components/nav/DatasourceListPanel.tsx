@@ -54,9 +54,11 @@ export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
             <Text>Add datasource</Text>
           </HStack>
         </BasicButton>
-        <BasicButton w="100%" onClick={onClickUpdateLocal}>
-          Sync local dataset
-        </BasicButton>
+        {process.env.NODE_ENV === "development" && (
+          <BasicButton w="100%" onClick={onClickUpdateLocal}>
+            Sync local dataset
+          </BasicButton>
+        )}
       </VStack>
 
       <Flex w="100%" direction={"column"} flex={1}>

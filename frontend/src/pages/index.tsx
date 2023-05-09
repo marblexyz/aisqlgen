@@ -76,7 +76,7 @@ export default function Home() {
                   my={0}
                   h={8}
                   w={48}
-                  borderRadius={0}
+                  borderRadius={"sm"}
                   color={"purple.500"}
                   fontSize={"xs"}
                   variant="outline"

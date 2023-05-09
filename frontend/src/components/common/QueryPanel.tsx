@@ -733,21 +733,21 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                     isChecked={useGPT4}
                     onToggle={setUseGPT4.toggle}
                   />
-                  <Popover placement="end">
+                  <Popover placement="bottom">
                     <PopoverTrigger>
-                      <BasicButton variant="unstyled" display="flex" w={32}>
-                        View chart code
-                      </BasicButton>
+                      <Button
+                        fontWeight="normal"
+                        fontSize="sm"
+                        borderRadius="sm"
+                        h="8"
+                      >
+                        <Text>View chart code</Text>
+                      </Button>
                     </PopoverTrigger>
-                    <PopoverContent
-                      position={"absolute"}
-                      top={"10"}
-                      w="container.md"
-                      left="0"
-                    >
+                    <PopoverContent w="100%" maxW="container.md">
                       <PopoverArrow />
                       <PopoverCloseButton />
-                      <PopoverBody fontSize="md" mr="8" minH={10}>
+                      <PopoverBody fontSize="md" mr="8" mt="6" minH={10}>
                         <Text>
                           {chartCode !== undefined
                             ? chartCode

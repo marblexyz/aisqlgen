@@ -35,6 +35,7 @@ export const QueryHistory: FC<QueryHistoryProps> = ({
         borderRadius={"sm"}
         color={"purple.500"}
         fontSize={"xs"}
+        textTransform={"none"}
         variant="outline"
         borderColor={"purple.500"}
         onClick={onOpen}

@@ -17,7 +17,7 @@ export const useGetSchema = ({
     queryKey: ["samplePostgresData", resourceName, sampleRowsInTableInfo ?? 0],
     queryFn: async () => {
       if (datasource?.config === undefined) {
-        throw new Error("Datasource config is undefined.");
+        return null;
       }
       const data = await getSampleData({
         config: datasource.config,
