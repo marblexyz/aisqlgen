@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  querymaker-server-db:
+    container_name: querymaker-local-db
+    networks:
+      - querymaker-server
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=querymaker_local
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - querymaker-server-db:/var/lib/postgresql/querymaker-server-db/data
+volumes:
+  querymaker-server-db:
+    driver: local
+networks:
+  querymaker-server: # spins up querymaker-server which local server can connect to
