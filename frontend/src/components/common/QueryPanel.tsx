@@ -309,8 +309,8 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
         executionLog: {
           ...queryItem.executionLog,
           [executionId]: {
+            ...queryItem.executionLog[executionId],
             id: executionId,
-            userQuestion,
             command: event.target.value,
             timestamp: Date.now(),
           },
@@ -330,9 +330,9 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
         executionLog: {
           ...queryItem.executionLog,
           [executionId]: {
+            ...queryItem.executionLog[executionId],
             id: executionId,
             userQuestion: event.target.value,
-            command,
             timestamp: Date.now(),
           },
         },
@@ -667,7 +667,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                     <HStack w="100%" justifyContent={"space-between"}>
                       <Text fontSize="sm" color="gray.600" fontWeight="bold">
                         Showing {queryResult.length} results.{" "}
-                        {queryResult.length === 600
+                        {queryResult.length >= 600
                           ? "Results may have been trunctaed because it was too long."
                           : ""}
                       </Text>
@@ -794,6 +794,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                 {isLoadingGenerateChart && <Spinner />}
                 {!isLoadingGenerateChart &&
                   chartCode !== undefined &&
+                  // do not pre-render the graph because this causes issues with the chart
                   tabIndex === 1 && (
                     <Flex
                       flexDirection={"column"}

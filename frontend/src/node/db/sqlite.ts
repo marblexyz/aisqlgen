@@ -58,7 +58,11 @@ export const executeSqliteQuery = async (
   query: string
 ) => {
   const conn = await createConnection(config);
-  return await conn.all<Record<string, string>[]>(query);
+  const rows = await conn.all<Record<string, string>[]>(query);
+  if (rows.length > 600) {
+    return rows.slice(0, 600);
+  }
+  return rows;
 };
 
 const createConnection = async (config: SQLiteConnectionConfig) => {
