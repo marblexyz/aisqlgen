@@ -1,4 +1,5 @@
 import { Button, Flex, Heading, useDisclosure } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { FC } from "react";
 import { SettingsModal } from "../common/SettingsModal";
@@ -9,6 +10,8 @@ export const Navbar: FC = () => {
     onClose: onCloseOpenAIKeyModal,
     onOpen: onOpenOpenAIKeyModal,
   } = useDisclosure();
+  const { data: session } = useSession();
+  const isLoggedIn = session !== null;
   return (
     <>
       <Flex
@@ -36,21 +39,41 @@ export const Navbar: FC = () => {
             </Heading>
           </Flex>
         </Link>
-        <Button
-          variant="unstyled"
-          onClick={onOpenOpenAIKeyModal}
-          h="12"
-          _hover={{ bg: "purple.50" }}
-          px={4}
-          alignItems={"center"}
-          borderLeft="1px solid"
-          borderColor={"gray.200"}
-          borderRadius={0}
-        >
-          <Heading size={"sm"} color="purple.600" textAlign={"center"}>
-            Settings
-          </Heading>
-        </Button>
+        {isLoggedIn && (
+          <Button
+            variant="unstyled"
+            onClick={onOpenOpenAIKeyModal}
+            h="12"
+            _hover={{ bg: "purple.50" }}
+            px={4}
+            alignItems={"center"}
+            borderLeft="1px solid"
+            borderColor={"gray.200"}
+            borderRadius={0}
+          >
+            <Heading size={"sm"} color="purple.600" textAlign={"center"}>
+              Settings
+            </Heading>
+          </Button>
+        )}
+        {!isLoggedIn && (
+          <Link href={"/auth/signin"}>
+            <Button
+              variant="unstyled"
+              h="12"
+              _hover={{ bg: "purple.50" }}
+              px={4}
+              alignItems={"center"}
+              borderLeft="1px solid"
+              borderColor={"gray.200"}
+              borderRadius={0}
+            >
+              <Heading size={"sm"} color="purple.600" textAlign={"center"}>
+                Sign in
+              </Heading>
+            </Button>
+          </Link>
+        )}
       </Flex>
       <SettingsModal
         isOpen={isOpenOpenAIKeyModal}

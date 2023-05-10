@@ -35,19 +35,21 @@ export const SettingsModal: FC<SettingModalProps> = ({ isOpen, onClose }) => {
         <ModalHeader>Input your OpenAI Key</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <VStack
-            w="100%"
-            minH="48"
-            h="100%"
-            justifyContent={"center"}
-            display="flex"
-            spacing={4}
-          >
-            <APIKeyInput onSave={handleSave} />
-            <Text textAlign="center">
-              We do not upload, log, or store your API key outside of your
-              browser storage.{" "}
-            </Text>
+          <VStack spacing={8}>
+            <VStack
+              w="100%"
+              minH="48"
+              h="100%"
+              justifyContent={"center"}
+              display="flex"
+              spacing={4}
+            >
+              <APIKeyInput onSave={handleSave} />
+              <Text textAlign="center">
+                We do not upload, log, or store your API key outside of your
+                browser storage.{" "}
+              </Text>
+            </VStack>
             <Button
               aria-label="Edit datasource"
               variant="unstyled"
@@ -63,6 +65,7 @@ export const SettingsModal: FC<SettingModalProps> = ({ isOpen, onClose }) => {
               py={0}
               borderRadius={1}
               onClick={handleSignOut}
+              w={60}
             >
               Sign out
             </Button>

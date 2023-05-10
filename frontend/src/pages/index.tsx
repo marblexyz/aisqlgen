@@ -4,6 +4,7 @@ import { SEOHead } from "@/components/utility/SEOHead";
 import { CHAKRA_100VH } from "@/style/constants";
 import {
   Button,
+  Link as ChakraLink,
   Flex,
   HStack,
   Heading,
@@ -48,9 +49,20 @@ export default function Home() {
             </Heading>
             <BasicButton bg={"purple.500"} color={"white"}>
               <Link href={"/auth/signin"}>
-                <Heading size={"sm"}>Get started for free</Heading>
+                <Heading size={"sm"}>{`Get started for free`}</Heading>
               </Link>
             </BasicButton>
+            <Text>
+              Need to generate queries locally?{" "}
+              <ChakraLink
+                target={"_blank"}
+                href={"https://github.com/marblexyz/aisqlgen"}
+                color={"purple.500"}
+                _hover={{ textDecor: "underline" }}
+              >
+                Download on GitHub
+              </ChakraLink>
+            </Text>
             <video controls style={{ width: "100%", maxWidth: "1024px" }}>
               <source src="/demo-video.mp4" />
             </video>
