@@ -2,6 +2,7 @@ import { BasicButton } from "@/components/common/BasicButton";
 import { Navbar } from "@/components/nav/Navbar";
 import { SEOHead } from "@/components/utility/SEOHead";
 import { CHAKRA_100VH } from "@/style/constants";
+import { isRunningLocally } from "@/utils/isRunningLocally";
 import {
   Button,
   Link as ChakraLink,
@@ -116,7 +117,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     getAuthOptions()
   );
 
-  if (session !== null) {
+  if (session !== null || isRunningLocally()) {
     return { redirect: { destination: "/query" } };
   }
 

@@ -1,4 +1,5 @@
 import { DatasourceMap } from "@/types/redux/slices/datasource";
+import { isRunningLocally } from "@/utils/isRunningLocally";
 import { Flex, HStack, Heading, Icon, Text, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 import { IoAddSharp } from "react-icons/io5";
@@ -55,7 +56,7 @@ export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
             <Text>Add datasource</Text>
           </HStack>
         </BasicButton>
-        {process.env.NODE_ENV === "development" && (
+        {isRunningLocally() && (
           <BasicButton w="100%" onClick={onClickUpdateLocal} maxW="xs">
             Sync local dataset
           </BasicButton>

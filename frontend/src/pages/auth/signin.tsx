@@ -3,6 +3,7 @@ import { CHAKRA_100VH } from "@/style/constants";
 import { Box, Flex, Heading, VStack } from "@chakra-ui/react";
 
 import { SEOHead } from "@/components/utility/SEOHead";
+import { isRunningLocally } from "@/utils/isRunningLocally";
 import type { GetServerSidePropsContext } from "next";
 import { getServerSession } from "next-auth/next";
 import { getProviders, signIn } from "next-auth/react";
@@ -58,7 +59,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     getAuthOptions()
   );
 
-  if (session !== null) {
+  if (session !== null || isRunningLocally()) {
     return { redirect: { destination: "/query" } };
   }
 

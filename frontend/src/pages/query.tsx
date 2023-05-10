@@ -10,6 +10,7 @@ import { selectIds } from "@/redux/slices/query/querySliceSelectors";
 import { SHOW_OPEN_AI_KEY_MODAL } from "@/storage/keys";
 import { localForageStore } from "@/storage/storage-provider";
 import { CHAKRA_100VH } from "@/style/constants";
+import { isRunningLocally } from "@/utils/isRunningLocally";
 import {
   Button,
   Divider,
@@ -114,10 +115,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     getAuthOptions()
   );
 
-  // If the user is already logged in, redirect.
+  // If the user is already logged in or is running locally, redirect.
   // Note: Make sure not to redirect to the same page
   // To avoid an infinite loop!
-  if (session === null) {
+  if (session === null || isRunningLocally()) {
     return { redirect: { destination: "/" } };
   }
 
