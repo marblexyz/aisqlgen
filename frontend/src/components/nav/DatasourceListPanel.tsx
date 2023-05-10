@@ -1,4 +1,5 @@
 import { DatasourceMap } from "@/types/redux/slices/datasource";
+import { isRunningLocally } from "@/utils/isRunningLocally";
 import { Flex, HStack, Heading, Icon, Text, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 import { IoAddSharp } from "react-icons/io5";
@@ -20,7 +21,7 @@ export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
 }) => {
   const datasourceMapKeys = Object.keys(datasourceMap);
   return (
-    <Flex w="100%" px={4} py={4} direction={"column"}>
+    <Flex w="100%" px={4} py={4} direction={"column"} h="100%" maxW="xs">
       <VStack w="100%" align={"left"} mb={4}>
         <Heading size="sm" color="gray.900" mb="2">
           Data connections
@@ -32,20 +33,21 @@ export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
       <VStack w="100%">
         <BasicButton
           w="100%"
+          maxW="xs"
           onClick={onOpenDatasourceModal}
           borderRadius={"sm"}
           bg={"purple.500"}
           color={"white"}
           _hover={{
-            bg: "purple.100",
+            bg: "purple.300",
             cursor: "pointer",
           }}
           _active={{
-            bg: "purple.100",
+            bg: "purple.300",
             cursor: "pointer",
           }}
           _focus={{
-            bg: "purple.100",
+            bg: "purple.300",
             cursor: "pointer",
           }}
         >
@@ -54,8 +56,8 @@ export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
             <Text>Add datasource</Text>
           </HStack>
         </BasicButton>
-        {process.env.NODE_ENV === "development" && (
-          <BasicButton w="100%" onClick={onClickUpdateLocal}>
+        {isRunningLocally() && (
+          <BasicButton w="100%" onClick={onClickUpdateLocal} maxW="xs">
             Sync local dataset
           </BasicButton>
         )}

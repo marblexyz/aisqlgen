@@ -1,41 +1,45 @@
-import {
-  Box,
-  Circle,
-  Flex,
-  HStack,
-  Heading,
-  Icon,
-  Stack,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
-import { IoCheckmark } from "react-icons/io5";
-
+import { BasicButton } from "@/components/common/BasicButton";
+import { Box, Flex, Heading, VStack } from "@chakra-ui/react";
+import Image from "next/image";
+import Link from "next/link";
 export const IndexHeader = () => {
   return (
-    <Flex justifyContent="center" w={"100%"} bg={"gray.50"} py={6} px={4}>
-      <Stack
-        direction={{ base: "column", md: "row" }}
-        h={"100%"}
-        w="100%"
-        maxW={"container.lg"}
-        spacing={2}
-        alignSelf={"center"}
-        justifyContent={"space-between"}
-      >
-        <VStack h={"100%"} w={"100%"} justify={"end"} spacing={8}>
-          <Heading color={"purple.500"}>Generate SQL queries using AI</Heading>
-          <Heading
-            size={"md"}
-            color={"gray.500"}
-            fontWeight={"normal"}
-            lineHeight={"base"}
-          >
-            Complicated joins? Difficult aggregations? Generate SQL queries
-            automagically with AI.
-          </Heading>
-        </VStack>
-        <Box
+    <Flex
+      w={"100%"}
+      bg={"gray.50"}
+      align={"center"}
+      justify={"center"}
+      py={6}
+      minH="60"
+    >
+      <VStack h={"100%"} w={"100%"} justify={"end"} spacing={8}>
+        <Heading color={"purple.500"}>Generate SQL queries using AI</Heading>
+        <Heading
+          size={"md"}
+          color={"gray.500"}
+          fontWeight={"normal"}
+          lineHeight={"base"}
+        >
+          Complicated joins? Difficult aggregations? Generate SQL queries
+          automagically with AI.
+        </Heading>
+        <BasicButton bg={"purple.500"} color={"white"}>
+          <Link href={"/auth/signin"}>
+            <Heading size={"md"}>Get started for free</Heading>
+          </Link>
+        </BasicButton>
+
+        <Box borderRadius={2}>
+          <Image
+            width={700}
+            height={200}
+            src={"/generate_query.png"}
+            alt={"Picture of a robot writing SQL on a blackboard."}
+          />
+        </Box>
+      </VStack>
+
+      {/* <Box
           w={"100%"}
           h={"100%"}
           display="flex"
@@ -71,8 +75,7 @@ export const IndexHeader = () => {
               <Text>Query multiple data sources at once</Text>
             </HStack>
           </VStack>
-        </Box>
-      </Stack>
+        </Box> */}
     </Flex>
   );
 };

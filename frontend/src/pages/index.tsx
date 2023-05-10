@@ -1,101 +1,129 @@
-import { OpenAIKeyModal } from "@/components/common/OpenAIKeyModal";
-import { QueryPanel } from "@/components/common/QueryPanel";
+import { BasicButton } from "@/components/common/BasicButton";
 import { Navbar } from "@/components/nav/Navbar";
-import { Sidebar } from "@/components/nav/Sidebar";
-import { IndexHeader } from "@/components/page/index/IndexHeader";
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
-import { selectOpenAIKey } from "@/redux/slices/config/configSliceSelector";
-import { createQuery } from "@/redux/slices/query/querySlice";
-import { selectIds } from "@/redux/slices/query/querySliceSelectors";
-import { SHOW_OPEN_AI_KEY_MODAL } from "@/storage/keys";
-import { localForageStore } from "@/storage/storage-provider";
+import { SEOHead } from "@/components/utility/SEOHead";
 import { CHAKRA_100VH } from "@/style/constants";
+import { isRunningLocally } from "@/utils/isRunningLocally";
 import {
   Button,
-  Divider,
+  Link as ChakraLink,
   Flex,
   HStack,
   Heading,
+  Icon,
   Text,
   VStack,
-  useDisclosure,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import type { GetServerSidePropsContext } from "next";
+import { getServerSession } from "next-auth/next";
+import { getProviders } from "next-auth/react";
+import Link from "next/link";
+import { FaDiscord } from "react-icons/fa";
+import { getAuthOptions } from "./api/auth/[...nextauth]";
 
 export default function Home() {
-  const {
-    isOpen: isOpenOpenAIKeyModal,
-    onClose: onCloseOpenAIKeyModal,
-    onOpen: onOpenOpenAIKeyModal,
-  } = useDisclosure();
-  const openAIKey = useAppSelector(selectOpenAIKey);
-  useEffect(() => {
-    const showModal = async () => {
-      if (
-        openAIKey === "" &&
-        ((await localForageStore.getItem(SHOW_OPEN_AI_KEY_MODAL)) === null ||
-          (await localForageStore.getItem(SHOW_OPEN_AI_KEY_MODAL)) === true)
-      ) {
-        onOpenOpenAIKeyModal();
-      }
-    };
-    void showModal();
-  }, [openAIKey, onOpenOpenAIKeyModal]);
-
-  const dispatch = useAppDispatch();
-  const handleCreateNewQuery = () => {
-    dispatch(createQuery());
-  };
-  const ids = useAppSelector(selectIds);
-  const [isMounted, setMount] = useState(false);
-
-  useEffect(() => {
-    setMount(true);
-  }, []);
-
   return (
-    <Flex direction={"column"} h={CHAKRA_100VH}>
-      <Navbar />
-      {/** subtract navbar height */}
-      <Flex h="calc(100% - 48px)">
-        <Sidebar />
-        <Flex direction={"column"} w="100%" overflowY="auto" pb={24}>
-          <IndexHeader />
-          <Flex w={"100%"} justify={"center"} align={"center"} px={4} pt={8}>
-            <VStack w="100%" maxW="container.lg" spacing={4}>
-              <Heading size="md" textAlign={"left"} w="100%">
-                Generate query
-              </Heading>
-              <HStack w="100%">
-                <Text w="100%">
-                  Select a data source, a schema, a table, and a question to
-                  generate your query.
-                </Text>
-                <Button
-                  p={0}
-                  my={0}
-                  h={8}
-                  w={48}
-                  borderRadius={"sm"}
-                  color={"purple.500"}
-                  fontSize={"xs"}
-                  variant="outline"
-                  borderColor={"purple.500"}
-                  onClick={handleCreateNewQuery}
-                >
-                  Create new query
-                </Button>
-              </HStack>
-              <Divider />
-              {isMounted && ids.map((id) => <QueryPanel key={id} id={id} />)}
-            </VStack>
-          </Flex>
+    <>
+      <SEOHead title={"Generate SQL queries from natural language"} />
+      <Flex direction={"column"} h={CHAKRA_100VH}>
+        <Navbar />
+        {/** subtract navbar height */}
+        <Flex
+          h="calc(100% - 48px)"
+          direction={"column"}
+          w="100%"
+          overflowY="auto"
+          justify={"center"}
+          alignItems={"center"}
+        >
+          <VStack h={"100%"} w={"100%"} spacing={8} py={24} px={4}>
+            <Heading color={"purple.500"}>
+              Generate SQL queries using AI
+            </Heading>
+            <Heading
+              size={"md"}
+              color={"gray.500"}
+              fontWeight={"normal"}
+              lineHeight={"base"}
+            >
+              Complicated joins? Difficult aggregations? Generate SQL queries
+              automagically with AI.
+            </Heading>
+            <BasicButton bg={"purple.500"} color={"white"}>
+              <Link href={"/auth/signin"}>
+                <Heading size={"sm"}>{`Get started for free`}</Heading>
+              </Link>
+            </BasicButton>
+            <Text>
+              Need to generate queries locally?{" "}
+              <ChakraLink
+                target={"_blank"}
+                href={"https://github.com/marblexyz/aisqlgen"}
+                color={"purple.500"}
+                _hover={{ textDecor: "underline" }}
+              >
+                Download on GitHub
+              </ChakraLink>
+            </Text>
+            <video controls style={{ width: "100%", maxWidth: "1024px" }}>
+              <source src="/demo-video.mp4" />
+            </video>
+          </VStack>
+        </Flex>
+        <Flex
+          py={4}
+          flexDirection={"column"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          position="fixed"
+          w="100%"
+          bottom={0}
+        >
+          <HStack>
+            <Button
+              w="auto"
+              display="flex"
+              variant="unstyled"
+              _hover={{
+                bg: "purple.600",
+              }}
+            >
+              <Link
+                href={`https://discord.gg/5ZQ4mqMvpB`}
+                target={"_blank"}
+                style={{ display: "flex" }}
+              >
+                <HStack color="purple.900">
+                  <Icon w={6} h={6} as={FaDiscord} />
+                </HStack>
+              </Link>
+            </Button>
+            <Text color="purple.900" fontWeight="bold" fontSize="sm">
+              team@aisqlgen.com
+            </Text>
+          </HStack>
+          <Text color="purple.900" fontSize="sm" fontWeight="bold">
+            © Superdrop Labs Inc. {new Date().getFullYear()}{" "}
+          </Text>
         </Flex>
       </Flex>
-      <OpenAIKeyModal
-        isOpen={isOpenOpenAIKeyModal}
-        onClose={onCloseOpenAIKeyModal}
-      />
-    </Flex>
+    </>
   );
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(
+    context.req,
+    context.res,
+    getAuthOptions()
+  );
+
+  if (session !== null || isRunningLocally()) {
+    return { redirect: { destination: "/query" } };
+  }
+
+  const providers = await getProviders();
+
+  return {
+    props: { providers: providers ?? [] },
+  };
 }

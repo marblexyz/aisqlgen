@@ -2,6 +2,10 @@ import { useCheckConnection } from "@/hooks/mutations/useCheckConnection";
 import { useAppDispatch } from "@/hooks/reduxHooks";
 import { upsertDatasource } from "@/redux/slices/datasource/datasourceSlice";
 import {
+  DatasourceType,
+  PGConnectionConfig,
+} from "@/types/redux/slices/datasource";
+import {
   Box,
   FormControl,
   FormErrorMessage,
@@ -27,10 +31,6 @@ import { v4 as uuidv4 } from "uuid";
 import { BasicButton } from "../common/BasicButton";
 import { BasicLinkButton } from "../common/BasicLinkButton";
 import { BasicInput } from "../common/Input";
-import {
-  DatasourceType,
-  PGConnectionConfig,
-} from "@/types/redux/slices/datasource";
 
 type AddDatasourceModalProps = {
   isOpen: boolean;
@@ -312,15 +312,15 @@ export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
                   bg={"purple.500"}
                   color={"white"}
                   _hover={{
-                    bg: "purple.100",
+                    bg: "purple.300",
                     cursor: "pointer",
                   }}
                   _active={{
-                    bg: "purple.100",
+                    bg: "purple.300",
                     cursor: "pointer",
                   }}
                   _focus={{
-                    bg: "purple.100",
+                    bg: "purple.300",
                     cursor: "pointer",
                   }}
                   type="submit"
