@@ -26,6 +26,7 @@ export default function App({
 }: AppProps<{
   session: Session;
 }>) {
+  const ANALYTICS_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID ?? "";
   const [queryClient] = useState(() => new QueryClient());
   useEffect(() => {
     const hydrateReduxOnLoad = async () => {
@@ -59,6 +60,24 @@ export default function App({
       <Script
         src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"
         strategy="beforeInteractive"
+      />
+      <Script
+        strategy="afterInteractive"
+        src={`https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}`}
+      />
+      <Script
+        id="google-analytics"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+					window.dataLayer = window.dataLayer || [];
+					function gtag(){dataLayer.push(arguments);}
+					gtag('js', new Date());
+					gtag('config', '${ANALYTICS_ID}', {
+					page_path: window.location.pathname,
+					});
+				`,
+        }}
       />
       <SessionProvider session={pageProps.session}>
         <ReduxProvider store={store}>
