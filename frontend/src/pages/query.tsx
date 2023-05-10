@@ -118,7 +118,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   // If the user is already logged in or is running locally, redirect.
   // Note: Make sure not to redirect to the same page
   // To avoid an infinite loop!
-  if (session === null || isRunningLocally()) {
+  if (session === null && !isRunningLocally()) {
     return { redirect: { destination: "/" } };
   }
 
