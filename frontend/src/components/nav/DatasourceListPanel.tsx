@@ -37,15 +37,15 @@ export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
           bg={"purple.500"}
           color={"white"}
           _hover={{
-            bg: "purple.100",
+            bg: "purple.300",
             cursor: "pointer",
           }}
           _active={{
-            bg: "purple.100",
+            bg: "purple.300",
             cursor: "pointer",
           }}
           _focus={{
-            bg: "purple.100",
+            bg: "purple.300",
             cursor: "pointer",
           }}
         >

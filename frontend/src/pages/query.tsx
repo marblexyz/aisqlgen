@@ -2,6 +2,7 @@ import { OpenAIKeyModal } from "@/components/common/OpenAIKeyModal";
 import { QueryPanel } from "@/components/common/QueryPanel";
 import { Navbar } from "@/components/nav/Navbar";
 import { Sidebar } from "@/components/nav/Sidebar";
+import { SEOHead } from "@/components/utility/SEOHead";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { selectOpenAIKey } from "@/redux/slices/config/configSliceSelector";
 import { createQuery } from "@/redux/slices/query/querySlice";
@@ -57,50 +58,53 @@ export default function Queries() {
   }, []);
 
   return (
-    <Flex direction={"column"} h={CHAKRA_100VH}>
-      <Navbar />
-      {/** subtract navbar height */}
-      <Flex h="calc(100% - 48px)">
-        <Sidebar />
-        <Flex direction={"column"} w="100%" overflowY="auto" pb={24}>
-          <Flex w={"100%"} justify={"center"} align={"center"} px={4} pt={8}>
-            <VStack w="100%" maxW="container.lg" spacing={4}>
-              <Heading size="md" textAlign={"left"} w="100%">
-                Generate query
-              </Heading>
-              <HStack w="100%">
-                <Text w="100%">
-                  Select a data source, a schema, a table, and a question to
-                  generate your query.
-                </Text>
-                <Button
-                  p={0}
-                  my={0}
-                  h={8}
-                  w={48}
-                  borderRadius={0}
-                  textTransform={"uppercase"}
-                  fontWeight={"bold"}
-                  color={"purple.500"}
-                  fontSize={"xs"}
-                  variant="outline"
-                  borderColor={"purple.500"}
-                  onClick={handleCreateNewQuery}
-                >
-                  Create new query
-                </Button>
-              </HStack>
-              <Divider />
-              {isMounted && ids.map((id) => <QueryPanel key={id} id={id} />)}
-            </VStack>
+    <>
+      <SEOHead title={"Generate SQL queries from natural language"} />
+      <Flex direction={"column"} h={CHAKRA_100VH}>
+        <Navbar />
+        {/** subtract navbar height */}
+        <Flex h="calc(100% - 48px)">
+          <Sidebar />
+          <Flex direction={"column"} w="100%" overflowY="auto" pb={24}>
+            <Flex w={"100%"} justify={"center"} align={"center"} px={4} pt={8}>
+              <VStack w="100%" maxW="container.lg" spacing={4}>
+                <Heading size="md" textAlign={"left"} w="100%">
+                  Generate query
+                </Heading>
+                <HStack w="100%">
+                  <Text w="100%">
+                    Select a data source, a schema, a table, and a question to
+                    generate your query.
+                  </Text>
+                  <Button
+                    p={0}
+                    my={0}
+                    h={8}
+                    w={48}
+                    borderRadius={0}
+                    textTransform={"uppercase"}
+                    fontWeight={"bold"}
+                    color={"purple.500"}
+                    fontSize={"xs"}
+                    variant="outline"
+                    borderColor={"purple.500"}
+                    onClick={handleCreateNewQuery}
+                  >
+                    Create new query
+                  </Button>
+                </HStack>
+                <Divider />
+                {isMounted && ids.map((id) => <QueryPanel key={id} id={id} />)}
+              </VStack>
+            </Flex>
           </Flex>
         </Flex>
+        <OpenAIKeyModal
+          isOpen={isOpenOpenAIKeyModal}
+          onClose={onCloseOpenAIKeyModal}
+        />
       </Flex>
-      <OpenAIKeyModal
-        isOpen={isOpenOpenAIKeyModal}
-        onClose={onCloseOpenAIKeyModal}
-      />
-    </Flex>
+    </>
   );
 }
 export async function getServerSideProps(context: GetServerSidePropsContext) {

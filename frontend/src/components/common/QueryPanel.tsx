@@ -520,19 +520,19 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                   display="flex"
                   w={32}
                   _hover={{
-                    bg: "purple.100",
+                    bg: "purple.300",
                     cursor: "pointer",
                   }}
                   _active={{
-                    bg: "purple.100",
+                    bg: "purple.300",
                     cursor: "pointer",
                   }}
                   _focus={{
-                    bg: "purple.100",
+                    bg: "purple.300",
                     cursor: "pointer",
                   }}
                   _disabled={{
-                    bg: "purple.100",
+                    bg: "purple.300",
                   }}
                   isLoading={isLoadingGenerateCommand}
                   isDisabled={generateCommandIsDisabled}
@@ -578,19 +578,19 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                 display="flex"
                 w={32}
                 _hover={{
-                  bg: "purple.100",
+                  bg: "purple.300",
                   cursor: "pointer",
                 }}
                 _active={{
-                  bg: "purple.100",
+                  bg: "purple.300",
                   cursor: "pointer",
                 }}
                 _focus={{
-                  bg: "purple.100",
+                  bg: "purple.300",
                   cursor: "pointer",
                 }}
                 _disabled={{
-                  bg: "purple.100",
+                  bg: "purple.300",
                 }}
                 isDisabled={executeCommandIsDisabled}
                 spinner={<Spinner size="sm" />}
@@ -763,19 +763,19 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
                     display="flex"
                     w={32}
                     _hover={{
-                      bg: "purple.100",
+                      bg: "purple.300",
                       cursor: "pointer",
                     }}
                     _active={{
-                      bg: "purple.100",
+                      bg: "purple.300",
                       cursor: "pointer",
                     }}
                     _focus={{
-                      bg: "purple.100",
+                      bg: "purple.300",
                       cursor: "pointer",
                     }}
                     _disabled={{
-                      bg: "purple.100",
+                      bg: "purple.300",
                     }}
                     isLoading={isLoadingGenerateChart}
                     isDisabled={runChartGenerateIsDisabled}
