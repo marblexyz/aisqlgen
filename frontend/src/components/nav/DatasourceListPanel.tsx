@@ -20,7 +20,7 @@ export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
 }) => {
   const datasourceMapKeys = Object.keys(datasourceMap);
   return (
-    <Flex w="100%" px={4} py={4} direction={"column"}>
+    <Flex w="100%" px={4} py={4} direction={"column"} h="100%" maxW="xs">
       <VStack w="100%" align={"left"} mb={4}>
         <Heading size="sm" color="gray.900" mb="2">
           Data connections
@@ -32,6 +32,7 @@ export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
       <VStack w="100%">
         <BasicButton
           w="100%"
+          maxW="xs"
           onClick={onOpenDatasourceModal}
           borderRadius={"sm"}
           bg={"purple.500"}
@@ -55,7 +56,7 @@ export const DatasourceListPanel: FC<DatasourceListPanelProps> = ({
           </HStack>
         </BasicButton>
         {process.env.NODE_ENV === "development" && (
-          <BasicButton w="100%" onClick={onClickUpdateLocal}>
+          <BasicButton w="100%" onClick={onClickUpdateLocal} maxW="xs">
             Sync local dataset
           </BasicButton>
         )}

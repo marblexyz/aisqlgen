@@ -1,20 +1,31 @@
+import { getLocalDatasets } from "@/handlers/db/localdataset";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { upsertDatasource } from "@/redux/slices/datasource/datasourceSlice";
 import {
   selectDatasource,
   selectDatasourceMap,
 } from "@/redux/slices/datasource/datasourceSliceSelectors";
-import { Flex, useBoolean, useDisclosure } from "@chakra-ui/react";
-import { FC, useState } from "react";
-import { DatasourceInputModal } from "../datasource/DatasourceInputModal";
-import { DatasourceDetailsPanel } from "./DatasourceDetailsPanel";
-import { DatasourceListPanel } from "./DatasourceListPanel";
-import { getLocalDatasets } from "@/handlers/db/localdataset";
 import {
   DatasourceType,
   SQLiteConnectionConfig,
 } from "@/types/redux/slices/datasource";
-import { upsertDatasource } from "@/redux/slices/datasource/datasourceSlice";
+import {
+  Button,
+  Flex,
+  HStack,
+  Icon,
+  Text,
+  VStack,
+  useBoolean,
+  useDisclosure,
+} from "@chakra-ui/react";
+import Link from "next/link";
+import { FC, useState } from "react";
+import { FaDiscord, FaGithub } from "react-icons/fa";
 import { v4 } from "uuid";
+import { DatasourceInputModal } from "../datasource/DatasourceInputModal";
+import { DatasourceDetailsPanel } from "./DatasourceDetailsPanel";
+import { DatasourceListPanel } from "./DatasourceListPanel";
 
 export const Sidebar: FC = () => {
   const {
@@ -77,7 +88,12 @@ export const Sidebar: FC = () => {
     }
   };
   return (
-    <Flex h="100%" borderRight="1px solid" borderColor="gray.100" w="xs">
+    <Flex
+      h="calc(100vh - 48px)"
+      borderRight="1px solid"
+      borderColor="gray.100"
+      direction={"column"}
+    >
       {showDetails === false && (
         <DatasourceListPanel
           onOpenDatasourceModal={onOpenDatasourceModal}
@@ -95,6 +111,61 @@ export const Sidebar: FC = () => {
             datasource={selectedDatasource}
           />
         )}
+      <VStack
+        position={"sticky"}
+        bottom={0}
+        w="100%"
+        direction={"column"}
+        p={4}
+      >
+        <Button
+          variant="outline"
+          backgroundColor="purple.900"
+          border="none"
+          _hover={{
+            bg: "purple.600",
+          }}
+          w="100%"
+          maxW="xs"
+          borderRadius={2}
+          h={8}
+        >
+          <Link
+            href={`https://discord.gg/fV4DNCeZPq`}
+            target={"_blank"}
+            style={{ display: "flex", height: "100%" }}
+          >
+            <HStack w="100%" justify={"space-between"}>
+              <Icon as={FaDiscord} color="white" />
+              <Text color="white">Help</Text>
+            </HStack>
+          </Link>
+        </Button>
+        <Button
+          variant="outline"
+          borderColor="purple.900"
+          border="1px solid"
+          color="purple.900"
+          _hover={{
+            bg: "purple.50",
+          }}
+          w="100%"
+          maxW="xs"
+          borderRadius={2}
+          h={8}
+        >
+          <Link
+            href={`https://github.com/marblexyz/aisqlgen`}
+            target={"_blank"}
+            style={{ display: "flex", height: "100%" }}
+          >
+            <HStack w="100%" justify={"space-between"}>
+              <Icon as={FaGithub} color="purple.900" />
+              <Text>Run locally</Text>
+            </HStack>
+          </Link>
+        </Button>
+      </VStack>
       {/* We always render this component in case you accidentally close it when adding a db. */}
       <DatasourceInputModal
         isOpen={datasourceModalIsOpen}
