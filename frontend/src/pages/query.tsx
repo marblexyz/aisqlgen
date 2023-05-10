@@ -1,5 +1,5 @@
-import { OpenAIKeyModal } from "@/components/common/OpenAIKeyModal";
 import { QueryPanel } from "@/components/common/QueryPanel";
+import { SettingsModal } from "@/components/common/SettingsModal";
 import { Navbar } from "@/components/nav/Navbar";
 import { Sidebar } from "@/components/nav/Sidebar";
 import { SEOHead } from "@/components/utility/SEOHead";
@@ -99,7 +99,7 @@ export default function Queries() {
             </Flex>
           </Flex>
         </Flex>
-        <OpenAIKeyModal
+        <SettingsModal
           isOpen={isOpenOpenAIKeyModal}
           onClose={onCloseOpenAIKeyModal}
         />

@@ -1,7 +1,7 @@
 import { Button, Flex, Heading, useDisclosure } from "@chakra-ui/react";
 import Link from "next/link";
 import { FC } from "react";
-import { OpenAIKeyModal } from "../common/OpenAIKeyModal";
+import { SettingsModal } from "../common/SettingsModal";
 
 export const Navbar: FC = () => {
   const {
@@ -52,7 +52,7 @@ export const Navbar: FC = () => {
           </Heading>
         </Button>
       </Flex>
-      <OpenAIKeyModal
+      <SettingsModal
         isOpen={isOpenOpenAIKeyModal}
         onClose={onCloseOpenAIKeyModal}
       />

@@ -1,4 +1,5 @@
 import {
+  Button,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -9,20 +10,23 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { signOut } from "next-auth/react";
 import { FC } from "react";
 import { APIKeyInput } from "./APIKeyInput";
 
-type OpenAIKeyModalProps = {
+type SettingModalProps = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-export const OpenAIKeyModal: FC<OpenAIKeyModalProps> = ({
-  isOpen,
-  onClose,
-}) => {
+export const SettingsModal: FC<SettingModalProps> = ({ isOpen, onClose }) => {
   const handleSave = () => {
     onClose();
+  };
+  const handleSignOut = async () => {
+    await signOut({
+      callbackUrl: "/",
+    });
   };
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered size="2xl">
@@ -44,6 +48,24 @@ export const OpenAIKeyModal: FC<OpenAIKeyModalProps> = ({
               We do not upload, log, or store your API key outside of your
               browser storage.{" "}
             </Text>
+            <Button
+              aria-label="Edit datasource"
+              variant="unstyled"
+              color={"red.500"}
+              fontSize={"xs"}
+              border={"1px solid"}
+              borderColor={"red.500"}
+              _hover={{
+                bg: "red.50",
+              }}
+              display="flex"
+              px={2}
+              py={0}
+              borderRadius={1}
+              onClick={handleSignOut}
+            >
+              Sign out
+            </Button>
           </VStack>
         </ModalBody>
         <ModalFooter></ModalFooter>
