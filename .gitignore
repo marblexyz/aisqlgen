@@ -41,4 +41,4 @@ frontend/dataset/*
 # backend
 backend/node_modules
 backend/.env
-backend/example_db/clickhouse
+backend/example_db/clickhouse/clickhouse_data
