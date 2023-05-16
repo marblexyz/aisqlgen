@@ -176,3 +176,27 @@ const getSampleRowsForSchema = async (
   }
   return sampleRows;
 };
+
+type ClickhouseQueryResult = {
+  meta: [{ name: string; type: string }];
+  data: Record<string, unknown>[];
+  rows: number;
+  rows_before_limit_at_least: number;
+};
+
+export const executeClickHouseQuery = async (
+  config: ClickHouseConnectionConfig,
+  query: string
+) => {
+  const chClient = createChClient(config);
+  try {
+    const res = await chClient.query({ query });
+    const result = await res.json<ClickhouseQueryResult>();
+    return result.data;
+  } catch (error) {
+    console.error(`Error executing query: ${query}`, error);
+    throw error;
+  } finally {
+    await chClient.close();
+  }
+};
