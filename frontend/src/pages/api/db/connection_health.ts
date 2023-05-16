@@ -1,4 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { checkClickHouseConnection } from "@/node/db/clickhouse";
 import { checkPostgresConnection } from "@/node/db/postgres";
 import { checkSqliteConnection } from "@/node/db/sqlite";
 import {
@@ -46,6 +47,11 @@ export default async function handler(
       }
       case DatasourceType.Sqlite: {
         await checkSqliteConnection(config);
+        res.status(200).json({ isConnected: true });
+        break;
+      }
+      case DatasourceType.ClickHouse: {
+        await checkClickHouseConnection(config);
         res.status(200).json({ isConnected: true });
         break;
       }

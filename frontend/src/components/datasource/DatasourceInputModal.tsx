@@ -2,6 +2,10 @@ import { useCheckConnection } from "@/hooks/mutations/useCheckConnection";
 import { useAppDispatch } from "@/hooks/reduxHooks";
 import { upsertDatasource } from "@/redux/slices/datasource/datasourceSlice";
 import {
+  DatasourceType,
+  PGConnectionConfig,
+} from "@/types/redux/slices/datasource";
+import {
   Box,
   FormControl,
   FormErrorMessage,
@@ -27,10 +31,6 @@ import { v4 as uuidv4 } from "uuid";
 import { BasicButton } from "../common/BasicButton";
 import { BasicLinkButton } from "../common/BasicLinkButton";
 import { BasicInput } from "../common/Input";
-import {
-  DatasourceType,
-  PGConnectionConfig,
-} from "@/types/redux/slices/datasource";
 
 type AddDatasourceModalProps = {
   isOpen: boolean;
@@ -150,12 +150,14 @@ export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
       return;
     }
 
+    const config: PGConnectionConfig = {
+      ...validatedValues,
+      type: DatasourceType.Postgres,
+    };
+
     const datasource = {
       type: DatasourceType.Postgres,
-      config: {
-        ...validatedValues,
-        type: DatasourceType.Postgres,
-      } as PGConnectionConfig,
+      config,
     };
     // Type 'DatasourceType' is not assignable to type 'DatasourceType.Postgres'.ts(2345)
     checkPgConnection(datasource);

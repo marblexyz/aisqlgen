@@ -857,6 +857,14 @@
   resolved "https://registry.yarnpkg.com/@chakra-ui/visually-hidden/-/visually-hidden-2.0.15.tgz#60df64e0ab97d95fee4e6c61ccabd15fd5ace398"
   integrity sha512-WWULIiucYRBIewHKFA7BssQ2ABLHLVd9lrUo3N3SZgR0u4ZRDDVEUNOy+r+9ruDze8+36dGbN9wsN1IdELtdOw==
 
+"@clickhouse/client@^0.0.15":
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@clickhouse/client/-/client-0.0.15.tgz#1fd508f769d7a0061711a07d5f5bcf97ccba851e"
+  integrity sha512-BvUXRorcOrFqFKp6yc7QrPSAQwDcVokEXjRPJzPI70/i60lXnWSan4zCgXl/aOM1B15v/GRGp7Kv6pZ8u2tHIA==
+  dependencies:
+    node-abort-controller "^3.0.1"
+    uuid "^9.0.0"
+
 "@dqbd/tiktoken@^1.0.7":
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/@dqbd/tiktoken/-/tiktoken-1.0.7.tgz#612871cf91eba5599c804f100c573aa4d8596f57"
@@ -3587,6 +3595,11 @@ next@13.3.0:
     "@next/swc-win32-arm64-msvc" "13.3.0"
     "@next/swc-win32-ia32-msvc" "13.3.0"
     "@next/swc-win32-x64-msvc" "13.3.0"
+
+node-abort-controller@^3.0.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/node-abort-controller/-/node-abort-controller-3.1.1.tgz#a94377e964a9a37ac3976d848cb5c765833b8548"
+  integrity sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==
 
 node-addon-api@^4.2.0:
   version "4.3.0"

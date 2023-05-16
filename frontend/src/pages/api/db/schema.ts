@@ -1,4 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { getClickHouseSchema } from "@/node/db/clickhouse";
 import { getPostgresSchema } from "@/node/db/postgres";
 import { getSqliteSchema } from "@/node/db/sqlite";
 import { GetDBSchemaResult } from "@/types/api";
@@ -46,6 +47,14 @@ export default async function handler(
       }
       case DatasourceType.Sqlite: {
         const responseBody = await getSqliteSchema(
+          config,
+          sampleRowsInTableInfo
+        );
+        res.status(200).json(responseBody);
+        return;
+      }
+      case DatasourceType.ClickHouse: {
+        const responseBody = await getClickHouseSchema(
           config,
           sampleRowsInTableInfo
         );

@@ -37,3 +37,8 @@ next-env.d.ts
 # sqlite datasets
 frontend/dataset/*
 !frontend/dataset/movies.sqlite
+
+# backend
+backend/node_modules
+backend/.env
+backend/example_db/clickhouse

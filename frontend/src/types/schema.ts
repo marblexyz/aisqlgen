@@ -12,6 +12,7 @@ export type SQLTableSchema = {
   tableName: string;
   columns: SQLColumnType[];
 };
+
 // tableName: SQLTableSchema
 export type DatabaseSchemaMap = Map<string, SQLTableSchema>;
 export type DatabaseSchemaObject = Record<string, SQLTableSchema>;
