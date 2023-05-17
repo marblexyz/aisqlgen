@@ -138,8 +138,7 @@ export const DatasourceDetailsPanel: FC<DatasourceDetailsPanelProps> = ({
             isOpen={datasourceModalIsOpen}
             onClose={onCloseDatasourceModal}
             initialValues={{
-              ...datasource.config,
-              port: datasource.config.port.toString(),
+              ...datasource,
               id: datasourceId,
             }}
           />

@@ -10,50 +10,33 @@ import {
 import { Field, FormikProps, FormikProvider } from "formik";
 import { FC } from "react";
 import { BasicInput } from "../common/Input";
-export type PostgresFormValues = {
-  type: DatasourceType.Postgres;
+
+export type ClickHouseFormValues = {
+  type: DatasourceType.ClickHouse;
   resourceName: string;
   host: string;
-  port: string | number;
   database: string;
   user: string;
   password: string;
 };
 
-export const DEFAULT_PG_FORM_VALUES: PostgresFormValues = {
-  type: DatasourceType.Postgres,
+export const DEFAULT_CH_FORM_VALUES: ClickHouseFormValues = {
+  type: DatasourceType.ClickHouse,
   resourceName: "",
   host: "",
-  port: 5432,
   database: "",
   user: "",
   password: "",
 };
 
-export const validatePgFormValues = (values: PostgresFormValues) => {
+export const validateChFormValues = (values: ClickHouseFormValues) => {
   const errors: Record<string, string> = {};
-  //  TODO: add validation for port, database, user, password
   if (values.resourceName === "") {
     errors.resourceName = "Required";
   }
   if (values.host === "") {
     errors.host = "Required";
   }
-  if (values.port === "") {
-    errors.port = "Required";
-  }
-  if (typeof values.port === "string") {
-    const portIsNumeric = !isNaN(parseInt(values.port));
-    if (!portIsNumeric) {
-      errors.port = "Port must be a number";
-    } else {
-      const portNumber = parseInt(values.port);
-      if (portNumber < 0 || portNumber > 65535) {
-        errors.port = "Port must be between 0 and 65535";
-      }
-    }
-  }
-
   if (values.database === "") {
     errors.database = "Required";
   }
@@ -70,16 +53,14 @@ export const validatePgFormValues = (values: PostgresFormValues) => {
     errors,
     values: {
       ...values,
-      port:
-        typeof values.port === "number" ? values.port : parseInt(values.port),
     },
   };
 };
 
-export type PgDatasourceInputPanelProps = {
-  formik: FormikProps<PostgresFormValues>;
+export type ChDatasourceInputPanelProps = {
+  formik: FormikProps<ClickHouseFormValues>;
 };
-export const PgDatasourceInputPanel: FC<PgDatasourceInputPanelProps> = ({
+export const ChDatasourceInputPanel: FC<ChDatasourceInputPanelProps> = ({
   formik,
 }) => {
   const { errors, handleSubmit, touched } = formik;
@@ -119,19 +100,6 @@ export const PgDatasourceInputPanel: FC<PgDatasourceInputPanelProps> = ({
                 placeholder="Host name or IP address, e.g. localhost"
               />
               <FormErrorMessage>{errors.host}</FormErrorMessage>
-            </FormControl>
-            <FormControl isInvalid={errors.port !== undefined && touched.port}>
-              <FormLabel htmlFor="port">
-                <Text>Port</Text>
-              </FormLabel>
-              <Field
-                required
-                as={BasicInput}
-                id="port"
-                name="port"
-                placeholder="Port number, e.g. 5432"
-              />
-              <FormErrorMessage>{errors.port}</FormErrorMessage>
             </FormControl>
             <FormControl
               isInvalid={errors.database !== undefined && touched.database}

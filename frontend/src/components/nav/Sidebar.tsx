@@ -1,20 +1,20 @@
+import { getLocalDatasets } from "@/handlers/db/localdataset";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { upsertDatasource } from "@/redux/slices/datasource/datasourceSlice";
 import {
   selectDatasource,
   selectDatasourceMap,
 } from "@/redux/slices/datasource/datasourceSliceSelectors";
-import { Flex, useBoolean, useDisclosure } from "@chakra-ui/react";
-import { FC, useState } from "react";
-import { DatasourceInputModal } from "../datasource/DatasourceInputModal";
-import { DatasourceDetailsPanel } from "./DatasourceDetailsPanel";
-import { DatasourceListPanel } from "./DatasourceListPanel";
-import { getLocalDatasets } from "@/handlers/db/localdataset";
 import {
   DatasourceType,
   SQLiteConnectionConfig,
 } from "@/types/redux/slices/datasource";
-import { upsertDatasource } from "@/redux/slices/datasource/datasourceSlice";
+import { Flex, useBoolean, useDisclosure } from "@chakra-ui/react";
+import { FC, useState } from "react";
 import { v4 } from "uuid";
+import { DatasourceInputModal } from "../datasource/DatasourceInputModal";
+import { DatasourceDetailsPanel } from "./DatasourceDetailsPanel";
+import { DatasourceListPanel } from "./DatasourceListPanel";
 
 export const Sidebar: FC = () => {
   const {

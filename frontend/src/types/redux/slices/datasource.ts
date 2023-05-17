@@ -21,7 +21,7 @@ export type PGConnectionConfig = ConnectionBase & {
 export type ClickHouseConnectionConfig = ConnectionBase & {
   type: typeof DatasourceType.ClickHouse;
   host: string;
-  username: string;
+  user: string;
   password: string;
   database: string;
 };
