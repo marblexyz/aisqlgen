@@ -2,7 +2,7 @@ import { useGetSchema } from "@/hooks/queries/useGetSchema";
 import { useAppDispatch } from "@/hooks/reduxHooks";
 import { deleteDatasource } from "@/redux/slices/datasource/datasourceSlice";
 import { CHAKRA_100VH } from "@/style/constants";
-import { Datasource, DatasourceType } from "@/types/redux/slices/datasource";
+import { Datasource } from "@/types/redux/slices/datasource";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -132,17 +132,16 @@ export const DatasourceDetailsPanel: FC<DatasourceDetailsPanelProps> = ({
           {data?.schema !== undefined && <SchemaSidebar schema={data.schema} />}
         </VStack>
       </Flex>
-      {datasourceModalIsOpen &&
-        datasource.config.type === DatasourceType.Postgres && (
-          <DatasourceInputModal
-            isOpen={datasourceModalIsOpen}
-            onClose={onCloseDatasourceModal}
-            initialValues={{
-              ...datasource,
-              id: datasourceId,
-            }}
-          />
-        )}
+      {datasourceModalIsOpen && (
+        <DatasourceInputModal
+          isOpen={datasourceModalIsOpen}
+          onClose={onCloseDatasourceModal}
+          initialValues={{
+            ...datasource,
+            id: datasourceId,
+          }}
+        />
+      )}
     </>
   );
 };

@@ -105,6 +105,7 @@ export const DatasourceInputModalContent: FC<
     mutate: checkConnection,
     isLoading: isCheckingConnection,
     isError: isErrorCheckingConnection,
+    error: checkConnectionError,
     isSuccess: isSuccessCheckingConnection,
   } = useCheckConnection();
   const dispatch = useAppDispatch();
@@ -218,8 +219,8 @@ export const DatasourceInputModalContent: FC<
           </HStack>
           {isErrorCheckingConnection && (
             <Text color="red.500" fontSize={"sm"} textAlign={"center"}>
-              The connection test failed. Please check your credentials and try
-              again.
+              {`The connection test failed. Please check your credentials and try
+              again. ${checkConnectionError}`}
             </Text>
           )}
         </VStack>

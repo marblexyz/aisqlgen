@@ -43,9 +43,7 @@ export const validateChFormValues = (values: ClickHouseFormValues) => {
   if (values.user === "") {
     errors.user = "Required";
   }
-  if (values.password === "") {
-    errors.password = "Required";
-  }
+
   if (Object.keys(errors).length > 0) {
     return { errors, values: undefined };
   }

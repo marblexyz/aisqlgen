@@ -95,11 +95,12 @@ export const Sidebar: FC = () => {
             datasource={selectedDatasource}
           />
         )}
-      {/* We always render this component in case you accidentally close it when adding a db. */}
-      <DatasourceInputModal
-        isOpen={datasourceModalIsOpen}
-        onClose={onCloseDatasourceModal}
-      />
+      {datasourceModalIsOpen && (
+        <DatasourceInputModal
+          isOpen={datasourceModalIsOpen}
+          onClose={onCloseDatasourceModal}
+        />
+      )}
     </Flex>
   );
 };
