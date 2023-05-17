@@ -158,7 +158,7 @@ export const DatasourceInputModalContent: FC<
     <ModalContent border="none" borderRadius={2}>
       <ModalHeader>
         <Heading fontSize="md" color="gray.900">
-          {action} datasource
+          {action} {type} datasource
         </Heading>
       </ModalHeader>
       <ModalCloseButton m={2} />
