@@ -41,7 +41,7 @@ import {
 } from "@chakra-ui/react";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { v4 } from "uuid";
-import { DatasourceMenu } from "../page/index/DatasourceMenu";
+import { DatasourceDropdownMenu } from "../page/index/DatasourceDropdownMenu";
 import { GPT4Switch } from "../page/index/GPT4Switch";
 import { BasicButton } from "./BasicButton";
 import { ResultTable } from "./ResultTable";
@@ -427,7 +427,7 @@ export const QueryPanel: FC<QueryPanelProps> = ({ id }) => {
       {/** Action Options */}
       <HStack w="100%" justifyContent={"space-between"}>
         <HStack>
-          <DatasourceMenu
+          <DatasourceDropdownMenu
             value={selectedDataSourceId}
             onChange={handleSelectDataSourceId}
           />

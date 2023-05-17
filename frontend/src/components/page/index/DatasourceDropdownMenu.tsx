@@ -20,12 +20,12 @@ import {
 import { FC } from "react";
 import { BsDatabase } from "react-icons/bs";
 
-export type DatasourceMenuProps = {
+export type DatasourceDropdownMenuProps = {
   value: string | undefined;
   onChange: (value: string) => void;
 };
 
-export const DatasourceMenu: FC<DatasourceMenuProps> = ({
+export const DatasourceDropdownMenu: FC<DatasourceDropdownMenuProps> = ({
   value,
   onChange,
 }) => {
