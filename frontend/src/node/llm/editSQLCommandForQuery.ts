@@ -1,21 +1,27 @@
 import { ExecutionLogItem } from "@/types/api";
+import { DatasourceType } from "@/types/redux/slices/datasource";
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
-import { printPromptEncodingLength } from "../utils";
+import {
+  getDbTypeFromDatasourceType,
+  printPromptEncodingLength,
+} from "../utils";
 import { generateChatCompletion } from "./openai";
 
-export type GetPostgresPromptConfig = {
+export type GetEditSQLPromptConfig = {
   userQuestion: string;
   query: string;
   tableInfo: string;
+  databaseType: string;
   previousQueries?: ExecutionLogItem[];
 };
 
-const getPostgresPrompt = ({
+const getEditSQLPrompt = ({
   tableInfo,
   query,
   userQuestion,
+  databaseType,
   previousQueries = [],
-}: GetPostgresPromptConfig) => {
+}: GetEditSQLPromptConfig) => {
   const previousQueriesToString = previousQueries
     .map((previousQuery) => {
       return `Question: ${previousQuery.userQuestion} \n Query: ${previousQuery.command} \n`;
@@ -23,7 +29,7 @@ const getPostgresPrompt = ({
     .join("\n");
 
   const PROMPT = `
-You are a PostgreSQL expert. Given an input question, your goal is to create a syntactically correct PostgreSQL query to run by modifying an existing query.
+You are a ${databaseType} expert. Given an input question, your goal is to create a syntactically correct ${databaseType} query to run by modifying an existing query.
 You can order the results to return the most informative data in the database.
 Never query for all columns from a table. You must query only the columns that are needed to answer the question. Wrap each column name in double quotes (") to denote them as delimited identifiers.
 Pay attention to use only the column names you can see in the tables below. Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table.
@@ -46,6 +52,7 @@ export type EditSQLCommandForQueryConfig = {
   userQuestion: string;
   tableInfo: string;
   query: string;
+  datasourceType: DatasourceType;
   previousQueries?: ExecutionLogItem[];
   openAIKey?: string;
 };
@@ -56,19 +63,22 @@ export const editSQLCommandForQuery = async ({
   tableInfo,
   previousQueries,
   openAIKey,
+  datasourceType,
 }: EditSQLCommandForQueryConfig) => {
   // TODO: Generalize this to work with any database type prompt
-  const psqlCmdPrompt = getPostgresPrompt({
+  const databaseType = getDbTypeFromDatasourceType(datasourceType);
+  const editSQLCmdPrompt = getEditSQLPrompt({
     userQuestion,
     query,
     tableInfo,
     previousQueries,
+    databaseType,
   });
-  printPromptEncodingLength(psqlCmdPrompt);
+  printPromptEncodingLength(editSQLCmdPrompt);
   const messages = [
     {
       role: ChatCompletionRequestMessageRoleEnum.User,
-      content: psqlCmdPrompt,
+      content: editSQLCmdPrompt,
     },
   ];
   const result = await generateChatCompletion({
