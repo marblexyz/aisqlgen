@@ -38,7 +38,7 @@ export const DatasourceInputModal: FC<AddDatasourceModalProps> = ({
       <ModalOverlay />
       {selectedDatasourceType === undefined && (
         <ModalContent>
-          <ModalHeader>Add Datasource</ModalHeader>
+          <ModalHeader>Add datasource</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack>
