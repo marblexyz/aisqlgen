@@ -1,6 +1,7 @@
 export enum DatasourceType {
   Postgres = "Postgres",
   Sqlite = "Sqlite",
+  ClickHouse = "ClickHouse",
 }
 
 export type ConnectionBase = {
@@ -17,6 +18,14 @@ export type PGConnectionConfig = ConnectionBase & {
   password: string;
 };
 
+export type ClickHouseConnectionConfig = ConnectionBase & {
+  type: typeof DatasourceType.ClickHouse;
+  host: string;
+  user: string;
+  password: string;
+  database: string;
+};
+
 export type SQLiteConnectionConfig = ConnectionBase & {
   type: typeof DatasourceType.Sqlite;
   filename: string;
@@ -24,7 +33,8 @@ export type SQLiteConnectionConfig = ConnectionBase & {
 
 export type DatasourceConnectionConfig =
   | PGConnectionConfig
-  | SQLiteConnectionConfig;
+  | SQLiteConnectionConfig
+  | ClickHouseConnectionConfig;
 
 export type Datasource = {
   type: DatasourceType;

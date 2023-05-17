@@ -1,4 +1,4 @@
-import { executeSQLQuery } from "@/handlers/db/execute";
+import { executeSQLQuery } from "@/handlers/db/query";
 import { Datasource } from "@/types/redux/slices/datasource";
 import { DatabaseRow } from "@/types/schema";
 import { useMutation } from "@tanstack/react-query";

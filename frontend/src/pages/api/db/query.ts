@@ -1,3 +1,4 @@
+import { executeClickHouseQuery } from "@/node/db/clickhouse";
 import { executePostgresQuery } from "@/node/db/postgres";
 import { executeSqliteQuery } from "@/node/db/sqlite";
 import {
@@ -48,6 +49,13 @@ export default async function handler(
         res.status(200).json({ result });
         break;
       }
+      case DatasourceType.ClickHouse: {
+        const result = await executeClickHouseQuery(config, query);
+        res.status(200).json({ result });
+        break;
+      }
+      default:
+        res.status(400).json({ error: "Unsupported DB type" });
     }
   } catch (error: Error | unknown) {
     res.status(500).json({ error: (error as Error).message });

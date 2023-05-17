@@ -3,6 +3,7 @@ import { editSQLCommandForQuery } from "@/node/llm/editSQLCommandForQuery";
 import { generateSQLCommandForQuery } from "@/node/llm/getSQLCommandForQuery";
 import { getTablesToUseForQuery } from "@/node/llm/getTablesToUseForQuery";
 import { ExecutionLogItem } from "@/types/api";
+import { DatasourceType } from "@/types/redux/slices/datasource";
 import { DatabaseSchemaObject, SampleRowsObject } from "@/types/schema";
 import { getSchemaAsString } from "@/utils/getSchemaAsString";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -10,7 +11,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export type GenerateSQLCommandRequest = {
   userQuestion: string;
   dbSchema: DatabaseSchemaObject;
-  datasourceType: string;
+  datasourceType: DatasourceType;
   query?: string;
   sampleRows?: SampleRowsObject;
   sequential?: boolean;
@@ -47,6 +48,7 @@ export default async function handler(
     sequential,
     previousQueries,
     openAIKey,
+    datasourceType,
   } = body as GenerateSQLCommandRequest;
 
   const tableNames = Object.keys(dbSchema).join(", ");
@@ -74,6 +76,7 @@ export default async function handler(
         userQuestion,
         tableInfo: tableSchemaAsString,
         openAIKey,
+        datasourceType,
       });
       res.status(200).json({ result });
       return;
@@ -84,6 +87,7 @@ export default async function handler(
         query,
         previousQueries,
         openAIKey,
+        datasourceType,
       });
       res.status(200).json({ result });
       return;

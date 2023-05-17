@@ -1,15 +1,24 @@
+import { DatasourceType } from "@/types/redux/slices/datasource";
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
-import { printPromptEncodingLength } from "../utils";
+import {
+  getDbTypeFromDatasourceType,
+  printPromptEncodingLength,
+} from "../utils";
 import { generateChatCompletion } from "./openai";
 
 export type GetPromptConfig = {
   userQuestion: string;
   tableInfo: string;
+  databaseType: string;
 };
 
-export const getPrompt = ({ tableInfo, userQuestion }: GetPromptConfig) => {
+export const getSQLPrompt = ({
+  tableInfo,
+  userQuestion,
+  databaseType,
+}: GetPromptConfig) => {
   const PROMPT = `
-You are a PostgreSQL expert. Given an input question, your goal is to create a syntactically correct PostgreSQL query to run.
+You are a ${databaseType} expert. Given an input question, your goal is to create a syntactically correct ${databaseType} query to run.
 You can order the results to return the most informative data in the database.
 Never query for all columns from a table. You must query only the columns that are needed to answer the question. Wrap each column name in double quotes (") to denote them as delimited identifiers.
 Pay attention to use only the column names you can see in the tables below. Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table.
@@ -25,6 +34,7 @@ Only return the SQL query in the answer. Do not include the question or any othe
 export type GenerateSQLCommandForQueryConfig = {
   userQuestion: string;
   tableInfo: string;
+  datasourceType: DatasourceType;
   openAIKey?: string;
 };
 
@@ -32,14 +42,16 @@ export const generateSQLCommandForQuery = async ({
   userQuestion,
   tableInfo,
   openAIKey,
+  datasourceType,
 }: GenerateSQLCommandForQueryConfig) => {
   // TODO: Generalize this to work with any database type prompt
-  const psqlCmdPrompt = getPrompt({ userQuestion, tableInfo });
-  printPromptEncodingLength(psqlCmdPrompt);
+  const databaseType = getDbTypeFromDatasourceType(datasourceType);
+  const commandPrompt = getSQLPrompt({ userQuestion, tableInfo, databaseType });
+  printPromptEncodingLength(commandPrompt);
   const messages = [
     {
       role: ChatCompletionRequestMessageRoleEnum.User,
-      content: psqlCmdPrompt,
+      content: commandPrompt,
     },
   ];
   const result = await generateChatCompletion({

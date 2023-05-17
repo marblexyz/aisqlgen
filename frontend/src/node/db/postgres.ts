@@ -1,7 +1,7 @@
 import { PGConnectionConfig } from "@/types/redux/slices/datasource";
 import {
+  DatabaseSchemaMap,
   DatabaseSchemaObject,
-  SQLTableSchema,
   SampleRowsObject,
 } from "@/types/schema";
 import { isNullOrUndefined } from "@/utils";
@@ -31,23 +31,16 @@ export const getPostgresSchema = async (
     let sampleRows: SampleRowsObject | undefined;
     try {
       databaseSchema = await getBasicDatabaseSchema(poolClient);
-      const tableNames = Object.keys(databaseSchema);
+      const tableNameList = Object.keys(databaseSchema);
 
-      if (sampleRowsInTableInfo !== undefined) {
-        sampleRows = {};
-        for (const tableName of tableNames) {
-          try {
-            const res = await getSampleRowsForTable(
+      sampleRows =
+        sampleRowsInTableInfo !== undefined
+          ? await getSampleRowsForSchema(
               poolClient,
-              tableName,
-              sampleRowsInTableInfo
-            );
-            sampleRows[tableName] = res;
-          } catch {
-            delete databaseSchema[tableName];
-          }
-        }
-      }
+              sampleRowsInTableInfo,
+              tableNameList
+            )
+          : undefined;
     } finally {
       poolClient.release();
     }
@@ -87,21 +80,19 @@ export const executePostgresQuery = async (
   return rows;
 };
 
-type DatabaseSchemaRow = {
+type PgDatabaseSchemaRow = {
   table_name: string;
   column_name: string;
   udt_name: string;
 };
 
-type DatabaseRelationshipRow = {
+type PgDatabaseRelationshipRow = {
   table_name: string;
   column_name: string;
   key_type: "pk" | "fk";
   referenced_table?: string;
   referenced_column?: string;
 };
-
-type DatabaseSchemaMap = Map<string, SQLTableSchema>;
 
 const DB_SCHEMA_QUERY = `
 SELECT
@@ -161,17 +152,17 @@ ORDER BY
 const getBasicDatabaseSchema = async (
   client: PoolClient
 ): Promise<DatabaseSchemaObject> => {
-  let databaseSchema: QueryResult<DatabaseSchemaRow>;
+  let databaseSchema: QueryResult<PgDatabaseSchemaRow>;
   try {
-    databaseSchema = await client.query<DatabaseSchemaRow>(DB_SCHEMA_QUERY);
+    databaseSchema = await client.query<PgDatabaseSchemaRow>(DB_SCHEMA_QUERY);
   } catch (error) {
     console.error(error);
     throw new Error(`Error getting database schema.`);
   }
 
-  let databaseRelationships: QueryResult<DatabaseRelationshipRow>;
+  let databaseRelationships: QueryResult<PgDatabaseRelationshipRow>;
   try {
-    databaseRelationships = await client.query<DatabaseRelationshipRow>(
+    databaseRelationships = await client.query<PgDatabaseRelationshipRow>(
       DB_RELATIONSHIPS_QUERY
     );
   } catch (error) {
@@ -229,7 +220,27 @@ const getBasicDatabaseSchema = async (
 
   return Object.fromEntries(schema);
 };
-
+const getSampleRowsForSchema = async (
+  poolClient: PoolClient,
+  sampleRowsInTableInfo: number,
+  tableNameList: string[]
+) => {
+  const sampleRows: SampleRowsObject | undefined = {};
+  for (const tableName of tableNameList) {
+    try {
+      const res = await getSampleRowsForTable(
+        poolClient,
+        tableName,
+        sampleRowsInTableInfo
+      );
+      sampleRows[tableName] = res;
+    } catch (error) {
+      console.error("Error getting sample rows for table", tableName, error);
+      // Ignore error and continue
+    }
+  }
+  return sampleRows;
+};
 const getSampleRowsForTable = async (
   poolClient: PoolClient,
   tableName: string,

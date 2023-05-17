@@ -1,7 +1,7 @@
 import {
   ExecuteQueryRequest,
   ExecuteSQLQueryResult,
-} from "@/pages/api/db/execute";
+} from "@/pages/api/db/query";
 import { HttpMethod, callServerlessApi } from "..";
 
 export const executeSQLQuery = async ({
@@ -9,7 +9,7 @@ export const executeSQLQuery = async ({
   config,
 }: ExecuteQueryRequest) => {
   const response = await callServerlessApi(
-    "/api/db/execute",
+    "/api/db/query",
     HttpMethod.POST,
     JSON.stringify({
       query,
