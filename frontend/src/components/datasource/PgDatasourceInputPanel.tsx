@@ -4,6 +4,7 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Switch,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -18,6 +19,7 @@ export type PostgresFormValues = {
   database: string;
   user: string;
   password: string;
+  ssl?: boolean;
 };
 
 export const DEFAULT_PG_FORM_VALUES: PostgresFormValues = {
@@ -28,6 +30,7 @@ export const DEFAULT_PG_FORM_VALUES: PostgresFormValues = {
   database: "",
   user: "",
   password: "",
+  ssl: false,
 };
 
 export const validatePgFormValues = (values: PostgresFormValues) => {
@@ -178,6 +181,21 @@ export const PgDatasourceInputPanel: FC<PgDatasourceInputPanelProps> = ({
                 placeholder="Database password"
               />
               <FormErrorMessage>{errors.password}</FormErrorMessage>
+            </FormControl>
+            {/** Form control for ssl */}
+            <FormControl isInvalid={errors.ssl !== undefined && touched.ssl}>
+              <FormLabel htmlFor="ssl">
+                <Text>SSL Mode</Text>
+              </FormLabel>
+              <Field
+                required
+                as={Switch}
+                id="ssl"
+                name="ssl"
+                type="ssl"
+                placeholder="Database ssl"
+              />
+              <FormErrorMessage>{errors.ssl}</FormErrorMessage>
             </FormControl>
           </VStack>
         </form>

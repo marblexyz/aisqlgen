@@ -7,6 +7,8 @@ import {
 import { isNullOrUndefined } from "@/utils";
 import { Pool, PoolClient, QueryResult } from "pg";
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 export const createPool = (config: PGConnectionConfig) => {
   try {
     const pool = new Pool(config);

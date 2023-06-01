@@ -16,6 +16,7 @@ export type PGConnectionConfig = ConnectionBase & {
   database: string;
   user: string;
   password: string;
+  ssl?: boolean;
 };
 
 export type ClickHouseConnectionConfig = ConnectionBase & {
